@@ -27,19 +27,18 @@ body {
     }
 
 /* Почта */
-h2 {
-    font-family: 'Nunito Sans', sans-serif;
-    color: #FFF5F2;
-    font-size: 120%;
-}
+    h2 {
+        font-family: 'Nunito Sans', sans-serif;
+        color: #FFF5F2;
+        font-size: 120%;
+    }
 
 /* нигде */   
-h3 {
-    font-family: 'Nunito Sans', sans-serif;
-    font-weight: 200;
-    color: #171717;
-    font-size: 80%;
-}
+    h3 {
+        font-family: 'Nunito Sans', sans-serif;
+        color: #FFF5F2;
+        font-size: 120%;
+    }
 
 /* Телефон */
     h4 {
@@ -55,6 +54,13 @@ h3 {
         color: #5163EB;
         font-size: 100%;
         margin-bottom: 7px;
+    }
+    
+    h6 {
+        font-family: 'Nunito Sans', sans-serif;
+        color: #5163EB;
+        font-size: 120%;
+        margin: 12px;
     }
 
 /* главная белая форма авторизации */
@@ -110,7 +116,7 @@ h3 {
         padding-right: 20%;
     }
 /* слайдер темная активная часть */    
-    .form .smallslider {
+    .form .smallslider_for_mail {
         width: 50%;   
         height: 100%;  
         background: #5163EB;
@@ -123,6 +129,21 @@ h3 {
         left: 50%;
         transform: translate(-28%, -7%); 
     }
+    
+    .smallslider_for_phone {
+        width: 50%;   
+        height: 100%;  
+        background: #5163EB;
+        margin-top: 3%;
+        border-radius: 20px; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        top: 55%;
+        left: 50%;
+        transform: translate(60%, -7%); 
+    }
+
 /* область ввода данных */    
     .form .infoform {
         width: 90%;   
@@ -232,6 +253,26 @@ h3 {
         object-fit: cover;       
     }
 
+
+    .btn-link {
+        display: flex;
+        padding: 0;
+        height: 100%;
+        background-color: none; 
+        font-family: 'Nunito Sans', sans-serif;
+        color: #5163EB;
+        font-size: 120%;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    
+
+    .btn-link:hover {
+        background-color: none; 
+        text-decoration: none;
+    }
 
 
 }
