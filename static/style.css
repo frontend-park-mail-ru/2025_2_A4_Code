@@ -33,13 +33,16 @@ body {
         font-size: 120%;
     }
 
-/* нигде */   
+/* Есть аккаунт? */   
     h3 {
         font-family: 'Nunito Sans', sans-serif;
-        color: #FFF5F2;
-        font-size: 120%;
+        font-weight: 400;
+        color: #5163EB;
+        font-size: 100%;
+        align-items: center;
+        justify-content: center;
     }
-
+    
 /* Телефон */
     h4 {
         font-family: 'Nunito Sans', sans-serif;
@@ -129,7 +132,7 @@ body {
         left: 50%;
         transform: translate(-28%, -7%); 
     }
-    
+ /* слайдер темная активная часть для страницы с телефоном */      
     .smallslider_for_phone {
         width: 50%;   
         height: 100%;  
@@ -144,7 +147,7 @@ body {
         transform: translate(60%, -7%); 
     }
 
-/* область ввода данных */    
+/* область ввода данных для входа*/    
     .form .infoform {
         width: 90%;   
         height: 25%; 
@@ -154,14 +157,14 @@ body {
         box-sizing: border-box;
     }
 
-/*  */     
+/* поля для входа*/     
     .infoform-group {
         width: 100%;
         display: flex;
         flex-direction: column;
     }
 
-/* инпуты на всю ширину */
+/* инпуты для входа на всю ширину */
     .infoform-group input {
         width: 100%; 
         border: none;
@@ -172,9 +175,10 @@ body {
         outline: none;
         font-family: 'Nunito Sans', sans-serif;
         font-weight: 200;
+        margin-top: 10px;
     }
     
-/* ссылка "забыли пароль" сразу под полем */
+/* ссылка "забыли пароль" */
     .forgotpassword {
         align-self: flex-start; 
         margin-top: 5px;
@@ -183,8 +187,7 @@ body {
         text-decoration: none;
     }
 
-
-/* область двух кнопок */    
+/* область двух кнопок на странице входа*/    
     .form .buttons {
         width: 90%;   
         height: 20%; 
@@ -194,8 +197,16 @@ body {
         box-sizing: border-box;
        
     }
+/* область кнопки регистрация на стр рег-ции */
+    .form .button {
+        width: 90%;   
+        height: 10%; 
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;       
+    }
 
-/* сами кнопки */
+/* сами кнопки на странице входа */
     .form .buttons .btn {
         width: 100%;
         height: 70%;
@@ -204,7 +215,6 @@ body {
         color: white;
         font-size: 18px;
         font-family: inherit;
-        border: none;
         border-radius: 20px;
         cursor: pointer;
         transition: 0.2s;
@@ -216,8 +226,26 @@ body {
         color: #5163EB;
         border: 2px solid #5163EB ;
     }
-
-/* низ формы, вход через другие пиложения */    
+/* кнопка регистрация на странице регистрации*/
+    .form .button .btn {
+        width: 100%;
+        height: 100%;
+        background: #5163EB;
+        color: white;
+        font-size: 18px;
+        font-family: inherit;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: 0.2s;
+        border: 2px solid #5163EB ;
+    }
+    
+    .form .button .btn:hover {
+        background: #F7F5FC;
+        color: #5163EB;
+        border: 2px solid #5163EB ;
+    }
+/* низ формы входа, вход через другие пиложения */    
     .form .bottom {
         width: 80%;   
         box-sizing: border-box;
@@ -253,7 +281,7 @@ body {
         object-fit: cover;       
     }
 
-
+/* кнопка чтобы переключаться на вход по почте/телефону */  
     .btn-link {
         display: flex;
         padding: 0;
@@ -273,6 +301,81 @@ body {
         background-color: none; 
         text-decoration: none;
     }
+/* на стр рег-ции внизу вопрос и кнопка */  
+    .alreadyexcist {
+        width: 100%;  
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 35px;
+    }
+/* кнопка войти на стр рег-ции */  
+    .btn-enter {
+        display: flex;
+        padding: 0;
+        height: 100%;
+        width: 50%;
+        background-color: none; 
+        font-family: 'Nunito Sans', sans-serif;
+        color: #5163EB;
+        font-size: 120%;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    
+    .btn-link:hover {
+        background-color: none; 
+        border: #5163EB;
+        border-radius: 10px;
+        text-decoration: none;
+    }
+    
+    /* область ввода данных */    
+    .form .regform {
+        width: 90%;   
+        height: 60%; 
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        box-sizing: border-box;
+    }
+    
+    /*  */     
+    .regform-group {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
 
+/* инпуты на всю ширину */
+    .regform-group input {
+        width: 100%; 
+        border: none;
+        border-bottom: 1px solid #555;
+        background: transparent;
+        font-size: 18px;
+        padding: 8px 0;
+        outline: none;
+        font-family: 'Nunito Sans', sans-serif;
+        font-weight: 200;
+        margin-top: 10px;
+    }
 
+    .checkbox {
+        width: 100%;
+        font-family: 'Nunito Sans', sans-serif;
+        color: #5163EB;
+        font-size: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .checkbox pre {
+        font-family: 'Nunito Sans', sans-serif;
+        color: #5163EB;
+        font-size: 100%;
+    }
 }
