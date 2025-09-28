@@ -9,8 +9,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    margin: 0;
     
     @font-face {
         font-family: 'Nunito Sans';
@@ -249,7 +247,7 @@ body {
         color: #5163EB;
         border: 2px solid #5163EB ;
     }
-/* низ формы входа, вход через другие пиложения */    
+/* низ формы входа, вход через другие приложения */    
     .form .bottom {
         width: 80%;   
         box-sizing: border-box;
