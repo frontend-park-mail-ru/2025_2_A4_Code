@@ -5,7 +5,7 @@ body {
 
     margin: 0;
     height: 100vh; 
-    background: url("images/background.jpg") no-repeat center center;
+    background: url("images/fone.jpeg") no-repeat center center;
     background-size: cover; 
     display: flex;
     align-items: center;
