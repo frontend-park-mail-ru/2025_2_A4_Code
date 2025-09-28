@@ -1,10 +1,11 @@
+
 body {
 
     font-family: 'Nunito Sans';
 
     margin: 0;
     height: 100vh; 
-    background: url("images/фон\ .jpg") no-repeat center center;
+    background: url("images/background.jpg") no-repeat center center;
     background-size: cover; 
     display: flex;
     align-items: center;
@@ -14,7 +15,7 @@ body {
     
     @font-face {
         font-family: 'Nunito Sans';
-        src: url('fonts/NunitoSans-Regular.ttf') format('ttf');
+        src: url('static/fonts/NunitoSans-Regular.ttf') format('ttf');
         font-weight: normal;
         font-style: normal;
     }
