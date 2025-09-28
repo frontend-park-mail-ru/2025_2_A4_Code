@@ -1,20 +1,19 @@
+
 body {
 
     font-family: 'Nunito Sans';
 
     margin: 0;
     height: 100vh; 
-    background: url("images/фон\ .jpg") no-repeat center center;
+    background: url("images/fone.jpeg") no-repeat center center;
     background-size: cover; 
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    margin: 0;
     
     @font-face {
         font-family: 'Nunito Sans';
-        src: url('fonts/NunitoSans-Regular.ttf') format('ttf');
+        src: url('static/fonts/NunitoSans-Regular.ttf') format('ttf');
         font-weight: normal;
         font-style: normal;
     }
@@ -249,7 +248,7 @@ body {
         color: #5163EB;
         border: 2px solid #5163EB ;
     }
-/* низ формы входа, вход через другие пиложения */    
+/* низ формы входа, вход через другие приложения */    
     .form .bottom {
         width: 80%;   
         box-sizing: border-box;

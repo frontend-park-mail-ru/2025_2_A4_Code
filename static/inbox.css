@@ -1,0 +1,347 @@
+/* фон */
+body {
+
+    font-family: 'Nunito Sans';
+
+    margin: 0;
+    height: 100vh; 
+    background: url("images/fone.jpeg") no-repeat center center;
+    background-size: cover; 
+    display: flex;
+    align-items: top;
+    justify-content: flex-start;
+    padding: none;
+    flex-direction: column;
+    
+    @font-face {
+        font-family: 'Nunito Sans';
+        src: url('fonts/NunitoSans-Regular.ttf') format('ttf');
+        font-weight: normal;
+        font-style: normal;
+    }
+}
+/* верхняя строка */
+.navbar {
+    width:100vw;
+    height:10vh;
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20%;
+}
+/* логотип текст */
+.logo {
+    font-family:'Nunito Sans',sans-serif;
+    font-size:2.2vw;
+    color:#F7F5FC;
+    display:flex;
+    align-items: center;
+    padding: 20px;
+    justify-content: flex-start;
+}
+/* область поиска*/
+.search-box {
+    flex:1;
+    display:flex;
+    align-items:center;
+    background-color: #F7F5FC;
+    border: 2px solid #5163EB;
+    border-radius: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+/* ввод в поиск */
+.search {
+    width: 100%; 
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    padding: 8px 0;
+    outline: none;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 200;
+}
+/* настройки выход аватар */
+.actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding-right: 20px;
+}
+
+/* иконки actions */
+.icon-container {
+    width: 100%;
+    display: flex;           
+    gap: 10px;               
+    justify-content: center; 
+    align-items: center; 
+    padding: 0;
+}
+/* формат этих иконок */    
+.icon {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;      
+    overflow: hidden;        
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 3px solid #5163EB;  
+}
+/* формат фото для этих иконок */    
+.icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;       
+}
+
+
+/* все пространство внизу */
+.content-row{
+    display: flex;
+    flex: 1;
+    height: 90vh;
+
+}
+
+/* меню сбоку */
+.sidebar {
+    width:18vw;
+    height:90vh;
+    display:flex;
+    justify-content: top;
+    align-items: center;
+    flex-direction:column;
+}
+
+/* Кнопки папок (sidebar) */
+.folder-btn {
+    background: #F7F5FC;
+    color: #000000;
+    border-radius: 10px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 400;
+    font-size: 1.3vw;
+    width: 80%;
+    height: 5%;
+    margin-bottom: 8px;
+    cursor: pointer;
+    text-align: left;
+    padding-left: 18px;
+    border: 2px solid #F7F5FC;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.folder-btn:hover {
+    background: #F7F5FC;
+    border: 2px solid #5163EB;
+    color: #000000;
+}
+
+/*развернутое меню с письмами*/
+.sidebar_mail {
+    width:18vw;
+    height:90vh;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction:column;
+    border-radius: 10px;
+    background-color: #8B92ED;
+}
+/* Входящие текст */
+h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    color: #F7F5FC;
+}
+
+/* Кнопки непрочитанных писем (sidebar_mail) */
+.new-mail-btn {
+    background: #F7F5FC;
+    color: #5163EB;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 400;
+    border-radius: 10px;
+    font-size: 1vw;
+    width: 95%;
+    height: 5%;
+    margin-bottom: 8px;
+    cursor: pointer;
+    text-align: left;
+    padding: 10px;
+    border: 2px solid #F7F5FC;
+}
+
+.new-mail-btn:hover {
+    background: #F7F5FC;
+    border: 2px solid #5163EB;
+    color: #5163EB;
+}
+
+/* Кнопки прочитанных писем (sidebar_mail) */
+.mail-btn {
+    background: #F7F5FC;
+    color: #000;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 400;
+    border-radius: 10px;
+    font-size: 1vw;
+    width: 95%;
+    height: 5%;
+    margin-bottom: 8px;
+    cursor: pointer;
+    text-align: left;
+    padding: 10px;
+    border: 2px solid #F7F5FC;
+}
+
+.mail-btn:hover {
+    background: #F7F5FC;
+    border: 2px solid #5163EB;
+    color: #5163EB;
+}
+
+/* две кнопки сверху sidebar_mail */
+.topbut {
+    width: 100%;
+    height: 5%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 6%;
+    padding-left: 12px;
+    padding-top: 7px;
+}
+
+/* кнопки сверху sidebar_mail */
+.topbut-btn {
+    background: #5163EB;
+    color: #F7F5FC;
+    border-radius: 10px;
+    font-size: 1vw;
+    width: 45%;
+    height: 100%;
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid #5163EB;
+}
+
+.topbut-btn:hover {
+    background: #F7F5FC;
+    border: 2px solid #5163EB;
+    color: #5163EB;
+}
+
+/*главная часть с письмом*/
+.maincontent {
+    width:82vw;
+    height:90vh;
+    display:flex;
+    align-items: flex-start;
+    flex-direction: row;
+    border-radius: 10px;
+    background-color: #F7F5FC;
+}
+/* шапка над письмом */
+.before_letter {
+    width:54vw;
+    height:8vh;
+    background-color: #8B92ED;
+    border-radius: 10px;
+    margin-top: 5%;
+    border: 2px solid #8B92ED;
+}
+
+/* часть с письмом */
+.letter {
+    width:54vw;
+    height:85vh;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+/* ввод кому копия */
+.string-box {
+    display:flex;
+    align-items:center;
+    background-color: #F7F5FC;
+    border: 2px solid #5163EB;
+    border-radius: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-top: 2px;
+}
+/* ввод */
+.string {
+    width: 100%; 
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    padding: 8px 0;
+    outline: none;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 200;
+    height: 10px;
+}
+/* белая часть для текста письма */
+.content {
+    width: 54vw;
+    background-color: #fff;
+    border-radius: 10px;
+    flex: 1;
+    border: 2px solid #5163EB;
+    
+}
+/* шапка под письмом */
+.under_letter {
+    width: 54vw;
+    height: 8vh;
+    background-color: #8B92ED;
+    border-radius: 10px;
+    gap: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border: 2px solid #8B92ED;
+}
+
+/* кнопка отправить */
+.send-btn {
+    background: #5163EB;
+    color: #F7F5FC;
+    border-radius: 10px;
+    font-size: 1vw;
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid #5163EB;
+    margin-right: 20px;
+}
+
+.send-btn:hover {
+    background: #F7F5FC;
+    border: 2px solid #5163EB;
+    color: #5163EB;
+} 
+
+/* формат этих иконок */    
+.icon_side {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;      
+    overflow: hidden;        
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* формат фото для этих иконок */    
+.icon_side img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;       
+}
