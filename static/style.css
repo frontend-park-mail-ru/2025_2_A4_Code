@@ -24,6 +24,7 @@ body {
         font-family: 'Nunito Sans', sans-serif;
         color: #5163EB;
         font-size: 185%;
+        margin: 0;
     }
 
 /* Почта */
@@ -98,6 +99,18 @@ body {
         text-align: center;
         align-items: center;
     }
+/* логотип А4 внутри верхушки формы */
+    .logo {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .logo img {
+        height: 2.3rem; 
+        width: auto;
+        transform: translateY(0.45em);
+    }
+
 /* верхушка формы, название почты */
     .form .lable {
         width: 95%;   
@@ -105,7 +118,7 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
-    }
+    }  
 /* слайдер с выбором, это светлая часть */    
     .form .bigslider {
         width: 70%;   
