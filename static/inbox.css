@@ -80,8 +80,8 @@ body {
 }
 /* формат этих иконок */    
 .icon {
-    width: 45px;
-    height: 45px;
+    width: 25px;
+    height: 25px;
     border-radius: 50%;      
     overflow: hidden;        
     display: flex;
@@ -120,7 +120,9 @@ body {
     background: #F7F5FC;
     color: #000000;
     border-radius: 10px;
-    font-size: 1vw;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 400;
+    font-size: 1.4vw;
     width: 80%;
     height: 5%;
     margin-bottom: 8px;
@@ -147,11 +149,18 @@ body {
     border-radius: 10px;
     background-color: #8B92ED;
 }
+/* Входящие текст */
+h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    color: #F7F5FC;
+}
 
 /* Кнопки непрочитанных писем (sidebar_mail) */
 .new-mail-btn {
     background: #F7F5FC;
     color: #5163EB;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 400;
     border-radius: 10px;
     font-size: 1vw;
     width: 95%;
@@ -172,7 +181,9 @@ body {
 /* Кнопки прочитанных писем (sidebar_mail) */
 .mail-btn {
     background: #F7F5FC;
-    color: #8B92ED;
+    color: #000;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 400;
     border-radius: 10px;
     font-size: 1vw;
     width: 95%;
@@ -199,7 +210,6 @@ body {
     gap: 6%;
     padding-left: 12px;
     padding-top: 7px;
-    margin-bottom: 10%;
 }
 
 /* кнопки сверху sidebar_mail */
@@ -231,17 +241,17 @@ body {
     border-radius: 10px;
     background-color: #F7F5FC;
 }
-
+/* шапка над письмом */
 .before_letter {
     width:54vw;
     height:8vh;
     background-color: #8B92ED;
     border-radius: 10px;
     margin-top: 5%;
-
+    border: 2px solid #8B92ED;
 }
 
-/*часть с письмом*/
+/* часть с письмом */
 .letter {
     width:54vw;
     height:85vh;
@@ -252,7 +262,7 @@ body {
     padding-left: 5%;
     padding-right: 5%;
 }
-
+/* ввод кому копия */
 .string-box {
     display:flex;
     align-items:center;
@@ -261,51 +271,52 @@ body {
     border-radius: 10px;
     padding-left: 30px;
     padding-right: 30px;
+    margin-top: 2px;
 }
-
+/* ввод */
 .string {
     width: 100%; 
     border: none;
     background: transparent;
-    font-size: 18px;
+    font-size: 15px;
     padding: 8px 0;
     outline: none;
     font-family: 'Nunito Sans', sans-serif;
     font-weight: 200;
-    height: 12px;
+    height: 10px;
 }
-
+/* белая часть для текста письма */
 .content {
-    width:54vw;
+    width: 54vw;
     background-color: #fff;
     border-radius: 10px;
     flex: 1;
     border: 2px solid #5163EB;
     
 }
-
+/* шапка под письмом */
 .under_letter {
-    width:54vw;
-    height:8vh;
+    width: 54vw;
+    height: 8vh;
     background-color: #8B92ED;
     border-radius: 10px;
+    gap: 7px;
     display: flex;
-    align-items: flex-end;
-    justify-content: right;
-
+    align-items: center;
+    justify-content: flex-end;
+    border: 2px solid #8B92ED;
 }
 
+/* кнопка отправить */
 .send-btn {
     background: #5163EB;
     color: #F7F5FC;
     border-radius: 10px;
     font-size: 1vw;
-    width: 10   vw;
-    height: 10hv;
     cursor: pointer;
     text-align: center;
     border: 2px solid #5163EB;
-    margin-bottom: 25%;
+    margin-right: 20px;
 }
 
 .send-btn:hover {
