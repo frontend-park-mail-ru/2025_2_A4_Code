@@ -122,7 +122,7 @@ body {
     border-radius: 10px;
     font-family: 'Nunito Sans', sans-serif;
     font-weight: 400;
-    font-size: 1.4vw;
+    font-size: 1.3vw;
     width: 80%;
     height: 5%;
     margin-bottom: 8px;
@@ -130,6 +130,10 @@ body {
     text-align: left;
     padding-left: 18px;
     border: 2px solid #F7F5FC;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
 }
 
 .folder-btn:hover {
@@ -325,3 +329,19 @@ h1 {
     color: #5163EB;
 } 
 
+/* формат этих иконок */    
+.icon_side {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;      
+    overflow: hidden;        
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* формат фото для этих иконок */    
+.icon_side img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;       
+}
