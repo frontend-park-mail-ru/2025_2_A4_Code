@@ -1,0 +1,119 @@
+/* Поле поиска */
+.mail-search {
+    width: 510px !important;
+    height: 50px !important;
+    border-radius: 14px;
+    border: none;
+    padding: 0 18px;
+    font-size: 1.1vw;
+    font-family: 'Nunito Sans',sans-serif;
+    background: #F7F5FC;
+    box-sizing: border-box;
+}
+/* Кнопки "Создать" и "Прочитать все" в списке писем */
+.mail-action {
+    background: #5163EB;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1vw;
+    height: 40px;
+    width: 100%;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-left: 4px;
+    margin-right: 4px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.mail-action:hover {
+    background: #fff;
+    color: #5163EB;
+    border: 2px solid #5163EB;
+}
+
+/* Кнопки папок (sidebar) */
+.folder-btn {
+    background: #fff;
+    color: #222;
+    border: none;
+    border-radius: 14px;
+    font-size: 1vw;
+    width: 90%;
+    height: 38px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    text-align: left;
+    padding-left: 18px;
+}
+.folder-btn:hover {
+    background: #F7F5FC;
+    color: #5163EB;
+}
+
+/* Кнопки писем */
+.mail-item {
+    width: 95%;
+    background: #fff;
+    color: #222;
+    border: none;
+    border-radius: 14px;
+    font-size: 1vw;
+    padding: 8px 16px;
+    margin-left: 6px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: border 0.2s, color 0.2s;
+    max-width: calc(100% - 12px);
+    overflow: hidden;
+    text-align: left;
+}
+.mail-item:hover {
+    border: 2px solid #5163EB;
+    color: #5163EB;
+}
+
+/* Размеры основных блоков */
+.sidebar {
+    width: 240px !important;
+    height: 362px !important;
+    min-width: 240px !important;
+    min-height: 362px !important;
+    max-width: 240px !important;
+    max-height: 362px !important;
+}
+.mail-list-panel {
+    width: 260px !important;
+    height: 900px !important;
+    min-width: 260px !important;
+    min-height: 900px !important;
+    max-width: 260px !important;
+    max-height: 900px !important;
+}
+.mail-send-panel {
+    width: 841px !important;
+    height: 900px !important;
+    min-width: 841px !important;
+    min-height: 900px !important;
+    max-width: 841px !important;
+    max-height: 900px !important;
+    background: #C7CEFD !important;
+    border-radius: 22px !important;
+    box-sizing: border-box;
+    padding: 24px 32px 24px 32px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Надпись "Входящие" */
+.mail-list-title {
+    color: #222 !important;
+    font-size: 1.2vw;
+    font-weight: 700;
+    margin: 10px 0 0 0;
+    text-align: left;
+    margin-left: 6px;
+}
