@@ -1,119 +1,316 @@
-/* Поле поиска */
-.mail-search {
-    width: 510px !important;
-    height: 50px !important;
-    border-radius: 14px;
-    border: none;
-    padding: 0 18px;
-    font-size: 1.1vw;
-    font-family: 'Nunito Sans',sans-serif;
-    background: #F7F5FC;
-    box-sizing: border-box;
+/* фон */
+body {
+
+    font-family: 'Nunito Sans';
+
+    margin: 0;
+    height: 100vh; 
+    background: url("images/фон\ .jpg") no-repeat center center;
+    background-size: cover; 
+    display: flex;
+    align-items: top;
+    justify-content: flex-start;
+    padding: none;
+    flex-direction: column;
+    
+    @font-face {
+        font-family: 'Nunito Sans';
+        src: url('fonts/NunitoSans-Regular.ttf') format('ttf');
+        font-weight: normal;
+        font-style: normal;
+    }
 }
-/* Кнопки "Создать" и "Прочитать все" в списке писем */
-.mail-action {
-    background: #5163EB;
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    font-size: 1vw;
-    height: 40px;
-    width: 100%;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    margin-left: 4px;
-    margin-right: 4px;
-    transition: all 0.2s;
-    cursor: pointer;
+/* верхняя строка */
+.navbar {
+    width:100vw;
+    height:10vh;
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20%;
 }
-.mail-action:hover {
-    background: #fff;
-    color: #5163EB;
+/* логотип текст */
+.logo {
+    font-family:'Nunito Sans',sans-serif;
+    font-size:2.2vw;
+    color:#F7F5FC;
+    display:flex;
+    align-items: center;
+    padding: 20px;
+    justify-content: flex-start;
+}
+/* область поиска*/
+.search-box {
+    flex:1;
+    display:flex;
+    align-items:center;
+    background-color: #F7F5FC;
     border: 2px solid #5163EB;
+    border-radius: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+/* ввод в поиск */
+.search {
+    width: 100%; 
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    padding: 8px 0;
+    outline: none;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 200;
+}
+/* настройки выход аватар */
+.actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding-right: 20px;
+}
+
+/* иконки actions */
+.icon-container {
+    width: 100%;
+    display: flex;           
+    gap: 10px;               
+    justify-content: center; 
+    align-items: center; 
+    padding: 0;
+}
+/* формат этих иконок */    
+.icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;      
+    overflow: hidden;        
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 3px solid #5163EB;  
+}
+/* формат фото для этих иконок */    
+.icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;       
+}
+
+
+/* все пространство внизу */
+.content-row{
+    display: flex;
+    flex: 1;
+    height: 90vh;
+
+}
+
+/* меню сбоку */
+.sidebar {
+    width:18vw;
+    height:90vh;
+    display:flex;
+    justify-content: top;
+    align-items: center;
+    flex-direction:column;
 }
 
 /* Кнопки папок (sidebar) */
 .folder-btn {
-    background: #fff;
-    color: #222;
-    border: none;
-    border-radius: 14px;
+    background: #F7F5FC;
+    color: #000000;
+    border-radius: 10px;
     font-size: 1vw;
-    width: 90%;
-    height: 38px;
+    width: 80%;
+    height: 5%;
     margin-bottom: 8px;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
     text-align: left;
     padding-left: 18px;
-}
-.folder-btn:hover {
-    background: #F7F5FC;
-    color: #5163EB;
+    border: 2px solid #F7F5FC;
 }
 
-/* Кнопки писем */
-.mail-item {
-    width: 95%;
-    background: #fff;
-    color: #222;
-    border: none;
-    border-radius: 14px;
-    font-size: 1vw;
-    padding: 8px 16px;
-    margin-left: 6px;
-    box-sizing: border-box;
-    cursor: pointer;
-    transition: border 0.2s, color 0.2s;
-    max-width: calc(100% - 12px);
-    overflow: hidden;
-    text-align: left;
+.folder-btn:hover {
+    background: #F7F5FC;
+    border: 2px solid #5163EB;
+    color: #000000;
 }
-.mail-item:hover {
+
+/*развернутое меню с письмами*/
+.sidebar_mail {
+    width:18vw;
+    height:90vh;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction:column;
+    border-radius: 10px;
+    background-color: #8B92ED;
+}
+
+/* Кнопки непрочитанных писем (sidebar_mail) */
+.new-mail-btn {
+    background: #F7F5FC;
+    color: #5163EB;
+    border-radius: 10px;
+    font-size: 1vw;
+    width: 95%;
+    height: 5%;
+    margin-bottom: 8px;
+    cursor: pointer;
+    text-align: left;
+    padding: 10px;
+    border: 2px solid #F7F5FC;
+}
+
+.new-mail-btn:hover {
+    background: #F7F5FC;
     border: 2px solid #5163EB;
     color: #5163EB;
 }
 
-/* Размеры основных блоков */
-.sidebar {
-    width: 240px !important;
-    height: 362px !important;
-    min-width: 240px !important;
-    min-height: 362px !important;
-    max-width: 240px !important;
-    max-height: 362px !important;
-}
-.mail-list-panel {
-    width: 260px !important;
-    height: 900px !important;
-    min-width: 260px !important;
-    min-height: 900px !important;
-    max-width: 260px !important;
-    max-height: 900px !important;
-}
-.mail-send-panel {
-    width: 841px !important;
-    height: 900px !important;
-    min-width: 841px !important;
-    min-height: 900px !important;
-    max-width: 841px !important;
-    max-height: 900px !important;
-    background: #C7CEFD !important;
-    border-radius: 22px !important;
-    box-sizing: border-box;
-    padding: 24px 32px 24px 32px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* Кнопки прочитанных писем (sidebar_mail) */
+.mail-btn {
+    background: #F7F5FC;
+    color: #8B92ED;
+    border-radius: 10px;
+    font-size: 1vw;
+    width: 95%;
+    height: 5%;
+    margin-bottom: 8px;
+    cursor: pointer;
+    text-align: left;
+    padding: 10px;
+    border: 2px solid #F7F5FC;
 }
 
-/* Надпись "Входящие" */
-.mail-list-title {
-    color: #222 !important;
-    font-size: 1.2vw;
-    font-weight: 700;
-    margin: 10px 0 0 0;
-    text-align: left;
-    margin-left: 6px;
+.mail-btn:hover {
+    background: #F7F5FC;
+    border: 2px solid #5163EB;
+    color: #5163EB;
 }
+
+/* две кнопки сверху sidebar_mail */
+.topbut {
+    width: 100%;
+    height: 5%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 6%;
+    padding-left: 12px;
+    padding-top: 7px;
+    margin-bottom: 10%;
+}
+
+/* кнопки сверху sidebar_mail */
+.topbut-btn {
+    background: #5163EB;
+    color: #F7F5FC;
+    border-radius: 10px;
+    font-size: 1vw;
+    width: 45%;
+    height: 100%;
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid #5163EB;
+}
+
+.topbut-btn:hover {
+    background: #F7F5FC;
+    border: 2px solid #5163EB;
+    color: #5163EB;
+}
+
+/*главная часть с письмом*/
+.maincontent {
+    width:82vw;
+    height:90vh;
+    display:flex;
+    align-items: flex-start;
+    flex-direction: row;
+    border-radius: 10px;
+    background-color: #F7F5FC;
+}
+
+.before_letter {
+    width:54vw;
+    height:8vh;
+    background-color: #8B92ED;
+    border-radius: 10px;
+    margin-top: 5%;
+
+}
+
+/*часть с письмом*/
+.letter {
+    width:54vw;
+    height:85vh;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.string-box {
+    display:flex;
+    align-items:center;
+    background-color: #F7F5FC;
+    border: 2px solid #5163EB;
+    border-radius: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.string {
+    width: 100%; 
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    padding: 8px 0;
+    outline: none;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 200;
+    height: 12px;
+}
+
+.content {
+    width:54vw;
+    background-color: #fff;
+    border-radius: 10px;
+    flex: 1;
+    border: 2px solid #5163EB;
+    
+}
+
+.under_letter {
+    width:54vw;
+    height:8vh;
+    background-color: #8B92ED;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: right;
+
+}
+
+.send-btn {
+    background: #5163EB;
+    color: #F7F5FC;
+    border-radius: 10px;
+    font-size: 1vw;
+    width: 10   vw;
+    height: 10hv;
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid #5163EB;
+    margin-bottom: 25%;
+}
+
+.send-btn:hover {
+    background: #F7F5FC;
+    border: 2px solid #5163EB;
+    color: #5163EB;
+} 
+
