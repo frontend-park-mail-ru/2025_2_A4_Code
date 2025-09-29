@@ -1,0 +1,80 @@
+<div class="inbox-page">
+  <div class="main-wrapper">
+    <div class="header">
+      <div class="logo">
+        <img src="/img/white_logo.svg" alt="white_logo">
+      </div>
+      <div class="search-center">
+        <input type="text" placeholder="Поиск" class="mail-search">
+      </div>
+      <div class="header-actions">
+        <button title="Настройки" class="header-btn"><span>⚙️</span></button>
+        <button title="Выйти" class="header-btn" id="logoutBtn"><span>⎋</span></button>
+        <button title="Профиль" class="header-btn"><span>👤</span></button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="sidebar">
+        <button class="folder-btn" style="margin-top:0;">Избранные</button>
+        <button class="folder-btn">Входящие &gt;</button>
+        <button class="folder-btn">Отправленные</button>
+        <button class="folder-btn">Черновики</button>
+        <button class="folder-btn">Удаленные</button>
+        <button class="folder-btn">Заметки</button>
+        <button class="folder-btn">Спам</button>
+      </div>
+
+      <div class="mail-list-panel">
+        <div style="display:flex;gap:10px;width:100%;">
+          <button class="mail-action">+ Создать</button>
+          <button class="mail-action" id="markAllRead">Прочитать все</button>
+        </div>
+        <div class="mail-list-title">Входящие</div>
+
+        {{#if loading}}
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Загрузка писем...</div>
+          </div>
+        {{else}}
+          {{#if error}}
+            <div class="inbox__error">{{error}}</div>
+          {{/if}}
+
+          <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-top:8px;width:100%;">
+            {{#if messages.length}}
+              {{#each messages}}
+                <button class="mail-item" data-id="{{id}}">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                    <span>{{sender.username}} &lt;{{sender.email}}&gt;</span>
+                    <span style="color:#555;">{{datetime}}</span>
+                  </div>
+                  <div style="color:#5163EB;">{{subject}}</div>
+                  <div style="color:#333;">{{snippet}}</div>
+                </button>
+              {{/each}}
+            {{else}}
+              <div class="inbox__empty">Писем пока нет</div>
+            {{/if}}
+          </div>
+        {{/if}}
+      </div>
+
+      <div class="mail-send-panel">
+        <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
+          <input type="text" placeholder="Кому" style="width:100%;height:32px;border-radius:14px;border:none;padding:0 12px;font-size:1vw;font-family:'Nunito Sans',sans-serif;margin-bottom:4px;background:#F7F5FC;">
+          <input type="text" placeholder="Копия" style="width:100%;height:32px;border-radius:14px;border:none;padding:0 12px;font-size:1vw;font-family:'Nunito Sans',sans-serif;background:#F7F5FC;">
+        </div>
+        <textarea style="width:100%;flex:1;border-radius:14px;border:none;padding:12px;font-size:1vw;font-family:'Nunito Sans',sans-serif;resize:none;background:#F7F5FC;"></textarea>
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;width:100%;">
+          <button class="btn" style="width:38px;height:38px;font-size:1.2vw;padding:0;border-radius:50%;">+</button>
+          <button class="btn" style="width:38px;height:38px;font-size:1.2vw;padding:0;border-radius:50%;">✎</button>
+          <button class="btn" style="width:38px;height:38px;font-size:1.2vw;padding:0;border-radius:50%;">🗑️</button>
+          <button class="btn" style="width:38px;height:38px;font-size:1.2vw;padding:0;border-radius:50%;">📋</button>
+          <button class="btn" style="height:38px;width:120px;font-size:1vw;background:#5163EB;color:#fff;border-radius:14px;">Отправить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="form">
+    <div class="lable">
+        <h1>
+            Регистрация<br>в
+            <span class="logo">
+                <img src="/img/blue_logo.svg" alt="blue_logo">
+            </span>
+            почту
+        </h1>
+    </div>
+    <form class="regform" novalidate>
+        <div class="regform-group">
+            <input type="text" id="publicname" placeholder="Ваше имя" name="publicname" 
+                value="{{formData.publicname}}">
+            {{#if errors.publicname}}<div class="error-message">{{errors.publicname}}</div>{{/if}}
+            
+            <input type="text" id="username" placeholder="Логин" name="username"
+                value="{{formData.username}}">
+            {{#if errors.username}}<div class="error-message">{{errors.username}}</div>{{/if}}
+            
+            <input type="text" id="birthday" placeholder="Дата рождения" name="birthday"
+                value="{{formData.birthday}}">
+            {{#if errors.birthday}}<div class="error-message">{{errors.birthday}}</div>{{/if}}
+        </div>
+        <div class="checkbox">
+            <pre>Пол:        Женский</pre><input type="radio" name="gender" value="female" {{#if formData.isFemale}}checked{{/if}}>
+            <pre>      Мужской</pre><input type="radio" name="gender" value="male" {{#if formData.isMale}}checked{{/if}}>
+        </div>
+        <div class="regform-group">
+            <input type="password" id="password" placeholder="Пароль" name="password"
+                value="{{formData.password}}">
+            {{#if errors.password}}<div class="error-message">{{errors.password}}</div>{{/if}}
+            
+            <input type="password" id="repeatpassword" placeholder="Повторите пароль" name="repeatpassword"
+                value="{{formData.repeatpassword}}">
+            {{#if errors.repeatpassword}}<div class="error-message">{{errors.repeatpassword}}</div>{{/if}}
+        </div>
+        <div class="button">
+            <button class="btn" id="registerButton" type="submit">Зарегистрироваться</button>
+        </div>
+    </form>
+    {{#if errors.general}}
+    <div class="error-message" style="margin-top:8px;">{{errors.general}}</div>
+    {{/if}}
+    <div class="alreadyexcist">
+        <h3>Есть аккаунт?</h3>
+        <div>
+            <a href="/login" class="btn-enter">Войти</a>
+        </div>
+    </div>
+</div>
