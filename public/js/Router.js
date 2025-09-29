@@ -1,34 +1,54 @@
 /**
  * @module Router
- * @description Handles client-side routing in the SPA
+ * @description Роутер
  */
 
 export default class Router {
     constructor(routes) {
         this.routes = routes;
         this.currentRoute = null;
+        this.currentView = null;
         
-        // Handle browser back/forward buttons
-        window.addEventListener('popstate', (event) => {
-            this.navigate(window.location.pathname, false);
-        });
+        this.navigate = this.navigate.bind(this);
+        this.handlePopState = this.handlePopState.bind(this);
+        
+        window.addEventListener('popstate', this.handlePopState);
     }
 
     /**
-     * Initialize the router
+     * Инициализация роутера
+     * @returns {Promise<void>}
      */
-    init() {
-        this.navigate(window.location.pathname);
+    async init() {
+        // Set up global navigation handler
+        window.navigate = this.navigate;
+        
+        // Initial navigation
+        await this.navigate(window.location.pathname, false);
+    }
+    
+    /**
+     * Обработка навигации браузера
+     * @param {PopStateEvent} event The popstate event
+     * @returns {Promise<void>}
+     */
+    async handlePopState(event) {
+        console.log(event);
+        await this.navigate(window.location.pathname, false);
     }
 
     /**
-     * Navigate to a specific path
-     * @param {string} path - The path to navigate to
-     * @param {boolean} [pushState=true] - Whether to add the route to browser history
+     * Перенавигация
+     * @param {string} path Путь для навигации
+     * @param {boolean} [pushState=true] Добавление пути в историю браузера
+     * @returns {Promise<void>}
      */
     async navigate(path, pushState = true) {
         try {
-            // Find matching route
+            if (this.currentView && typeof this.currentView.destroy === 'function') {
+                this.currentView.destroy();
+            }
+            
             const route = this.routes.find(route => {
                 if (typeof route.path === 'string') {
                     return route.path === path;
@@ -37,41 +57,67 @@ export default class Router {
             });
 
             if (!route) {
-                // Handle 404
+                console.warn(`Route not found: ${path}`);
                 path = '/404';
-                return;
+                const notFoundRoute = this.routes.find(r => r.path === path);
+                if (!notFoundRoute) return;
+                
+                return this.navigate(path, pushState);
             }
 
-            if (pushState) {
+            if (pushState && window.location.pathname !== path) {
                 window.history.pushState(null, '', path);
             }
 
             this.currentRoute = route;
 
-            // Показываем загрузку
             const root = document.getElementById('root');
-            root.innerHTML = `
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <div class="loading-text">Загрузка...</div>
-                </div>
-            `;
+            if (root) {
+                root.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Загрузка...</div>
+                    </div>
+                `;
+            }
 
-            // Создаем компонент
-            const view = await Promise.resolve(route.component());
-            // Дожидаемся загрузки шаблона и рендерим компонент
-            await view.loadTemplate();
-            await view.render();
+            try {
+                this.currentView = await Promise.resolve(route.component());
+                
+                if (typeof this.currentView.loadTemplate === 'function') {
+                    await this.currentView.loadTemplate();
+                }
+                
+                if (typeof this.currentView.render === 'function') {
+                    await this.currentView.render();
+                }
+                
+                window.scrollTo(0, 0);
+                
+            } catch (error) {
+                console.error('Error creating or rendering component:', error);
+                throw error;
+            }
 
         } catch (error) {
             console.error('Error during navigation:', error);
             const root = document.getElementById('root');
-            root.innerHTML = `
-                <div class="error">
-                    <h1>Произошла ошибка</h1>
-                    <p>${error.message || 'Попробуйте перезагрузить страницу'}</p>
-                </div>
-            `;
+            if (root) {
+                root.innerHTML = `
+                    <div class="error">
+                        <h1>Произошла ошибка</h1>
+                        <p>${error.message || 'Попробуйте перезагрузить страницу'}</p>
+                        <button onclick="window.navigate('/')">На главную</button>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    destroy() {
+        window.removeEventListener('popstate', this.handlePopState);
+        if (this.currentView && typeof this.currentView.destroy === 'function') {
+            this.currentView.destroy();
         }
     }
 }

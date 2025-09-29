@@ -1,0 +1,163 @@
+/* Inbox scoped styles */
+.inbox-page {
+  height:100vh;
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-start;
+}
+
+.inbox-page .main-wrapper {
+  width:90vw;
+  height:90vh;
+  display:flex;
+  flex-direction:column;
+  margin-left:2vw;
+}
+
+.inbox-page .header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 30px 0 0;
+}
+
+.inbox-page .logo {
+  font-family:'Nunito Sans',sans-serif;
+  font-size:2.2vw;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.inbox-page .search-center {
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.inbox-page .mail-search {
+  width: 60%;
+  border: none;
+  background: #F7F5FC;
+  border: 2px solid #5163EB;
+  border-radius: 10px;
+  font-size: 1vw;
+  padding: 8px 16px;
+  outline: none;
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 200;
+}
+
+.inbox-page .header-actions {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.inbox-page .header-btn {
+  background:#F7F5FC;
+  border: 2px solid #5163EB;
+  color:#5163EB;
+  border-radius: 10px;
+  cursor: pointer;
+  height:38px;
+  width:38px;
+}
+
+.inbox-page .main-content {
+  display:flex;
+  flex:1;
+  gap:18px;
+  padding:18px 0 30px 0;
+  align-items:flex-start;
+}
+
+.inbox-page .sidebar {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  margin-top:70px;
+}
+
+.inbox-page .folder-btn {
+  background: #F7F5FC;
+  color: #000000;
+  border-radius: 10px;
+  font-size: 1vw;
+  width: 14vw;
+  height: 40px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  text-align: left;
+  padding-left: 18px;
+  border: 2px solid #F7F5FC;
+}
+
+.inbox-page .folder-btn:hover {
+  background: #F7F5FC;
+  border: 2px solid #5163EB;
+  color: #000000;
+}
+
+.inbox-page .mail-list-panel {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:flex-start;
+  background:#C7CEFD;
+  padding: 12px;
+  border-radius: 12px;
+  width: 28vw;
+}
+
+.inbox-page .mail-action {
+  background:#5163EB;
+  color:#fff;
+  border-radius:10px;
+  border:2px solid #5163EB;
+  padding:6px 12px;
+  cursor:pointer;
+}
+
+.inbox-page .mail-list-title {
+  font-family:'Nunito Sans', sans-serif;
+  color:#5163EB;
+  font-weight:600;
+}
+
+.inbox-page .mail-item {
+  background:#F7F5FC;
+  border: 2px solid #F7F5FC;
+  color:#000;
+  text-align:left;
+  padding:10px 12px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.inbox-page .mail-item:hover {
+  border: 2px solid #5163EB;
+}
+
+.inbox-page .mail-send-panel {
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:flex-start;
+  justify-content:flex-start;
+  height:600px !important;
+  max-height:600px !important;
+  min-height:600px !important;
+  width: 36vw;
+}
+
+.inbox-page .btn {
+  background:#F7F5FC;
+  color:#5163EB;
+  border: 2px solid #5163EB;
+  border-radius:14px;
+  cursor:pointer;
+}

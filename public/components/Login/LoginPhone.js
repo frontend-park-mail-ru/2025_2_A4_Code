@@ -1,6 +1,6 @@
 /**
  * @module LoginPhone
- * @description Login with phone component
+ * @description Компонент входа по телефону
  */
 
 import Component from '../../js/Component.js';
@@ -42,15 +42,15 @@ export default class LoginPhone extends Component {
     }
 
     async attachEventListeners() {
+        const form = document.querySelector('form');
         const loginButton = document.getElementById('loginButton');
         const links = document.querySelectorAll('a');
 
-        loginButton.addEventListener('click', async (e) => {
+        const submitHandler = async (e) => {
             e.preventDefault();
-            const formData = new FormData();
-            formData.append('phone', document.getElementById('phone').value);
-            formData.append('password', document.getElementById('password').value);
-            
+            const currentForm = e.target.closest('form') || form;
+            if (!currentForm) return;
+            const formData = new FormData(currentForm);
             this.errors = this.validateForm(formData);
 
             if (Object.keys(this.errors).length === 0) {
@@ -59,7 +59,9 @@ export default class LoginPhone extends Component {
                         login: formData.get('phone'),
                         password: formData.get('password')
                     });
-                    window.location.href = '/inbox';
+                    window.dispatchEvent(new CustomEvent('navigate', { 
+                        detail: { path: '/inbox' }
+                    }));
                 } catch (error) {
                     this.errors.general = error.message || 'Неверный телефон или пароль';
                     await this.render();
@@ -67,9 +69,15 @@ export default class LoginPhone extends Component {
             } else {
                 await this.render();
             }
-        });
+        };
 
-        // Обработка ссылок для SPA навигации
+        if (form) {
+            form.addEventListener('submit', submitHandler);
+        }
+        if (loginButton) {
+            loginButton.addEventListener('click', submitHandler);
+        }
+
         links.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -82,7 +90,6 @@ export default class LoginPhone extends Component {
             });
         });
 
-        // Обработка переключения на вход по email
         const emailLink = document.querySelector('[data-type="email"]');
         if (emailLink) {
             emailLink.addEventListener('click', (e) => {
@@ -93,7 +100,6 @@ export default class LoginPhone extends Component {
             });
         }
 
-        // Форматирование телефонного номера при вводе
         const phoneInput = document.getElementById('phone');
         if (phoneInput) {
             phoneInput.addEventListener('input', (e) => {
@@ -122,7 +128,6 @@ export default class LoginPhone extends Component {
                 password: document.getElementById('password')?.value || ''
             }
         });
-        // Заменяем текущий контент новым
         const existingForm = document.querySelector('.form');
         if (existingForm) {
             existingForm.replaceWith(container.firstElementChild);

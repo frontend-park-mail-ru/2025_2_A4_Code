@@ -4,7 +4,7 @@
             Регистрация<br>в А4 почту
         </h1>
     </div>
-    <form id="signupForm" class="regform" novalidate>
+    <form class="regform" novalidate>
         <div class="regform-group">
             <input type="text" id="publicname" placeholder="Ваше имя" name="publicname" 
                 value="{{formData.publicname}}">
@@ -35,6 +35,9 @@
             <button class="btn" id="registerButton" type="submit">Зарегистрироваться</button>
         </div>
     </form>
+    {{#if errors.general}}
+    <div class="error-message" style="margin-top:8px;">{{errors.general}}</div>
+    {{/if}}
     <div class="alreadyexcist">
         <h3>Есть аккаунт?</h3>
         <div>

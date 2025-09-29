@@ -68,17 +68,13 @@ h6 {
 /* главная белая форма авторизации */
 .form {
     position: absolute;
-    width: 35.83vw;
+    /* Responsive width with sensible limits */
+    width: clamp(270px, 35.83vw, 400px);
+    /* Keep aspect ratio for consistent look */
     aspect-ratio: 516/814;
     background: white;
     border-radius: 20px;
     border: none;
-
-    min-width: 270px;
-    max-width: 400px;
-    min-height: 400px;
-    max-height: 631px;
-    
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); 
@@ -154,7 +150,8 @@ h6 {
 /* область ввода данных для входа*/    
 .form .infoform {
     width: 90%;   
-    height: 25%; 
+    /* Let content define height to avoid overlap when errors appear */
+    height: auto;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -340,13 +337,19 @@ h6 {
 }
 
 /* область ввода данных */    
-.form .regform {
+form .regform {
     width: 90%;   
     height: 60%; 
     display: flex;
     flex-direction: column;
     gap: 5px;
     box-sizing: border-box;
+}
+
+.regform .button {
+    width: 100%;
+    height: 62px;
+    margin-top: 10px;
 }
 
 .regform-group {

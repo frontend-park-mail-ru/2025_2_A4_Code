@@ -1,6 +1,6 @@
 /**
  * @module Loading
- * @description Loading component for displaying loading state
+ * @description Компонент загрузки
  */
 
 export default class Loading {

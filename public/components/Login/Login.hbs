@@ -26,6 +26,9 @@
             <a href="#" class="forgotpassword">Забыли пароль?</a>
         </div>
     </div>
+    {{#if errors.general}}
+    <div class="error-message" style="margin-top:8px;">{{errors.general}}</div>
+    {{/if}}
     <div class="buttons">
         <button class="btn" id="loginButton">Войти</button>
         <a href="/signup" class="btn">Зарегистрироваться</a>

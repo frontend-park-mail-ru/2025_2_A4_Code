@@ -1,14 +1,15 @@
 /**
  * @module Login
- * @description Login component with form validation
+ * @description Login component
  */
 
 import Component from '../../js/Component.js';
 import Api from '../../js/Api.js';
+import { validateLogin, mapBackendError } from '../../js/validation.js';
 
 export default class Login extends Component {
     constructor() {
-        super('public/components/Login/Login.hbs');
+        super('/components/Login/Login.hbs');
         this.errors = {};
     }
 
@@ -22,59 +23,53 @@ export default class Login extends Component {
         };
     }
 
-    validateForm(formData) {
-        const errors = {};
-        const login = formData.get('login');
-        const password = formData.get('password');
+    /**
+     * Handle submit of login form
+     * @param {Event} e
+     */
 
-        if (!login) {
-            errors.login = 'Введите логин или email';
+    async handleSubmit(e) {
+        e.preventDefault();
+        const form = e.target.closest('form');
+        let values;
+        if (form) {
+            const fd = new FormData(form);
+            values = { login: fd.get('login') || '', password: fd.get('password') || '' };
+        } else {
+            values = {
+                login: document.getElementById('login')?.value || '',
+                password: document.getElementById('password')?.value || ''
+            };
         }
+        this.errors = validateLogin(values);
 
-        if (!password) {
-            errors.password = 'Пароль обязателен';
-        } else if (password.length < 6) {
-            errors.password = 'Пароль должен быть не менее 6 символов';
+        if (Object.keys(this.errors).length === 0) {
+            try {
+                await Api.login({ login: values.login, password: values.password });
+                window.dispatchEvent(new CustomEvent('navigate', { 
+                    detail: { path: '/inbox' }
+                }));
+                
+            } catch (error) {
+                // Маппим сообщение бэкенда в читабельные ошибки
+                this.errors = mapBackendError(error);
+                await this.render();
+            }
+        } else {
+            await this.render();
         }
-
-        return errors;
     }
 
     async attachEventListeners() {
+        const form = document.querySelector('form');
         const loginButton = document.getElementById('loginButton');
         const links = document.querySelectorAll('a');
 
+        if (form) {
+            form.addEventListener('submit', this.handleSubmit.bind(this));
+        }
         if (loginButton) {
-            loginButton.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const formData = new FormData();
-                const loginInput = document.getElementById('login');
-                const passwordInput = document.getElementById('password');
-
-                if (loginInput && passwordInput) {
-                    formData.append('login', loginInput.value);
-                    formData.append('password', passwordInput.value);
-
-                    this.errors = this.validateForm(formData);
-
-                    if (Object.keys(this.errors).length === 0) {
-                        try {
-                            await Api.login({
-                                login: formData.get('login'),
-                                password: formData.get('password')
-                            });
-                            const inbox = await Api.getInbox();
-                            console.log('Inbox:', inbox);
-                            window.location.href = '/inbox';
-                        } catch (error) {
-                            this.errors.general = error.message || 'Неверный логин или пароль';
-                            await this.render();
-                        }
-                    } else {
-                        await this.render();
-                    }
-                }
-            });
+            loginButton.addEventListener('click', this.handleSubmit.bind(this));
         }
 
         if (links) {
@@ -108,10 +103,13 @@ export default class Login extends Component {
         container.innerHTML = template(this.getTemplateData());
         
         const root = document.getElementById('root');
-        root.innerHTML = '';
-        root.appendChild(container.firstElementChild);
-        
-        this.attachEventListeners();
-        return container.firstElementChild;
+        if (root) {
+            root.innerHTML = '';
+            root.appendChild(container.firstElementChild);
+            
+            this.attachEventListeners();
+            return container.firstElementChild;
+        }
+        return null;
     }
 }

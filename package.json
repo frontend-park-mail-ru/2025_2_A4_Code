@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "live-server --port=3000",
-    "lint:fix": "eslint src/**/*js --fix",
+    "lint": "eslint . --ext .js,.mjs,.cjs",
+    "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix",
     "prod": "node server.js"
   },
   "keywords": [],
