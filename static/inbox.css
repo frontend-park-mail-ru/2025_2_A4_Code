@@ -1,3 +1,16 @@
+/* Сообщение о пустом списке писем */
+.mail-empty {
+    width: 95%;
+    background: #F7F5FC;
+    color: #5163EB;
+    border-radius: 10px;
+    font-size: 1vw;
+    text-align: center;
+    padding: 12px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    border: 2px solid #F7F5FC;
+}
 /* фон */
 body {
 
@@ -5,7 +18,7 @@ body {
 
     margin: 0;
     height: 100vh; 
-    background: url("images/фон\ .jpg") no-repeat center center;
+    background: url("images/background.jpg") no-repeat center center;
     background-size: cover; 
     display: flex;
     align-items: top;
@@ -142,7 +155,7 @@ body {
     height:90vh;
     display:flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction:column;
     border-radius: 10px;
     background-color: #8B92ED;

@@ -1,73 +1,82 @@
-
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A4 Почта</title>
-    <link href="inbox.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="inbox.css">
+    <title>А4 Почта</title>
 </head>
 <body>
-    
-    <div class="fone" style="width:100vw;height:100vh;background: url('images/фон .jpg') no-repeat center center;background-size:cover;display:flex;align-items:flex-start;justify-content:flex-start;">
-        <div class="main-wrapper" style="width:90vw;height:90vh;display:flex;flex-direction:column;margin-left:2vw;">
-            <div class="header" style="display:flex;align-items:center;justify-content:space-between;padding:18px 30px 0 0;">
-                <div class="logo" style="font-family:'Nunito Sans',sans-serif;font-size:2.2vw;color:#fff;display:flex;align-items:center;gap:10px;"><span>A4 почта</span></div>
-                <div class="search-center" style="flex:1;display:flex;align-items:center;justify-content:center;">
-                    <input type="text" placeholder="Поиск" class="mail-search">
+<div class="navbar">
+    <div class="logo" >A4 почта</div>
+    <div class="search-box">
+        <input type="text" placeholder="Поиск" class="search">
+    </div>
+    <div class="actions">
+        <div class="icon">
+            <img src="images/vk.jpeg" alt="vk">
+        </div>
+        <div class="icon">
+            <img src="images/tg.jpeg" alt="tg">
+        </div>
+        <div class="icon">
+            <img src="images/apid.jpeg" alt="apple id">
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="content-row">
+    <div class="sidebar">
+        <button class="folder-btn">Избранные</button>
+        <button class="folder-btn">Входящие &gt;</button>
+        <button class="folder-btn">Отправленные</button>
+        <button class="folder-btn">Черновики</button>
+        <button class="folder-btn">Удаленные</button>
+        <button class="folder-btn">Заметки</button>
+        <button class="folder-btn">Спам</button>
+    </div>
+    <div class="maincontent">
+
+        <div class="sidebar_mail">
+            <div class="topbut">
+                <button class="topbut-btn">+ Создать</button>
+                <button class="topbut-btn">Отметить</button>
+            </div>
+            <div id="messages-list"></div>
+            <script id="messages-template" type="text/x-handlebars-template">
+                
+                {{#if body.messages.length}}
+                    {{#each body.messages}}
+                        <button class="new-mail-btn">{{snippet}}</button>
+                    {{/each}}
+                {{else}}
+                    <div class="mail-empty">Нет писем</div>
+                {{/if}}
+            </script>
+                    
+        </div>
+
+        <div class="letter">
+            <div class="before_letter">
+                <div class="string-box">
+                    <input type="text" placeholder="Кому" class="string">
                 </div>
-                <div class="header-actions" style="display:flex;align-items:center;gap:12px;">
-                    <button title="Настройки" class="header-btn"><span>⚙️</span></button>
-                    <button title="Выйти" class="header-btn"><span>⎋</span></button>
-                    <button title="Профиль" class="header-btn"><span>👤</span></button>
+                <div class="string-box">
+                    <input type="text" placeholder="Копия" class="string">
                 </div>
             </div>
-            <div class="main-content" style="display:flex;flex:1;gap:18px;padding:18px 0 30px 0;align-items:flex-start;">
-                <div class="sidebar" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;margin-top:70px;">
-                    <button class="folder-btn" style="margin-top:0;">Избранные</button>
-                    <button class="folder-btn">Входящие &gt;</button>
-                    <button class="folder-btn">Отправленные</button>
-                    <button class="folder-btn">Черновики</button>
-                    <button class="folder-btn">Удаленные</button>
-                    <button class="folder-btn">Заметки</button>
-                    <button class="folder-btn">Спам</button>
-                </div>
-                <div class="mail-list-panel" style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;background:#C7CEFD;">
-                    <div style="display:flex;gap:10px;width:100%;">
-                        <button class="mail-action">+ Создать</button>
-                        <button class="mail-action">Прочитать все</button>
-                    </div>
-                    <div class="mail-list-title">Входящие</div>
-                    <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-top:8px;width:100%;">
-                        <button class="mail-item">Здравствуйте! Для вас скидка...</button>
-                        <button class="mail-item">Здравствуйте! Для вас скидка...</button>
-                        <button class="mail-item">Здравствуйте! Для вас скидка...</button>
-                        <button class="mail-item">Здравствуйте! Для вас скидка...</button>
-                        <button class="mail-item">Здравствуйте! Для вас скидка...</button>
-                        <button class="mail-item">Здравствуйте! Для вас скидка...</button>
-                        <button class="mail-item">Здравствуйте! Для вас скидка...</button>
-                        <button class="mail-item">Здравствуйте! Для вас скидка...</button>
-                        <button class="mail-item">Здравствуйте! Для вас скидка...</button>
-                        <button class="mail-item">Здравствуйте! Для вас скидка...</button>
-                    </div>
-                </div>
-                <div class="mail-send-panel" style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;justify-content:flex-start;height:600px !important;max-height:600px !important;min-height:600px !important;">
-                    <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
-                        <input type="text" placeholder="Кому" style="width:100%;height:32px;border-radius:14px;border:none;padding:0 12px;font-size:1vw;font-family:'Nunito Sans',sans-serif;margin-bottom:4px;background:#F7F5FC;">
-                        <input type="text" placeholder="Копия" style="width:100%;height:32px;border-radius:14px;border:none;padding:0 12px;font-size:1vw;font-family:'Nunito Sans',sans-serif;background:#F7F5FC;">
-                    </div>
-                    <textarea style="width:100%;flex:1;border-radius:14px;border:none;padding:12px;font-size:1vw;font-family:'Nunito Sans',sans-serif;resize:none;background:#F7F5FC;"></textarea>
-                    <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;width:100%;">
-                        <button class="btn" style="width:38px;height:38px;font-size:1.2vw;padding:0;border-radius:50%;">+</button>
-                        <button class="btn" style="width:38px;height:38px;font-size:1.2vw;padding:0;border-radius:50%;">✎</button>
-                        <button class="btn" style="width:38px;height:38px;font-size:1.2vw;padding:0;border-radius:50%;">🗑️</button>
-                        <button class="btn" style="width:38px;height:38px;font-size:1.2vw;padding:0;border-radius:50%;">📋</button>
-                        <button class="btn" style="height:38px;width:120px;font-size:1vw;background:#5163EB;color:#fff;border-radius:14px;">Отправить</button>
-                    </div>
+            <div class="content">
+            </div>
+            <div class="under_letter">
+                <div>
+                    <button class="send-btn">Отправить</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<script src="../scripts/inbox.js"></script>
 </body>
-</html>
