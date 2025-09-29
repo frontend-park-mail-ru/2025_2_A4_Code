@@ -6,9 +6,7 @@ fetch('/inbox') // TODO: заменить на реальный URL
     // Передача данных в контекст
     const source = document.getElementById('messages-template').innerHTML;
     const template = Handlebars.compile(source);
-    const html = template(data);
-
-    document.getElementById('messages-list').innerHTML = html;
+    document.getElementById('messages-list').innerHTML = template(data);
   })
   .catch(error => {
     console.error('Ошибка при получении данных:', error);
