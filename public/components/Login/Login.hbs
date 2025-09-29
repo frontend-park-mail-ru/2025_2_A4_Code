@@ -1,0 +1,52 @@
+<div class="form">
+    <div class="lable">
+        <h1>
+            Вход в А4 почту
+        </h1>
+    </div>
+    <div class="bigslider">
+        <div class="smallslider_for_mail">
+            <h2>
+                Почта
+            </h2>
+        </div> 
+        <a href="#" class="btn-link" data-type="phone">Телефон</a>
+    </div>
+    <div class="infoform">
+        <div class="infoform-group">
+            <input type="text" id="login" placeholder="Логин или email" name="login" 
+                value="{{formData.login}}">
+            {{#if errors.login}}<div class="error-message">{{errors.login}}</div>{{/if}}
+        </div>
+
+        <div class="infoform-group">
+            <input type="password" id="password" placeholder="Пароль" name="password"
+                value="{{formData.password}}">
+            {{#if errors.password}}<div class="error-message">{{errors.password}}</div>{{/if}}
+            <a href="#" class="forgotpassword">Забыли пароль?</a>
+        </div>
+    </div>
+    {{#if errors.general}}
+    <div class="error-message" style="margin-top:8px;">{{errors.general}}</div>
+    {{/if}}
+    <div class="buttons">
+        <button class="btn" id="loginButton">Войти</button>
+        <a href="/signup" class="btn">Зарегистрироваться</a>
+    </div>
+    <div class="bottom">
+        <h5>
+            Войти с помощью
+        </h5>
+        <div class="icon-container">
+            <div class="icon">
+                <img src="/img/vk.jpeg" alt="vk">
+            </div>
+            <div class="icon">
+                <img src="/img/tg.jpeg" alt="tg">
+            </div>
+            <div class="icon">
+                <img src="/img/apid.jpeg" alt="apple id">
+            </div>
+        </div>
+    </div>
+</div>
