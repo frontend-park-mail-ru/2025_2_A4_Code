@@ -5,6 +5,7 @@ const url = require('url');
 
 const PORT = 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
+const DIST_PATH = path.join(__dirname, 'dist');
 
 const MIME_TYPES = {
     '.html': 'text/html; charset=UTF-8',

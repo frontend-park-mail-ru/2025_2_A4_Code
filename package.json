@@ -5,10 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "live-server --port=3000",
+    "dev": "webpack serve --mode development",
     "lint": "eslint . --ext .js,.mjs,.cjs",
     "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix",
-    "prod": "node server.js"
+    "prod": "node server.js",
+    "start": "node server.js",
+    "build": "webpack --mode production"
   },
   "keywords": [],
   "author": "",
@@ -17,11 +19,34 @@
     "handlebars": "^4.7.8"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.4",
+    "@babel/preset-env": "^7.28.3",
     "@eslint/js": "^9.36.0",
+    "babel-loader": "^9.2.1",
+    "css-loader": "^7.1.2",
     "eslint": "^9.36.0",
     "eslint-plugin-import": "^2.32.0",
     "globals": "^16.4.0",
+    "html-webpack-plugin": "^5.6.4",
     "live-server": "^1.2.2",
-    "nodemon": "^3.1.10"
-  }
+    "nodemon": "^3.1.10",
+    "sass": "^1.93.2",
+    "sass-loader": "^16.0.5",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frontend-park-mail-ru/2025_2_A4_Code.git"
+  },
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/frontend-park-mail-ru/2025_2_A4_Code/issues"
+  },
+  "homepage": "https://github.com/frontend-park-mail-ru/2025_2_A4_Code#readme"
 }
