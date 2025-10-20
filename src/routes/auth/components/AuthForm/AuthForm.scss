@@ -67,3 +67,13 @@
   }
 }
 
+.input--error {
+  border: 1px solid #ff4d4f;
+}
+
+.auth-form__error-message {
+  color: #ff4d4f;
+  font-size: 14px;
+  margin-top: 5px;
+  display: block;
+}

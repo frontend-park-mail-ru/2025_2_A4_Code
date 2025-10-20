@@ -1,5 +1,14 @@
 <div class="register-page">
     <div class="register-page__header">Регистрация</div>
+    <div class="form-errors-container">
+        {{#if errors}}
+            <div class="error-list">
+                {{#each errors}}
+                    <div class="error-item">{{this}}</div>
+                {{/each}}
+            </div>
+        {{/if}}
+    </div>
     {{{registerForm}}}
     <div class="register-page__already-registered-container">
         Есть аккаунт?

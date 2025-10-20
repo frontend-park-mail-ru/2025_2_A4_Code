@@ -1,8 +1,40 @@
+{{!--
 <form action="" class="auth-form">
     <input id="login" class="auth-form__login-input primary-input" type="text" placeholder="{{{loginPlaceholder}}}">
     <div class="auth-form__password-container">
         <input id="password" class="auth-form__password-input primary-input" type="password" placeholder="{{{passwordPlaceholder}}}">
         <a href="" class="auth-form__forgot-password-link">{{{forgotPasswordText}}}</a>
     </div>
+    <button type="submit" class="auth-form__button-submit primary-button">{{{submitLoginText}}}</button>
+</form>
+--}}
+
+<form action="" class="auth-form">
+    <div class="auth-form__field">
+        <input 
+            id="login" 
+            class="auth-form__login-input primary-input {{#if errors.login}}input--error{{/if}}" 
+            type="text" 
+            placeholder="{{{loginPlaceholder}}}"
+            value="{{loginValue}}"
+        >
+        {{#if errors.login}}
+            <span class="auth-form__error-message">{{errors.login}}</span>
+        {{/if}}
+    </div>
+
+    <div class="auth-form__password-container">
+        <input 
+            id="password" 
+            class="auth-form__password-input primary-input {{#if errors.password}}input--error{{/if}}" 
+            type="password" 
+            placeholder="{{{passwordPlaceholder}}}"
+        >
+        {{#if errors.password}}
+            <span class="auth-form__error-message">{{errors.password}}</span>
+        {{/if}}
+        <a href="" class="auth-form__forgot-password-link">{{{forgotPasswordText}}}</a>
+    </div>
+
     <button type="submit" class="auth-form__button-submit primary-button">{{{submitLoginText}}}</button>
 </form>

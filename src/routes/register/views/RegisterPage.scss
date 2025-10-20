@@ -4,13 +4,13 @@
   align-items: center;
 
   &__header {
-    margin-top: 37px;
+    margin-top: 20px;
     font-size: 40px;
     font-weight: 600;
   }
 
   &__already-registered-container {
-    margin-top: 24px;
+    margin-top: 28px;
     width: 80%;
     display: flex;
     justify-content: space-around;
@@ -19,7 +19,7 @@
 
   &__auth-link {
     color: #5163EB;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 600;
 
     &:hover {
