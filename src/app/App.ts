@@ -25,6 +25,6 @@ export class App {
     init() {
         // TODO: вызвать метод апи для проверки логина и после этого делать нужный роутинг
         this.router.navigate('/inbox');
-        this.router.navigate('/auth');
+        //this.router.navigate('/auth');
     }
 }

@@ -1,6 +1,11 @@
 .main-layout {
+  background-color: #EFF2F7;
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+
   &__header {
-    padding: 30px 15px 15px 15px;
+    padding: 15px 15px 15px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -15,11 +20,39 @@
   }
 
   &__search-field {
-    font-size: 18px;
-    border-radius: 12px;
+    font-size: 16px;
+    border-radius: 10px;
+    padding-left: 50px;
+    padding-right: 20px;
     background-color: #E2E7F0;
     border: none;
-    width: 518px;
-    height: 48px;
+    width: 500px;
+    height:48px;
+
+    background-image: url('../../../../public/img/search-icon.svg');
+    background-repeat: no-repeat;
+    background-position: 12px center;
+    
+
+    &:focus {
+      border: none;
+      outline: none;
+    }
+
+  }
+
+  &__profile-button {
+    margin-left: 20px;
+    margin-right: 20px;
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    &:hover {
+    }
+    &__image {
+      background: url('../../../../public/img/avatar.svg');
+    }
   }
 }
