@@ -1,0 +1,25 @@
+.main-layout {
+  &__header {
+    padding: 30px 15px 15px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__logo {
+
+  }
+
+  &__action-wrapper {
+    display: flex;
+  }
+
+  &__search-field {
+    font-size: 18px;
+    border-radius: 12px;
+    background-color: #E2E7F0;
+    border: none;
+    width: 518px;
+    height: 48px;
+  }
+}

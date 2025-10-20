@@ -1,0 +1,37 @@
+.register-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 500px;
+  width: 360px;
+
+  &__name-input {
+    margin-top: 24px;
+    width: 360px;
+  }
+
+  &__gender-picker-container {
+    width: 360px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__gender-picker-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__gender-picker {
+    margin-right: 5px;
+    width: 20px;
+    height: 20px;
+    color: black;
+
+    &:checked {
+      accent-color: black;
+    }
+  }
+}

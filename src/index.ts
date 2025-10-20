@@ -1,13 +1,7 @@
-import { Router } from './infra/Router';
-import { LoginLayout } from "./app";
-import {AuthPage} from "./routes/AuthPage";
+import {App} from "./app"
 
-const router = new Router();
-const authPage = new AuthPage();
-(window as any).authPage = authPage;
-(window as any).router = router;
-router.addRoute('/auth', authPage, LoginLayout);
-router.init();
-router.navigate('/auth');
+const app = new App();
 
-console.log('App started');
+document.addEventListener("DOMContentLoaded", e => {
+    app.init();
+})

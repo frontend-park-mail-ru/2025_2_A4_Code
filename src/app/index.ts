@@ -1,3 +1,2 @@
-import { LoginLayout } from "./components/LoginLayout/LoginLayout";
-
-export { LoginLayout };
+export {App} from "./App";
+export { AuthLayout } from "./components/AuthLayout/AuthLayout";
