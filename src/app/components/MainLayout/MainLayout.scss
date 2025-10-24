@@ -55,4 +55,22 @@
       background: url('../../../../public/img/avatar.svg');
     }
   }
+
+  &__inbox {
+  background-color: #608edd;
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  display: flex;
+  align-items: center;
+  
+  &__window {
+    display: flex;
+    align-items: center;
+    width: 50px;
+    height: 100px;
+    background-color: aquamarine;
+  }
+
+}
 }

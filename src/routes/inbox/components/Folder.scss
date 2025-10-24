@@ -1,0 +1,15 @@
+.main-folder {
+    color: #6c9bec;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: normal;
+    font-style: normal;
+  
+    &__header {
+      padding: 15px 15px 15px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 30px;
+      height: 200px;
+    }
+}
