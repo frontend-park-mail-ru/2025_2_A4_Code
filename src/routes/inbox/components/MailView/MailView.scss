@@ -1,0 +1,60 @@
+.mail-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mv-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: background .12s;
+    &:hover { background: rgba(0,0,0,0.06); }
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__subject {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #d6efd6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3b7e3b;
+    font-weight: 700;
+  }
+
+  &__from-name { font-weight: 600; }
+  &__time { color: #888; font-size: 12px; }
+
+  &__body {
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+}
+

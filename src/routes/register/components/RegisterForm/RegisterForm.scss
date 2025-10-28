@@ -1,37 +1,23 @@
+
 .register-form {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  height: 500px;
-  width: 360px;
+  gap: 32px;
+  width: 100%;
 
-  &__name-input {
-    margin-top: 24px;
-    width: 360px;
-  }
-
-  &__gender-picker-container {
-    width: 360px;
+  &__fields {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 28px;
   }
 
-  &__gender-picker-wrapper {
+  &__actions {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+    flex-direction: column;
+    margin-top: 16px;
 
-  &__gender-picker {
-    margin-right: 5px;
-    width: 20px;
-    height: 20px;
-    color: black;
-
-    &:checked {
-      accent-color: black;
+    .ui-button {
+      width: 100%;
     }
   }
 }

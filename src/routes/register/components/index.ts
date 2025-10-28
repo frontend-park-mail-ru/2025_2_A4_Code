@@ -1,3 +1,1 @@
-import {RegisterForm} from './RegisterForm/RegisterForm';
-
-export default RegisterForm;
+export {RegisterFormComponent} from './RegisterForm/RegisterForm';

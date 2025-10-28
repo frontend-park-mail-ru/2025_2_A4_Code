@@ -1,8 +1,8 @@
 export const AUTH_PAGE_TEXTS = {
-    headerText: "Войти в почту",
-    registrationButtonText: "Зарегистрироваться",
+    headerText: "Войдите в аккаунт",
+    registrationButtonText: "Создать аккаунт",
     loginInputPlaceholder: "Логин или email",
     passwordInputPlaceholder: "Пароль",
     forgotPasswordText: "Забыли пароль?",
     submitLoginButtonText: "Войти",
-}
+};

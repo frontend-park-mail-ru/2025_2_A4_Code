@@ -1,69 +1,37 @@
+
 .auth-form {
   display: flex;
   flex-direction: column;
+  gap: 32px;
+  width: 100%;
 
-  &__login-input {
-    margin-top: 63px;
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
   }
 
-  &__password-input {
-    margin-top: 30px;
-  }
-
-  &__forgot-password-link {
-    margin-top: 10px;
-    color: #5163EB;
-    font-size: 15px;
+  &__forgot {
+    align-self: flex-start;
+    font-size: 14px;
+    color: #5163eb;
+    font-weight: 600;
     text-decoration: none;
-    text-underline: none;
+    transition: color .15s ease;
+    margin-top: -16px;
 
-
-    &:visited {
-      text-decoration: none;
-      text-underline: none;
+    &:hover {
+      color: #3242b0;
     }
   }
 
-  &__password-container {
+  &__actions {
     display: flex;
     flex-direction: column;
-  }
+    gap: 16px;
 
-  &__button-submit {
-    margin-top: 63px;
-  }
-}
-
-.primary-input {
-  border: none;
-  border-bottom: 1px solid black;
-  font-size: 20px;
-  color: #064232;
-  width: 360px;
-
-  &:focus {
-    outline: none;
-    border-bottom: 1px solid #5163EB;
+    .ui-button {
+      width: 100%;
+    }
   }
 }
-
-.primary-button {
-  padding: 15px 60px;
-  border: 2px solid #5163EB;
-  border-radius: 18px;
-  text-decoration: none;
-  color: #ffffff;
-  background-color: #5163EB;
-  width: 360px;
-
-  &:visited {
-    color: #5163EB;
-    text-decoration: none;
-    text-underline: none;
-  }
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-

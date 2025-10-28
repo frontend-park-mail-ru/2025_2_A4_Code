@@ -1,0 +1,7 @@
+<button type="button" class="header__avatar-btn" data-avatar-button>
+    {{#if imageUrl}}
+        <img class="header__avatar header__avatar--image" src="{{imageUrl}}" alt="{{label}}" />
+    {{else}}
+        <span class="header__avatar">{{label}}</span>
+    {{/if}}
+</button>

@@ -1,0 +1,28 @@
+<div class="compose-overlay" role="dialog" aria-modal="true">
+  <div class="compose">
+    <div class="compose__header">
+      <div class="compose__title">Новое письмо</div>
+      <button class="compose__close" data-action="close" title="Закрыть">✕</button>
+    </div>
+
+    <div class="compose__fields">
+      <input class="compose__input" type="text" placeholder="Кому:" data-field="to" />
+      <input class="compose__input" type="text" placeholder="Тема:" data-field="subject" />
+      <div class="compose__tools">
+        <button class="compose__tool" data-action="attach">📎 Прикрепить файл</button>
+        <button class="compose__tool" data-action="save">💾 Сохранить в черновики</button>
+      </div>
+    </div>
+
+    <textarea class="compose__textarea" placeholder="Текст письма" data-field="body"></textarea>
+
+    <div class="compose__footer">
+      <div class="compose__signature">
+        <div>— —</div>
+        <div>{{signature}}</div>
+        <div>Отправлено из почты A4mail</div>
+      </div>
+      <button class="compose__send" data-action="send">Отправить</button>
+    </div>
+  </div>
+</div>

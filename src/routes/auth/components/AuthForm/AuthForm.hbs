@@ -1,8 +1,8 @@
-<form action="" class="auth-form">
-    <input id="login" class="auth-form__login-input primary-input" type="text" placeholder="{{{loginPlaceholder}}}">
-    <div class="auth-form__password-container">
-        <input id="password" class="auth-form__password-input primary-input" type="password" placeholder="{{{passwordPlaceholder}}}">
-        <a href="" class="auth-form__forgot-password-link">{{{forgotPasswordText}}}</a>
+<form class="auth-form" data-form novalidate>
+    <div class="auth-form__fields">
+        <div class="auth-form__field" data-slot="login"></div>
+        <div class="auth-form__field" data-slot="password"></div>
     </div>
-    <button type="submit" class="auth-form__button-submit primary-button">{{{submitLoginText}}}</button>
+    <a href="#" class="auth-form__forgot" data-action="forgot">{{forgotPasswordText}}</a>
+    <div class="auth-form__actions" data-slot="submit"></div>
 </form>

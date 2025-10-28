@@ -1,0 +1,23 @@
+.mail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size: 18px;
+    color: #1f2937;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}

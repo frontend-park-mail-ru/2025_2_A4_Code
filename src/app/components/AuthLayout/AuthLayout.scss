@@ -1,45 +1,50 @@
 .auth-layout {
   background: url('../../../../public/img/background.jpg') repeat center center / cover;
-  margin: 0;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Nunito Sans', sans-serif;
-  font-weight: normal;
-  font-style: normal;
+  padding: 32px;
 
-  &__logo {
-    flex-direction: column;
-  }
-
-  &__container {
-    padding-top: 60px;
-    padding-bottom: 60px;
+  &__panel {
     background-color: #ffffff;
-    width: 516px;
+    width: min(516px, 100%);
+    min-height: 765px;
     border-radius: 20px;
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 56px 60px;
+    box-shadow: 0 24px 60px rgba(26, 41, 128, 0.15);
+    box-sizing: border-box;
   }
-}
 
+  &__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-direction: column;
+    font-size: 40px;
+    color: #5163eb;
+    text-decoration: none;
+    margin-bottom: 40px;
+  }
 
-.logo {
-  font-family: 'Nunito Sans', sans-serif;
-  font-weight: 600;
-  font-size: 40px;
-  color: #5163EB;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  &__image {
-    content: url('../../../../public/img/logo.svg');
+  &__logo-icon {
     width: 40px;
     height: 40px;
-    margin-right: 10px;
+    margin-right: 12px;
+  }
+
+  &__logo-text {
+    letter-spacing: 0.02em;
+  }
+
+  &__content {
+    width: 100%;
+    flex: 1;
   }
 }

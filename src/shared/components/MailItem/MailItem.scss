@@ -1,0 +1,88 @@
+.mail-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background .12s ease;
+  border-bottom: 1px solid #D6E3F3;
+  border-radius: 12px 12px 0 0;
+
+
+  &__left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  &--unread {
+    .mail-item__status {
+      background: #5163eb;
+    }
+  }
+
+  &:hover {
+    background: rgba(81, 99, 235, 0.12);
+  }
+
+  &__status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: transparent;
+    justify-self: center;
+  }
+
+  &__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+
+    &--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e2e8f0;
+      color: #5163eb;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+  }
+
+  &__from {
+
+    font-weight: 700;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__subject {
+    font-weight: 600;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__preview {
+    color: #6b7280;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__time {
+    align-self: flex-end;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+}
+
+

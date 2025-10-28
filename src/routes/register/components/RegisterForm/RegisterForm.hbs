@@ -1,19 +1,11 @@
-<form action="" class="register-form">
-    <input type="text" class="register-form__name-input primary-input" placeholder="Ваше имя">
-    <input type="text" class="register-form__login-input primary-input" placeholder="Логин@flintmail.ru">
-    <input type="text" class="register-form__date-input primary-input" placeholder="Дата рождения">
-    <div class="register-form__gender-picker-container">
-        <div class="register-form__gender-picker-label">Пол:</div>
-        <div class="register-form__gender-picker-wrapper">
-            <input class="register-form__gender-picker" type="radio" id="male" name="gender" value="male">
-            <label for="male">Мужской</label>
-        </div>
-        <div class="register-form__gender-picker-wrapper">
-            <input class="register-form__gender-picker" type="radio" id="female" name="gender" value="female">
-            <label for="female">Женский</label>
-        </div>
+<form class="register-form" data-form novalidate>
+    <div class="register-form__fields">
+        <div data-slot="name"></div>
+        <div data-slot="login"></div>
+        <div data-slot="birthdate"></div>
+        <div data-slot="gender"></div>
+        <div data-slot="password"></div>
+        <div data-slot="passwordRepeat"></div>
     </div>
-    <input type="text" class="register-form__password-input primary-input" placeholder="Новый пароль">
-    <input type="text" class="register-form__password-repeat-input primary-input" placeholder="Повторите пароль">
-    <button type="submit" class="register-form__button-submit primary-button">Зарегистрироваться</button>
+    <div class="register-form__actions" data-slot="submit"></div>
 </form>

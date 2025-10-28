@@ -1,37 +1,34 @@
 .auth-page {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+  text-align: left;
   width: 100%;
+  height: 100%;
 
-  &__header {
-    margin-top: 37px;
-    font-size: 40px;
-    font-weight: 600;
+  &__title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: #1f2937;
+    text-align: center;
   }
 
-  &__registration-button {
-    margin-top: 32px;
-    width: 236px;
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    flex: 1;
   }
-}
 
-.secondary-button {
-  display: flex;
-  justify-content: center;
-  color: #5163EB;
-  padding: 15px 60px;
-  border: 2px solid #5163EB;
-  border-radius: 18px;
-  text-decoration: none;
-  align-items: center;
+  &__actions {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 
-  &:visited {
-    color: #5163EB;
-    text-decoration: none;
-  }
-  
-  &:hover {
-    cursor: pointer;
+    .ui-button {
+      width: 100%;
+    }
   }
 }

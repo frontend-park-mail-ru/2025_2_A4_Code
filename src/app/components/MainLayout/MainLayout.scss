@@ -1,25 +1,51 @@
 .main-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #F7F5FC;
+  font-family: 'Nunito Sans', sans-serif;
+
   &__header {
-    padding: 30px 15px 15px 15px;
+    height: 64px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    padding: 0 20px;
   }
 
-  &__logo {
-
-  }
-
-  &__action-wrapper {
+  &__container {
     display: flex;
+    flex: 1;
+    overflow: hidden;
   }
 
-  &__search-field {
-    font-size: 18px;
-    border-radius: 12px;
-    background-color: #E2E7F0;
-    border: none;
-    width: 518px;
-    height: 48px;
+  &__sidebar {
+    width: 260px;
+    padding: 16px;
+    box-sizing: border-box;
   }
+
+  &__main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #FFFFFF;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+
+  &__modal-root {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+
+    &--active {
+      pointer-events: auto;
+    }
+  }
+}
+
+.sidebar__compose {
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
 }

@@ -1,0 +1,31 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__compose {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: none;
+    background: #5163eb;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: box-shadow .15s ease, transform .15s ease;
+
+    &:hover {
+      box-shadow: 0 12px 24px rgba(81, 99, 235, 0.25);
+      transform: translateY(-1px);
+    }
+  }
+
+  &__folders {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
