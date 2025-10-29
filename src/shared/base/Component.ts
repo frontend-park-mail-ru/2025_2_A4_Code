@@ -9,10 +9,6 @@ export abstract class Component<TProps = any> {
 
     protected abstract renderTemplate(): string;
 
-    /**
-     * Lifecycle hook that runs after the element has been rendered and appended.
-     * Subclasses can override it to attach listeners or perform additional setup.
-     */
     protected afterRender(): void {}
 
     protected createElement(html: string): HTMLElement {
@@ -33,11 +29,7 @@ export abstract class Component<TProps = any> {
         const childrenContainer = this.element.querySelector('[data-slot="children"]') || this.element;
         childElements.forEach((child) => childrenContainer.appendChild(child));
 
-        try {
-            this.afterRender();
-        } catch {
-            // ignore hook failures to avoid breaking render flow
-        }
+        try { this.afterRender(); } catch {}
 
         return this.element;
     }

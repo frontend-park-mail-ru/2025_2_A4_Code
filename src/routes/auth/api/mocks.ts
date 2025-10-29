@@ -1,7 +1,7 @@
 import {User} from "../../../types/user";
 
 export const mockUser: User = {
-    username: "ivanPotroshitel",
+    username: "ivanTake",
     createdAt: "01.10.2025",
     name: "Иван",
     surname: "Иванов",

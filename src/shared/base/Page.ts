@@ -20,9 +20,7 @@ export abstract class Page extends Component {
 
     protected abstract getSlotContent(): SlotContent;
 
-    public async update(_params: Record<string, string>): Promise<void> {
-        // optional override per page
-    }
+    public async update(_params: Record<string, string>): Promise<void> { }
 
     public async renderWithLayout(layout: Layout, reuseLayout = false): Promise<HTMLElement> {
         this.layout = layout;
@@ -59,9 +57,7 @@ export abstract class Page extends Component {
         }
     }
 
-    public init(): void {
-        // optional override
-    }
+    public init(): void { }
 
     public async mount(rootElement: HTMLElement, options: MountOptions = {}): Promise<void> {
         if (this.layout) {

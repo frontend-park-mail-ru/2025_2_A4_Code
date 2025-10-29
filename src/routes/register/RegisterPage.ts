@@ -16,7 +16,7 @@ export class RegisterPage extends Page {
 
         this.authButton = new ButtonComponent({
             variant: "secondary",
-            label: "\u0423\u0436\u0435 \u0435\u0441\u0442\u044c \u0430\u043a\u043a\u0430\u0443\u043d\u0442?",
+            label: "Есть аккаунт?",
             onClick: () => this.router.navigate('/auth'),
             fullWidth: true,
         });
@@ -32,7 +32,7 @@ export class RegisterPage extends Page {
 
         const title = document.createElement('h1');
         title.className = 'register-page__title';
-        title.textContent = '\u0420\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u044f';
+        title.textContent = 'Регистрация';
         content.appendChild(title);
 
         const formWrapper = document.createElement('div');
