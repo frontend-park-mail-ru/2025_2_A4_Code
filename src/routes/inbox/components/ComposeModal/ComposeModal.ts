@@ -21,21 +21,21 @@ export class ComposeModal extends Component<Props> {
         super(props);
 
         this.attachButton = new ButtonComponent({
-            label: "\u041f\u0440\u0438\u043a\u0440\u0435\u043f\u0438\u0442\u044c \u0444\u0430\u0439\u043b",
+            label: "Attach",
             variant: "link",
             icon: '<img src="/img/modal-attach-file.svg" alt="" aria-hidden="true" />',
             onClick: () => this.handleAttach(),
         });
 
         this.draftButton = new ButtonComponent({
-            label: "\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u0432 \u0447\u0435\u0440\u043d\u043e\u0432\u0438\u043a\u0438",
+            label: "Draft",
             variant: "link",
             icon: '<img src="/img/modal-to-draft.svg" alt="" aria-hidden="true" />',
             onClick: () => this.handleSaveDraft(),
         });
 
         this.sendButton = new ButtonComponent({
-            label: "\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c",
+            label: "Send",
             variant: "secondary",
             onClick: () => this.handleSend(),
         });

@@ -139,3 +139,4 @@ export class MailViewComponent extends Component<Props> {
         await super.unmount();
     }
 }
+
