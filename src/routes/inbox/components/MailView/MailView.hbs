@@ -1,23 +1,36 @@
 <div class="mail-view">
-    <div class="mail-view__toolbar">
-        <button class="mv-btn" data-action="back" title="Назад">←</button>
-        <button class="mv-btn" data-action="delete" title="Удалить">🗑</button>
-        <button class="mv-btn" data-action="move" title="В папку">📁</button>
-        <button class="mv-btn" data-action="spam" title="Спам">🚫</button>
-        <button class="mv-btn" data-action="reply" title="Ответить">↩</button>
-        <button class="mv-btn" data-action="forward" title="Переслать">↪</button>
+  <div class="mail-view__toolbar">
+    <div class="mail-view__toolbar-slot mail-view__toolbar-slot--icon" data-slot="back"></div>
+    <div class="mail-view__toolbar-slot" data-slot="delete"></div>
+    <div class="mail-view__toolbar-slot" data-slot="folder"></div>
+    <div class="mail-view__toolbar-slot" data-slot="spam"></div>
+    <div class="mail-view__toolbar-slot" data-slot="reply"></div>
+    <div class="mail-view__toolbar-slot" data-slot="forward"></div>
+  </div>
+
+  <h1 class="mail-view__subject">{{subject}}</h1>
+
+  <div class="mail-view__summary">
+    <div class="mail-view__avatar">
+      {{#if avatarUrl}}
+        <img src="{{avatarUrl}}" alt="{{from}}" />
+      {{else}}
+        <span>{{initials}}</span>
+      {{/if}}
     </div>
 
-    <div class="mail-view__header">
-        <h1 class="mail-view__subject">{{subject}}</h1>
-        <div class="mail-view__meta">
-            <div class="mail-view__avatar">{{initials}}</div>
-            <div class="mail-view__from">
-                <div class="mail-view__from-name">{{from}}</div>
-                <div class="mail-view__time">{{time}}</div>
-            </div>
-        </div>
+    <div class="mail-view__details">
+      <div class="mail-view__details-row">
+        <span class="mail-view__from">{{from}}</span>
+        <span class="mail-view__email">{{fromEmail}}</span>
+        <span class="mail-view__time">{{time}}</span>
+      </div>
+      <div class="mail-view__details-row">
+        <span class="mail-view__label">Кому:</span>
+        <span class="mail-view__recipient">{{recipient}}</span>
+      </div>
     </div>
+  </div>
 
-    <div class="mail-view__body">{{{body}}}</div>
+  <div class="mail-view__body">{{{body}}}</div>
 </div>

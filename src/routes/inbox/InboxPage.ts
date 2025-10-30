@@ -109,6 +109,7 @@ export class InboxPage extends Page {
             subject: mail.subject,
             time: mail.time,
             body: mail.body,
+            avatarUrl: mail.avatarUrl ?? null,
             onBack: () => this.showList(true),
         });
     }

@@ -36,6 +36,22 @@
     }
   }
 
+  &--link {
+    padding: 0;
+    min-width: auto;
+    background: transparent;
+    color: #5163eb;
+    border: none;
+    box-shadow: none;
+    font-size: 15px;
+    font-weight: 600;
+    gap: 6px;
+
+    &:hover:not(:disabled) {
+      text-decoration: underline;
+    }
+  }
+
   &:disabled {
     opacity: 0.6;
     cursor: default;
