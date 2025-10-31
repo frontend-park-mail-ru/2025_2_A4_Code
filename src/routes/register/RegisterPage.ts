@@ -13,7 +13,7 @@ export class RegisterPage extends Page {
         this.form = new RegisterFormComponent({
             onSubmit: (payload) => this.handleSubmit(payload),
         });
-
+        
         this.authButton = new ButtonComponent({
             variant: "secondary",
             label: "Есть аккаунт?",

@@ -32,7 +32,7 @@ export class RegisterFormComponent extends Component<Props> {
 
         this.nameField = new InputFieldComponent({
             name: "name",
-            placeholder: "Введите имя",
+            placeholder: "Ваше имя",
             autocomplete: "name",
             required: true,
             variant: "underline",
@@ -40,11 +40,11 @@ export class RegisterFormComponent extends Component<Props> {
 
         this.loginField = new InputFieldComponent({
             name: "login",
-            placeholder: "например, 1@flintmail.ru",
+            placeholder: "Логин@flintmail.ru",
             required: true,
             variant: "underline",
         });
-
+        
         this.birthdateField = new InputFieldComponent({
             name: "birthdate",
             type: "date",
@@ -55,15 +55,15 @@ export class RegisterFormComponent extends Component<Props> {
             name: "gender",
             label: "Пол",
             options: [
-                { label: "Мужчина", value: "male" },
-                { label: "Женщина", value: "female" },
+                { label: "Мужской", value: "male" },
+                { label: "Женский", value: "female" },
             ],
         });
 
         this.passwordField = new InputFieldComponent({
             name: "password",
             type: "password",
-            placeholder: "Придумайте пароль",
+            placeholder: "Новый пароль",
             required: true,
             autocomplete: "new-password",
             variant: "underline",
@@ -80,7 +80,7 @@ export class RegisterFormComponent extends Component<Props> {
 
         this.submitButton = new ButtonComponent({
             type: "submit",
-            label: "Создать аккаунт",
+            label: "Зарегистрироваться",
             variant: "primary",
             fullWidth: true,
         });

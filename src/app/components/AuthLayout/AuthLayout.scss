@@ -1,23 +1,27 @@
 .auth-layout {
-  background: url('../../../../public/img/background.jpg') repeat center center / cover;
+  background: url('../../../../public/img/background.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Nunito Sans', sans-serif;
-  padding: 32px;
+  padding: 12px;
 
   &__panel {
     background-color: #ffffff;
-    width: min(516px, 100%);
-    min-height: 765px;
+    width: min(450px, 100%);
+    height: 740px;
     border-radius: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 56px 60px;
-    box-shadow: 0 24px 60px rgba(26, 41, 128, 0.15);
+    padding: 40px;
+    padding-right: 50px;
     box-sizing: border-box;
   }
 
@@ -30,7 +34,6 @@
     font-size: 40px;
     color: #5163eb;
     text-decoration: none;
-    margin-bottom: 40px;
   }
 
   &__logo-icon {
@@ -46,5 +49,7 @@
   &__content {
     width: 100%;
     flex: 1;
+    align-items: center;
+    justify-content: center;
   }
 }

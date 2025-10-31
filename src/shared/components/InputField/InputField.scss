@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   font-family: 'Nunito Sans', sans-serif;
-  color: #272b35;
+  color: #000000;
 
   &__label {
     font-weight: 600;
@@ -43,7 +43,6 @@
 
     &:focus {
       border-color: #5163eb;
-      box-shadow: 0 0 0 4px rgba(81, 99, 235, 0.2);
     }
   }
 }

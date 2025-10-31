@@ -2,29 +2,27 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  text-align: left;
+  text-align: center;
   height: 100%;
 
   &__title {
-    font-size: 36px;
-    font-weight: 700;
-    margin-bottom: 32px;
-    color: #1f2937;
-    text-align: left;
+    font-size: 40px;
+    font-weight: 600;
+    color: #000000;
+    text-align: center;
   }
 
   &__form {
     display: flex;
     flex-direction: column;
-    gap: 28px;
     flex: 1;
+    margin-bottom: 12px;
   }
 
   &__actions {
     margin-top: 24px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
 
     .ui-button {
       width: 100%;
