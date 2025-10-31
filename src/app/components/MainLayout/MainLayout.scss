@@ -2,13 +2,13 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #F7F5FC;
+  background: #EFF2F7;
   font-family: 'Nunito Sans', sans-serif;
-
+  
   &__header {
-    height: 64px;
+    height: 80px;
     display: flex;
-    align-items: center;
+    align-items: top;
     padding: 0 20px;
   }
 
@@ -16,11 +16,12 @@
     display: flex;
     flex: 1;
     overflow: hidden;
+    padding-right: 16px;
   }
 
   &__sidebar {
-    width: 260px;
-    padding: 16px;
+    width: 240px;
+    padding: 0 16px;
     box-sizing: border-box;
   }
 
