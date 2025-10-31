@@ -7,14 +7,14 @@
   height: 100%;
 
   &__title {
-    font-size: 36px;
-    font-weight: 700;
+    font-size: 40px;
+    font-weight: 600;
     margin-bottom: 40px;
     color: #1f2937;
     text-align: center;
     margin-top: 32px;
   }
-
+  
   &__form {
     display: flex;
     flex-direction: column;
@@ -26,7 +26,7 @@
     margin-top: 24px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
 
     .ui-button {
       width: 100%;

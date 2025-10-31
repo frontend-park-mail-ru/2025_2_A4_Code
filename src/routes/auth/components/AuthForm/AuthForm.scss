@@ -8,8 +8,9 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
+    margin-top: 32px;
   }
-
+  
   &__forgot {
     align-self: flex-start;
     font-size: 14px;
@@ -18,7 +19,7 @@
     text-decoration: none;
     transition: color .15s ease;
     margin-top: 8px;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
     
     &:hover {
       color: #3242b0;
@@ -28,7 +29,8 @@
   &__actions {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 8px;
+    margin-bottom: -16px;
 
     &:hover {
       
