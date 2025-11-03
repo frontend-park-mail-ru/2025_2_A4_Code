@@ -21,26 +21,26 @@ export class ComposeModal extends Component<Props> {
         super(props);
 
         this.attachButton = new ButtonComponent({
-            label: "Attach",
+            label: "Прикрепить файл",
             variant: "link",
             icon: '<img src="/img/modal-attach-file.svg" alt="" aria-hidden="true" />',
             onClick: () => this.handleAttach(),
         });
 
         this.draftButton = new ButtonComponent({
-            label: "Draft",
+            label: "Сохранить в черновики",
             variant: "link",
             icon: '<img src="/img/modal-to-draft.svg" alt="" aria-hidden="true" />',
             onClick: () => this.handleSaveDraft(),
         });
 
         this.sendButton = new ButtonComponent({
-            label: "Send",
-            variant: "secondary",
+            label: "Отправить",
+            variant: "primary",
             onClick: () => this.handleSend(),
         });
     }
-
+    
     protected renderTemplate(): string {
         return template({
             avatarUrl: this.props.avatarUrl ?? null,

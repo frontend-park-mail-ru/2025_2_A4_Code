@@ -18,7 +18,8 @@
     background: #5163eb;
     color: #ffffff;
     border: 2px solid #5163eb;
-
+    border-radius: 10px;
+    
     &:hover:not(:disabled) {
       background: #4959d5;
       border: 2px solid #4959d5;
@@ -39,7 +40,7 @@
     padding: 0;
     min-width: auto;
     background: transparent;
-    color: #5163eb;
+    color: #000000;
     border: none;
     box-shadow: none;
     font-size: 16px;
@@ -47,7 +48,7 @@
     gap: 6px;
 
     &:hover:not(:disabled) {
-      text-decoration: underline;
+      color: #5163eb;
     }
   }
 
