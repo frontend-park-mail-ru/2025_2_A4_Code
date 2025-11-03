@@ -18,15 +18,15 @@ export class AvatarMenu extends Component<Props> {
         super(props);
 
         this.profileButton = new ButtonComponent({
-            label: "profile",
+            label: "Профиль",
             variant: "link",
             fullWidth: true,
             icon: '<img src="/img/menu-profile-logo.svg" alt="" aria-hidden="true" />',
             onClick: () => this.props.onProfile?.(),
         });
-
+        
         this.settingsButton = new ButtonComponent({
-            label: "settings",
+            label: "Настройки",
             variant: "link",
             fullWidth: true,
             icon: '<img src="/img/menu-settings-logo.svg" alt="" aria-hidden="true" />',
@@ -34,7 +34,7 @@ export class AvatarMenu extends Component<Props> {
         });
 
         this.logoutButton = new ButtonComponent({
-            label: "logout",
+            label: "Выйти",
             variant: "link",
             fullWidth: true,
             icon: '<img src="/img/menu-logout-logo.svg" alt="" aria-hidden="true" />',
