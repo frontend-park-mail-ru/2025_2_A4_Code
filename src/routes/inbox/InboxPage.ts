@@ -7,6 +7,7 @@ import {Component} from "../../shared/base/Component";
 import {MailViewComponent} from "./components/MailView/MailView";
 import {ComposeModal} from "./components/ComposeModal/ComposeModal";
 import {fetchInboxMessages, fetchMessageById} from "./api/mailApi";
+import {MainLayout} from "../../app/components/MainLayout/MainLayout";
 import "./views/InboxPage.scss";
 import template from "./views/InboxPage.hbs"
 
@@ -49,6 +50,10 @@ export class InboxPage extends Page {
     }
 
     public async init(): Promise<void> {
+        if (this.layout instanceof MainLayout) {
+            this.layout.setContentBackground(true);
+            this.layout.setSidebarWidth(null);
+        }
         await this.loadMessages();
     }
 

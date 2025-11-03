@@ -20,7 +20,7 @@
   }
 
   &__sidebar {
-    width: 240px;
+    width: var(--main-layout-sidebar-width, 240px);
     padding: 0 16px;
     box-sizing: border-box;
   }
@@ -32,6 +32,18 @@
     background-color: #FFFFFF;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
+
+    &--no-bg {
+      background-color: transparent;
+      border-radius: 0;
+    }
+    
+    &--transition {
+      opacity: 1;
+      transform: translateY(0);
+      animation: main-layout-fade-in 0.3s ease;
+    }
+
   }
 
   &__modal-root {
@@ -49,4 +61,16 @@
   display: block;
   width: 100%;
   margin-bottom: 12px;
+}
+
+@keyframes main-layout-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

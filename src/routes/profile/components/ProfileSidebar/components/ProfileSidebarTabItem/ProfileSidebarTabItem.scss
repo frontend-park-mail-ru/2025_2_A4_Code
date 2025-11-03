@@ -1,0 +1,33 @@
+
+.profile-sidebar-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  color: #1f2544;
+  font-weight: 600;
+
+  &:hover {
+    background: rgba(81, 99, 235, 0.08);
+  }
+
+  &--active {
+    background: rgba(81, 99, 235, 0.14);
+    color: #5163eb;
+  }
+
+  &__icon {
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  &__label {
+    flex: 1;
+  }
+}

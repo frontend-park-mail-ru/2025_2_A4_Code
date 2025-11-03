@@ -1,0 +1,35 @@
+.avatar-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+
+  &__item {
+    padding: 2px 8px;
+  }
+
+  &__separator {
+    height: 1px;
+    margin: 6px 12px;
+    background: rgba(81, 99, 235, 0.12);
+  }
+
+  .ui-button {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1f2544;
+
+    &:hover:not(:disabled) {
+      background: rgba(81, 99, 235, 0.08);
+      text-decoration: none;
+    }
+  }
+
+  .ui-button__icon img {
+    width: 18px;
+    height: 18px;
+  }
+}
