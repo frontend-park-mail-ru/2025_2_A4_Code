@@ -1,5 +1,5 @@
-import {Component} from "../../../../shared/base/Component";
-import {ButtonComponent} from "../../../../shared/components/Button/Button";
+import { Component } from "../../../../shared/base/Component";
+import { ButtonComponent } from "../../../../shared/components/Button/Button";
 import template from "./MailView.hbs";
 import "./MailView.scss";
 
@@ -13,6 +13,8 @@ type Props = {
     fromEmail?: string;
     recipient?: string;
     onBack?: () => void;
+    onReply?: () => void;
+    onForward?: () => void;
 };
 
 export class MailViewComponent extends Component<Props> {
@@ -26,7 +28,7 @@ export class MailViewComponent extends Component<Props> {
                 "back",
                 this.createToolbarButton({
                     icon: '<img src="/img/message-back.svg" alt="" aria-hidden="true" />',
-                    ariaLabel: "Вернуться к сообщениям",
+                    ariaLabel: "Назад",
                     onClick: () => this.props.onBack?.(),
                 }),
             ],
@@ -56,6 +58,7 @@ export class MailViewComponent extends Component<Props> {
                 this.createToolbarButton({
                     label: "Ответить",
                     icon: '<img src="/img/message-reply.svg" alt="" aria-hidden="true" />',
+                    onClick: () => this.props.onReply?.(),
                 }),
             ],
             [
@@ -63,6 +66,7 @@ export class MailViewComponent extends Component<Props> {
                 this.createToolbarButton({
                     label: "Переслать",
                     icon: '<img src="/img/message-forward.svg" alt="" aria-hidden="true" />',
+                    onClick: () => this.props.onForward?.(),
                 }),
             ],
         ]);
@@ -111,10 +115,10 @@ export class MailViewComponent extends Component<Props> {
             initials,
             avatarUrl: avatarUrl ?? null,
             fromEmail: this.props.fromEmail ?? from,
-            recipient: this.props.recipient ?? "Вам",
+            recipient: this.props.recipient ?? "вам",
         });
     }
-    
+
     protected afterRender(): void {
         if (!this.element) {
             return;
@@ -139,4 +143,3 @@ export class MailViewComponent extends Component<Props> {
         await super.unmount();
     }
 }
-

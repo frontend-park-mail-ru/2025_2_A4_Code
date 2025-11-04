@@ -6,6 +6,7 @@ import { MainLayout } from "../../app/components/MainLayout/MainLayout";
 import { fetchProfile, ProfileData, updateProfile, uploadProfileAvatar } from "./api";
 import { logout } from "../auth/api";
 import { authManager } from "../../infra";
+import { validateProfileForm } from "../../utils";
 import "./views/ProfilePage.scss";
 
 type PlaceholderProfile = {
@@ -37,6 +38,7 @@ export class ProfilePage extends Page {
     private readonly form: ProfileFormComponent;
     private readonly header: HeaderComponent;
     private profile: ProfileData | null = null;
+    private globalLoadingDepth = 0;
 
     constructor() {
         super();
@@ -96,11 +98,14 @@ export class ProfilePage extends Page {
 
     private async loadProfile(): Promise<void> {
         try {
+            this.beginGlobalLoading();
             const fetchedProfile = await fetchProfile();
             const normalizedProfile = this.normalizeProfile(fetchedProfile);
             this.applyProfile(normalizedProfile);
         } catch (error) {
             console.error("Failed to load profile", error);
+        } finally {
+            this.endGlobalLoading();
         }
     }
 
@@ -110,6 +115,7 @@ export class ProfilePage extends Page {
         }
 
         try {
+            this.beginGlobalLoading();
             this.form.setAvatarUploading(true);
             const avatarPath = await uploadProfileAvatar(file);
             const avatarUrl = avatarPath || null;
@@ -122,6 +128,7 @@ export class ProfilePage extends Page {
             console.error("Failed to upload avatar", error);
         } finally {
             this.form.setAvatarUploading(false);
+            this.endGlobalLoading();
         }
     }
 
@@ -132,9 +139,21 @@ export class ProfilePage extends Page {
         birthDate: string;
         gender: ProfileData["gender"];
     }): Promise<void> {
-        try {
-            this.form.setSubmitting(true);
+        const errors = validateProfileForm({
+            firstName: values.firstName,
+            lastName: values.lastName,
+            middleName: values.middleName,
+            birthDate: values.birthDate,
+            gender: values.gender ?? "",
+        });
+        this.form.setErrors(errors);
+        if (errors.length > 0) {
+            return;
+        }
 
+        this.beginGlobalLoading();
+        this.form.setSubmitting(true);
+        try {
             const updatedProfile = await updateProfile({
                 firstName: values.firstName,
                 lastName: values.lastName,
@@ -145,10 +164,12 @@ export class ProfilePage extends Page {
 
             const normalizedProfile = this.normalizeProfile(updatedProfile);
             this.applyProfile(normalizedProfile);
+            this.form.clearErrors();
         } catch (error) {
             console.error("Failed to update profile", error);
         } finally {
             this.form.setSubmitting(false);
+            this.endGlobalLoading();
         }
     }
 
@@ -184,6 +205,7 @@ export class ProfilePage extends Page {
             avatarUrl: resolvedAvatar,
         });
 
+        this.form.clearErrors();
         this.form.setProfile({
             fullName,
             email,
@@ -231,4 +253,24 @@ export class ProfilePage extends Page {
 
         return initials || "--";
     }
+
+    private beginGlobalLoading(): void {
+        this.globalLoadingDepth += 1;
+        this.updateLayoutLoadingState();
+    }
+
+    private endGlobalLoading(): void {
+        if (this.globalLoadingDepth === 0) {
+            return;
+        }
+        this.globalLoadingDepth -= 1;
+        this.updateLayoutLoadingState();
+    }
+
+    private updateLayoutLoadingState(): void {
+        if (this.layout instanceof MainLayout) {
+            this.layout.setLoading(this.globalLoadingDepth > 0);
+        }
+    }
 }
+

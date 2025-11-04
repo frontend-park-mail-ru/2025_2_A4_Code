@@ -81,23 +81,11 @@ export class Router {
             return;
         }
 
-        if (path === "/404") {
-            console.error("Not found");
-            return;
-        }
-
-        const notFoundRoute = this.findRoute("/404");
-        if (notFoundRoute && this.onNavigateCallback) {
-            const { config, params } = notFoundRoute;
-            const layout = this.getOrCreateLayout(config);
-            if (!options.skipHistory) {
-                window.history.replaceState({}, "", "/404");
-            }
-            this.onNavigateCallback({ path: "/404", layout, params, config });
-            return;
-        }
-
-        console.error("Router: route not found");
+        // fallback to appropriate route
+        const status = authManager.getStatus();
+        const target = status === "authenticated" ? "/inbox" : "/auth";
+        console.warn(`Router: route not found, redirecting to ${target}`);
+        await this.navigate(target, { replace: true, skipHistory: options.skipHistory });
     }
 
     public getQueryParams(): URLSearchParams {

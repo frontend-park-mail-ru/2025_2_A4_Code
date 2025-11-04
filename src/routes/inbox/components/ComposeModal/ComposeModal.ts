@@ -2,10 +2,9 @@ import { Component } from "../../../../shared/base/Component";
 import { ButtonComponent } from "../../../../shared/components/Button/Button";
 import template from "./ComposeModal.hbs";
 import "./ComposeModal.scss";
+import { validateRecipientAddress } from "../../../../utils";
 
 type Props = {
-    avatarUrl?: string | null;
-    avatarLabel?: string;
     onClose?: () => void;
     onSend?: (data: { to: string; subject: string; body: string }) => void;
     onAttachFile?: () => void;
@@ -20,7 +19,9 @@ export class ComposeModal extends Component<Props> {
     private readonly attachButton: ButtonComponent;
     private readonly draftButton: ButtonComponent;
     private readonly sendButton: ButtonComponent;
+
     private toInput: HTMLInputElement | null = null;
+    private toErrorEl: HTMLElement | null = null;
     private subjectInput: HTMLInputElement | null = null;
     private bodyTextarea: HTMLTextAreaElement | null = null;
 
@@ -35,7 +36,7 @@ export class ComposeModal extends Component<Props> {
         });
 
         this.draftButton = new ButtonComponent({
-            label: "Сохранить в черновики",
+            label: "Сохранить черновик",
             variant: "link",
             icon: '<img src="/img/modal-to-draft.svg" alt="" aria-hidden="true" />',
             onClick: () => this.handleSaveDraft(),
@@ -49,10 +50,7 @@ export class ComposeModal extends Component<Props> {
     }
 
     protected renderTemplate(): string {
-        return template({
-            avatarUrl: this.props.avatarUrl ?? null,
-            avatarLabel: this.props.avatarLabel ?? "",
-        });
+        return template({});
     }
 
     protected afterRender(): void {
@@ -67,36 +65,48 @@ export class ComposeModal extends Component<Props> {
         const closeBtn = root.querySelector('[data-action="close"]') as HTMLElement | null;
         closeBtn?.addEventListener("click", () => this.props.onClose?.());
 
-        const attachSlot = root.querySelector('[data-slot="attach"]') as HTMLElement | null;
-        if (attachSlot) {
-            this.attachButton.render();
-            this.attachButton.mount(attachSlot).then();
-        }
-
-        const draftSlot = root.querySelector('[data-slot="draft"]') as HTMLElement | null;
-        if (draftSlot) {
-            this.draftButton.render();
-            this.draftButton.mount(draftSlot).then();
-        }
-
-        const sendSlot = root.querySelector('[data-slot="send"]') as HTMLElement | null;
-        if (sendSlot) {
-            this.sendButton.render();
-            this.sendButton.mount(sendSlot).then();
-        }
+        this.mountButton(root, "attach", this.attachButton);
+        this.mountButton(root, "draft", this.draftButton);
+        this.mountButton(root, "send", this.sendButton);
 
         this.toInput = root.querySelector('[data-field="to"]') as HTMLInputElement | null;
+        this.toErrorEl = root.querySelector('[data-error="to"]') as HTMLElement | null;
         this.subjectInput = root.querySelector('[data-field="subject"]') as HTMLInputElement | null;
         this.bodyTextarea = root.querySelector('[data-field="body"]') as HTMLTextAreaElement | null;
 
+        if (this.toInput) {
+            this.toInput.addEventListener("input", () => this.setRecipientError(null));
+        }
+        if (this.toErrorEl) {
+            this.toErrorEl.classList.remove("compose-modal__error--visible");
+            this.toErrorEl.textContent = "";
+        }
+
         this.applyInitialValues();
         this.focusInitialField();
+    }
+
+    private mountButton(root: HTMLElement, slotName: string, button: ButtonComponent): void {
+        const slot = root.querySelector(`[data-slot="${slotName}"]`) as HTMLElement | null;
+        if (!slot) {
+            return;
+        }
+        button.render();
+        button.mount(slot).then();
     }
 
     private handleSend(): void {
         const to = this.toInput?.value ?? "";
         const subject = this.subjectInput?.value ?? "";
         const body = this.bodyTextarea?.value ?? "";
+
+        const recipientError = validateRecipientAddress(to);
+        this.setRecipientError(recipientError);
+        if (recipientError) {
+            this.toInput?.focus();
+            return;
+        }
+
         this.props.onSend?.({ to, subject, body });
     }
 
@@ -104,6 +114,7 @@ export class ComposeModal extends Component<Props> {
         if (this.toInput) {
             this.toInput.value = this.props.initialTo ?? "";
         }
+        this.setRecipientError(null);
 
         if (this.subjectInput) {
             this.subjectInput.value = this.props.initialSubject ?? "";
@@ -141,11 +152,25 @@ export class ComposeModal extends Component<Props> {
         this.props.onSaveDraft?.();
     }
 
+    private setRecipientError(message: string | null): void {
+        if (!this.toErrorEl) {
+            return;
+        }
+        if (message) {
+            this.toErrorEl.textContent = message;
+            this.toErrorEl.classList.add("compose-modal__error--visible");
+        } else {
+            this.toErrorEl.textContent = "";
+            this.toErrorEl.classList.remove("compose-modal__error--visible");
+        }
+    }
+
     public async unmount(): Promise<void> {
         await this.attachButton.unmount();
         await this.draftButton.unmount();
         await this.sendButton.unmount();
         this.toInput = null;
+        this.toErrorEl = null;
         this.subjectInput = null;
         this.bodyTextarea = null;
         await super.unmount();

@@ -58,6 +58,14 @@ type SendMessageRequest = {
     files: MessageFileDto[];
 };
 
+type ReplyMessageRequest = {
+    root_message_id: number;
+    topic: string;
+    text: string;
+    thread_root: number;
+    receivers: Array<{ email: string }>;
+    files: MessageFileDto[];
+};
 export type InboxSummary = {
     total: number;
     unread: number;
@@ -71,9 +79,17 @@ export type SendMessagePayload = {
     body: string;
 };
 
+export type ReplyMessagePayload = {
+    to: string;
+    subject: string;
+    body: string;
+    rootMessageId: number;
+    threadRoot: number;
+};
 const INBOX_ENDPOINT = "/messages/inbox";
 const MESSAGE_ENDPOINT = (id: string) => `/messages/${id}`;
 const SEND_ENDPOINT = "/messages/send";
+const REPLY_ENDPOINT = "/messages/reply";
 const SENDER_FALLBACK = "Неизвестный отправитель";
 
 export async function fetchInboxMessages(): Promise<InboxSummary> {
@@ -105,6 +121,27 @@ export async function sendMessage(payload: SendMessagePayload): Promise<void> {
     };
 
     await apiService.request<ApiResponse<unknown>>(SEND_ENDPOINT, {
+        method: "POST",
+        body: requestBody,
+    });
+}
+
+export async function replyToMessage(payload: ReplyMessagePayload): Promise<void> {
+    const trimmedTo = payload.to.trim();
+    if (!trimmedTo) {
+        throw new Error("Recipient email is required");
+    }
+
+    const requestBody: ReplyMessageRequest = {
+        root_message_id: payload.rootMessageId,
+        topic: payload.subject.trim(),
+        text: payload.body,
+        thread_root: payload.threadRoot,
+        receivers: [{ email: trimmedTo }],
+        files: [],
+    };
+
+    await apiService.request<ApiResponse<unknown>>(REPLY_ENDPOINT, {
         method: "POST",
         body: requestBody,
     });

@@ -17,7 +17,7 @@ export class RegisterPage extends Page {
 
         this.authButton = new ButtonComponent({
             variant: "secondary",
-            label: "Уже есть аккаунт?",
+            label: "У меня уже есть аккаунт",
             onClick: () => this.router.navigate("/auth"),
             fullWidth: true,
         });
@@ -60,10 +60,11 @@ export class RegisterPage extends Page {
         passwordRepeat: string;
     }) {
         const errors = validateRegisterForm(payload);
+        this.form.applyErrors(errors);
         if (errors.length > 0) {
-            console.warn("Ошибка проверки формы:", errors[0].message);
             return;
         }
+        this.form.clearErrors();
 
         const requestPayload: RegisterPayload = {
             name: payload.name.trim(),
@@ -74,12 +75,10 @@ export class RegisterPage extends Page {
         };
 
         try {
-            const response = await register(requestPayload);
-            console.log("Регистрация выполнена", response.message);
+            await register(requestPayload);
             this.router.navigate("/auth");
         } catch (error) {
-            console.error("Ошибка при регистрации", error);
+            console.error("Failed to register", error);
         }
     }
 }
-

@@ -8,6 +8,8 @@ export class MainLayout extends Layout {
     private sidebarElement: HTMLElement | null = null;
     private contentBackgroundEnabled = true;
     private sidebarWidth: string | null = null;
+    private loadingElement: HTMLElement | null = null;
+    private isLoading = false;
 
     protected renderTemplate(): string {
         return template({});
@@ -17,8 +19,10 @@ export class MainLayout extends Layout {
         const element = super.render(slots);
         this.mainElement = element.querySelector(".main-layout__main") as HTMLElement | null;
         this.sidebarElement = element.querySelector(".main-layout__sidebar") as HTMLElement | null;
+        this.loadingElement = element.querySelector(".main-layout__loading") as HTMLElement | null;
         this.applyMainBackground();
         this.applySidebarWidth();
+        this.applyLoadingState();
         this.updateModalState();
         this.triggerTransition();
         return element;
@@ -44,6 +48,11 @@ export class MainLayout extends Layout {
         this.applySidebarWidth();
     }
 
+    public setLoading(loading: boolean): void {
+        this.isLoading = loading;
+        this.applyLoadingState();
+    }
+
     public triggerTransition(): void {
         if (!this.mainElement) return;
         this.mainElement.classList.remove("main-layout__main--transition");
@@ -64,6 +73,11 @@ export class MainLayout extends Layout {
         } else {
             this.sidebarElement.style.removeProperty("--main-layout-sidebar-width");
         }
+    }
+
+    private applyLoadingState(): void {
+        if (!this.loadingElement) return;
+        this.loadingElement.classList.toggle("main-layout__loading--active", this.isLoading);
     }
 
     private updateModalState(): void {

@@ -48,7 +48,7 @@ export class AvatarButtonComponent extends Component<Props> {
             if (typeof newProps.imageUrl !== 'undefined') {
                 if (newProps.imageUrl) {
                     if (!img && this.buttonEl) {
-                        this.buttonEl.innerHTML = `<img class="header__avatar header__avatar--image" src="${newProps.imageUrl}" alt="${newProps.label ?? this.props.label ?? ''}" />`;
+                        this.buttonEl.innerHTML = `<img class="header__avatar header__avatar--image" src="${newProps.imageUrl}" alt="${newProps.label ?? this.props.label ?? ''}" loading="lazy" decoding="async" />`;
                     } else if (img) {
                         img.src = newProps.imageUrl;
                         img.alt = newProps.label ?? this.props.label ?? '';

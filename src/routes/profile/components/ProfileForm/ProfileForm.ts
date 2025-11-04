@@ -4,6 +4,7 @@ import { RadioGroupComponent } from "../../../../shared/components/RadioGroup/Ra
 import { ButtonComponent } from "../../../../shared/components/Button/Button";
 import template from "./ProfileForm.hbs";
 import "./ProfileForm.scss";
+import type { FieldError, ProfileFormFields } from "../../../../utils";
 
 type Gender = "male" | "female" | "";
 
@@ -43,6 +44,7 @@ export class ProfileFormComponent extends Component<Props> {
     private fileInput: HTMLInputElement | null = null;
     private initialValues: EditableValues;
     private currentValues: EditableValues;
+    private fieldErrors: Partial<Record<keyof EditableValues, string>> = {};
 
     constructor(props: Props) {
         super({
@@ -98,8 +100,8 @@ export class ProfileFormComponent extends Component<Props> {
         });
 
         this.uploadButton = new ButtonComponent({
-            label: "Сменить аватар",
-            variant: "link",
+            label: "Загрузить фото",
+            variant: "secondary",
             onClick: () => this.handleUploadClick(),
         });
 
@@ -151,6 +153,7 @@ export class ProfileFormComponent extends Component<Props> {
 
         this.initialValues = this.pickEditableValues(this.props);
         this.currentValues = { ...this.initialValues };
+        this.clearErrors();
         this.setFieldValues(this.currentValues);
         this.updateFullNameFromValues(this.currentValues);
         this.updateAvatar();
@@ -243,6 +246,7 @@ export class ProfileFormComponent extends Component<Props> {
             };
         }
 
+        this.clearFieldError(field);
         this.updateFullNameFromValues(this.currentValues);
         this.updateButtons();
     }
@@ -319,9 +323,9 @@ export class ProfileFormComponent extends Component<Props> {
     private updateUploadButton(): void {
         const isUploading = Boolean(this.props.isAvatarUploading);
         this.uploadButton.setProps({
-            label: isUploading ? "Загрузка..." : "Сменить аватар",
+            label: isUploading ? "Загрузка..." : "Загрузить фото",
             disabled: isUploading,
-            variant: "link",
+            variant: "secondary",
             onClick: () => this.handleUploadClick(),
         });
     }
@@ -344,6 +348,50 @@ export class ProfileFormComponent extends Component<Props> {
             variant: "secondary",
             onClick: () => this.handleCancel(),
         });
+    }
+
+    public setErrors(errors: FieldError<keyof ProfileFormFields>[]): void {
+        const map = new Map<keyof ProfileFormFields, string>();
+        errors.forEach((error) => map.set(error.field, error.message));
+        this.setFieldError("firstName", map.get("firstName") ?? null);
+        this.setFieldError("lastName", map.get("lastName") ?? null);
+        this.setFieldError("middleName", map.get("middleName") ?? null);
+        this.setFieldError("birthDate", map.get("birthDate") ?? null);
+        this.setFieldError("gender", map.get("gender") ?? null);
+    }
+
+    public clearErrors(): void {
+        this.setFieldError("firstName", null);
+        this.setFieldError("lastName", null);
+        this.setFieldError("middleName", null);
+        this.setFieldError("birthDate", null);
+        this.setFieldError("gender", null);
+    }
+
+    private setFieldError(field: keyof EditableValues, message: string | null): void {
+        this.fieldErrors[field] = message ?? undefined;
+        switch (field) {
+            case "firstName":
+                this.firstNameField.setError(message);
+                break;
+            case "lastName":
+                this.lastNameField.setError(message);
+                break;
+            case "middleName":
+                this.middleNameField.setError(message);
+                break;
+            case "birthDate":
+                this.birthDateField.setError(message);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private clearFieldError(field: keyof EditableValues): void {
+        if (this.fieldErrors[field]) {
+            this.setFieldError(field, null);
+        }
     }
 
     private handleUploadClick(): void {
@@ -420,3 +468,5 @@ export class ProfileFormComponent extends Component<Props> {
         return initials || "--";
     }
 }
+
+

@@ -14,7 +14,7 @@
   <div class="mail-view__summary">
     <div class="mail-view__avatar">
       {{#if avatarUrl}}
-        <img src="{{avatarUrl}}" alt="{{from}}" />
+        <img src="{{avatarUrl}}" alt="{{from}}" loading="lazy" decoding="async" />
       {{else}}
         <span>{{initials}}</span>
       {{/if}}

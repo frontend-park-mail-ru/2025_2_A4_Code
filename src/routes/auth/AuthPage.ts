@@ -1,10 +1,10 @@
-import {Page} from "../../shared/base/Page";
-import {AuthFormComponent} from "./components";
-import {AUTH_PAGE_TEXTS} from "./constants";
-import {ButtonComponent} from "../../shared/components/Button/Button";
-import {login} from "./api";
-import {LoginPayload} from "./api/authApi";
-import {authManager} from "../../infra";
+import { Page } from "../../shared/base/Page";
+import { AuthFormComponent } from "./components";
+import { AUTH_PAGE_TEXTS } from "./constants";
+import { ButtonComponent } from "../../shared/components/Button/Button";
+import { login } from "./api";
+import { LoginPayload } from "./api/authApi";
+import { authManager } from "../../infra";
 import "./views/AuthPage.scss";
 
 export class AuthPage extends Page {
@@ -56,17 +56,17 @@ export class AuthPage extends Page {
 
     private async handleSubmit(payload: LoginPayload) {
         try {
-            const user = await login(payload);
-            console.log("Успешная авторизация", user);
+            await login(payload);
             authManager.setAuthenticated(true);
+            this.form.clearErrors();
             this.router.navigate("/inbox");
         } catch (error) {
             authManager.setAuthenticated(false);
-            console.error("Ошибка авторизации", error);
+            console.error("Failed to login", error);
         }
     }
 
     private handleForgotPassword() {
-        console.log("Напоминание пароля пока не реализовано");
+        console.log("Reset password flow is not implemented yet.");
     }
 }

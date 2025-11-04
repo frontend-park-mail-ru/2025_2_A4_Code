@@ -1,8 +1,8 @@
 .mail-item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto minmax(160px, 1fr) minmax(200px, 1.2fr) auto;
   align-items: center;
+  column-gap: 16px;
   padding: 12px 16px;
   cursor: pointer;
   transition: background .12s ease;
@@ -16,6 +16,7 @@
     align-items: center;
     flex-direction: row;
     gap: 10px;
+    flex-shrink: 0;
   }
 
   &--unread {
@@ -54,7 +55,7 @@
   }
 
   &__from {
-
+    min-width: 0;
     font-weight: 700;
     color: #1f2937;
     white-space: nowrap;
@@ -63,23 +64,27 @@
   }
 
   &__subject {
+    align-self: center;
     font-weight: 600;
     color: #1f2937;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
   }
 
   &__preview {
+    align-self: center;
     color: #6b7280;
     font-size: 16px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
   }
 
   &__time {
-    align-self: flex-end;
+    align-self: center;
     font-size: 12px;
     color: #94a3b8;
   }

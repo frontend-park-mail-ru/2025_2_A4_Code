@@ -1,7 +1,7 @@
 <div class="profile-sidebar">
   <div class="profile-sidebar__avatar">
     {{#if avatarUrl}}
-      <img src="{{avatarUrl}}" alt="{{name}}" />
+      <img src="{{avatarUrl}}" alt="{{name}}" loading="lazy" decoding="async" />
     {{else}}
       <span>{{initials}}</span>
     {{/if}}

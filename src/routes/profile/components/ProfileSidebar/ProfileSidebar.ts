@@ -39,7 +39,7 @@ export class ProfileSidebarComponent extends Component<Props> {
         });
 
         this.backButton = new ButtonComponent({
-            label: "Вернуться во входящие",
+            label: "К письмам",
             variant: "link",
             icon: '<img src="/img/arrow-left.svg" alt="" aria-hidden="true" />',
             onClick: () => this.props.onNavigateInbox?.(),

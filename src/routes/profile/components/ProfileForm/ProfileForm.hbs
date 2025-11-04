@@ -4,7 +4,7 @@
   <div class="profile-form__content">
     <div class="profile-form__avatar">
       {{#if avatarUrl}}
-        <img src="{{avatarUrl}}" alt="{{fullName}}" />
+        <img src="{{avatarUrl}}" alt="{{fullName}}" loading="lazy" decoding="async" />
       {{else}}
         <span>{{initials}}</span>
       {{/if}}

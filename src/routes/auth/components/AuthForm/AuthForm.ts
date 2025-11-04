@@ -1,9 +1,10 @@
-import {Component} from "../../../../shared/base/Component";
+import { Component } from "../../../../shared/base/Component";
 import template from "./AuthForm.hbs";
 import "./AuthForm.scss";
-import {AUTH_PAGE_TEXTS} from "../../constants";
-import {InputFieldComponent} from "../../../../shared/components/InputField/InputField";
-import {ButtonComponent} from "../../../../shared/components/Button/Button";
+import { AUTH_PAGE_TEXTS } from "../../constants";
+import { InputFieldComponent } from "../../../../shared/components/InputField/InputField";
+import { ButtonComponent } from "../../../../shared/components/Button/Button";
+import { FieldError, validateLoginForm } from "../../../../utils";
 
 type SubmitPayload = {
     login: string;
@@ -29,6 +30,7 @@ export class AuthFormComponent extends Component<Props> {
             autocomplete: "username",
             required: true,
             variant: "underline",
+            onInput: () => this.clearFieldError("login"),
         });
 
         this.passwordField = new InputFieldComponent({
@@ -38,6 +40,7 @@ export class AuthFormComponent extends Component<Props> {
             autocomplete: "current-password",
             required: true,
             variant: "underline",
+            onInput: () => this.clearFieldError("password"),
         });
 
         this.submitButton = new ButtonComponent({
@@ -83,10 +86,39 @@ export class AuthFormComponent extends Component<Props> {
 
         form?.addEventListener('submit', (event) => {
             event.preventDefault();
-            this.props.onSubmit?.({
+            const payload = {
                 login: this.loginField.getValue(),
                 password: this.passwordField.getValue(),
-            });
+            };
+            const errors = validateLoginForm(payload);
+            this.applyErrors(errors);
+            if (errors.length === 0) {
+                this.props.onSubmit?.(payload);
+            }
         });
+    }
+
+    public applyErrors(errors: FieldError<keyof SubmitPayload>[]): void {
+        const map = new Map<keyof SubmitPayload, string>();
+        errors.forEach((error) => map.set(error.field, error.message));
+        this.setFieldError("login", map.get("login") ?? null);
+        this.setFieldError("password", map.get("password") ?? null);
+    }
+
+    public clearErrors(): void {
+        this.setFieldError("login", null);
+        this.setFieldError("password", null);
+    }
+
+    private setFieldError(field: keyof SubmitPayload, message: string | null): void {
+        if (field === "login") {
+            this.loginField.setError(message);
+        } else if (field === "password") {
+            this.passwordField.setError(message);
+        }
+    }
+
+    private clearFieldError(field: keyof SubmitPayload): void {
+        this.setFieldError(field, null);
     }
 }

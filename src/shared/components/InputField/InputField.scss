@@ -1,8 +1,10 @@
 .input-field {
+  position: relative;
   display: flex;
   flex-direction: column;
   font-family: 'Nunito Sans', sans-serif;
   color: #000000;
+  padding-bottom: 20px;
 
   &__label {
     font-weight: 600;
@@ -29,9 +31,14 @@
   }
 
   &__error {
-    margin-top: 8px;
-    font-size: 14px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    font-size: 16px;
     color: #e65151;
+    min-height: 16px;
+    line-height: 1.2;
+    transition: opacity .15s ease;
   }
 }
 
@@ -49,6 +56,10 @@
 
 .input-field--underline {
   gap: 6px;
+  padding-bottom: 18px;
+  .input-field__error {
+    min-height: 14px;
+  }
 
   .input-field__label {
     font-size: 14px;

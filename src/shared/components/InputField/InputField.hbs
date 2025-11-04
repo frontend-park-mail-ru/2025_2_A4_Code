@@ -15,7 +15,5 @@
     {{#if hint}}
         <span class="input-field__hint">{{hint}}</span>
     {{/if}}
-    {{#if error}}
-        <span class="input-field__error">{{error}}</span>
-    {{/if}}
+    <span class="input-field__error" data-error {{#unless error}}hidden{{/unless}}>{{error}}</span>
 </label>

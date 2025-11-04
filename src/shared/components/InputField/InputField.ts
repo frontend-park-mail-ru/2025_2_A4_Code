@@ -13,6 +13,7 @@ type Props = {
     autocomplete?: string;
     onInput?: (value: string) => void;
     variant?: "filled" | "underline";
+    hint?: string;
 };
 
 export class InputFieldComponent extends Component<Props> {
@@ -58,5 +59,26 @@ export class InputFieldComponent extends Component<Props> {
     public getValue(): string {
         const input = this.element?.querySelector('[data-input]') as HTMLInputElement | null;
         return input?.value ?? this.props.value ?? "";
+    }
+
+    public setError(message: string | null): void {
+        this.props = { ...this.props, error: message ?? undefined };
+        const root = this.element as HTMLElement | null;
+        if (!root) {
+            return;
+        }
+
+        const errorEl = root.querySelector("[data-error]") as HTMLElement | null;
+        if (!errorEl) {
+            return;
+        }
+
+        if (message && message.trim()) {
+            errorEl.textContent = message;
+            errorEl.hidden = false;
+        } else {
+            errorEl.textContent = "";
+            errorEl.hidden = true;
+        }
     }
 }

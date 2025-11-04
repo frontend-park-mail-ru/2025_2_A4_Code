@@ -4,6 +4,7 @@ import "./RegisterForm.scss";
 import { InputFieldComponent } from "../../../../shared/components/InputField/InputField";
 import { RadioGroupComponent } from "../../../../shared/components/RadioGroup/RadioGroup";
 import { ButtonComponent } from "../../../../shared/components/Button/Button";
+import type { FieldError, RegisterFormFields } from "../../../../utils";
 
 type SubmitPayload = {
     name: string;
@@ -19,13 +20,13 @@ type Props = {
 };
 
 export class RegisterFormComponent extends Component<Props> {
-    private nameField: InputFieldComponent;
-    private loginField: InputFieldComponent;
-    private birthdateField: InputFieldComponent;
-    private genderGroup: RadioGroupComponent;
-    private passwordField: InputFieldComponent;
-    private passwordRepeatField: InputFieldComponent;
-    private submitButton: ButtonComponent;
+    private readonly nameField: InputFieldComponent;
+    private readonly loginField: InputFieldComponent;
+    private readonly birthdateField: InputFieldComponent;
+    private readonly genderGroup: RadioGroupComponent;
+    private readonly passwordField: InputFieldComponent;
+    private readonly passwordRepeatField: InputFieldComponent;
+    private readonly submitButton: ButtonComponent;
 
     constructor(props: Props = {}) {
         super(props);
@@ -36,19 +37,22 @@ export class RegisterFormComponent extends Component<Props> {
             autocomplete: "name",
             required: true,
             variant: "underline",
+            onInput: () => this.clearFieldError("name"),
         });
 
         this.loginField = new InputFieldComponent({
             name: "login",
-            placeholder: "логин@flintmail.ru",
+            placeholder: "login@flintmail.ru",
             required: true,
             variant: "underline",
+            onInput: () => this.clearFieldError("login"),
         });
 
         this.birthdateField = new InputFieldComponent({
             name: "birthdate",
             type: "date",
             variant: "underline",
+            onInput: () => this.clearFieldError("birthdate"),
         });
 
         this.genderGroup = new RadioGroupComponent({
@@ -67,6 +71,7 @@ export class RegisterFormComponent extends Component<Props> {
             required: true,
             autocomplete: "new-password",
             variant: "underline",
+            onInput: () => this.clearFieldError("password"),
         });
 
         this.passwordRepeatField = new InputFieldComponent({
@@ -76,6 +81,7 @@ export class RegisterFormComponent extends Component<Props> {
             required: true,
             autocomplete: "new-password",
             variant: "underline",
+            onInput: () => this.clearFieldError("passwordRepeat"),
         });
 
         this.submitButton = new ButtonComponent({
@@ -109,15 +115,59 @@ export class RegisterFormComponent extends Component<Props> {
         const form = this.element as HTMLFormElement | null;
         form?.addEventListener("submit", (event) => {
             event.preventDefault();
-            this.props.onSubmit?.({
+            const payload: SubmitPayload = {
                 name: this.nameField.getValue(),
                 login: this.loginField.getValue(),
                 birthdate: this.birthdateField.getValue(),
                 gender: this.genderGroup.getValue(),
                 password: this.passwordField.getValue(),
                 passwordRepeat: this.passwordRepeatField.getValue(),
-            });
+            };
+            this.props.onSubmit?.(payload);
         });
     }
-}
 
+    public applyErrors(errors: FieldError<keyof RegisterFormFields>[]): void {
+        const map = new Map<keyof RegisterFormFields, string>();
+        errors.forEach((error) => map.set(error.field, error.message));
+        this.setFieldError("name", map.get("name") ?? null);
+        this.setFieldError("login", map.get("login") ?? null);
+        this.setFieldError("birthdate", map.get("birthdate") ?? null);
+        this.setFieldError("password", map.get("password") ?? null);
+        this.setFieldError("passwordRepeat", map.get("passwordRepeat") ?? null);
+    }
+
+    public clearErrors(): void {
+        this.setFieldError("name", null);
+        this.setFieldError("login", null);
+        this.setFieldError("birthdate", null);
+        this.setFieldError("password", null);
+        this.setFieldError("passwordRepeat", null);
+    }
+
+    private setFieldError(field: keyof RegisterFormFields, message: string | null): void {
+        switch (field) {
+            case "name":
+                this.nameField.setError(message);
+                break;
+            case "login":
+                this.loginField.setError(message);
+                break;
+            case "birthdate":
+                this.birthdateField.setError(message);
+                break;
+            case "password":
+                this.passwordField.setError(message);
+                break;
+            case "passwordRepeat":
+                this.passwordRepeatField.setError(message);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private clearFieldError(field: keyof RegisterFormFields): void {
+        this.setFieldError(field, null);
+    }
+}
