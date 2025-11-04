@@ -1,12 +1,13 @@
-import {Component} from "../../base/Component";
+import { Component } from "../../base/Component";
 import template from "./MailList.hbs";
 import "./MailList.scss";
-import {MailItemComponent} from "../../components/MailItem/MailItem";
-import {Mail} from "../../../types/mail";
+import { MailItemComponent } from "../../components/MailItem/MailItem";
+import { Mail } from "../../../types/mail";
 
 type Props = {
     items?: Mail[];
     onOpen?: (id: string) => void;
+    emptyMessage?: string;
 };
 
 export class MailListComponent extends Component<Props> {
@@ -16,11 +17,11 @@ export class MailListComponent extends Component<Props> {
         super({
             items: props.items ?? [],
             onOpen: props.onOpen,
+            emptyMessage: props.emptyMessage ?? "Писем пока нет",
         });
     }
 
     protected renderTemplate(): string {
-        const items = this.props.items ?? [];
         return template({});
     }
 
@@ -29,16 +30,25 @@ export class MailListComponent extends Component<Props> {
     }
 
     private renderItems(): void {
-        const container = this.element?.querySelector('.mail-list__items') as HTMLElement | null;
+        const container = this.element?.querySelector(".mail-list__items") as HTMLElement | null;
         if (!container) return;
 
         for (const [, child] of this.childItems) {
             child.unmount();
         }
-        container.innerHTML = '';
+        container.innerHTML = "";
         this.childItems.clear();
 
         const items = this.props.items ?? [];
+
+        if (items.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "mail-list__empty";
+            empty.textContent = this.props.emptyMessage ?? "Писем пока нет";
+            container.appendChild(empty);
+            return;
+        }
+
         for (const mail of items) {
             const item = new MailItemComponent({
                 mail,
@@ -51,10 +61,12 @@ export class MailListComponent extends Component<Props> {
     }
 
     public setProps(newProps: Partial<Props>): void {
-        const previous = { ...(this.props as Props) };
         this.props = { ...(this.props as Props), ...newProps };
 
-        if (newProps.items && JSON.stringify(previous.items) !== JSON.stringify(newProps.items)) {
+        if (
+            Object.prototype.hasOwnProperty.call(newProps, "items") ||
+            Object.prototype.hasOwnProperty.call(newProps, "emptyMessage")
+        ) {
             this.renderItems();
         }
     }

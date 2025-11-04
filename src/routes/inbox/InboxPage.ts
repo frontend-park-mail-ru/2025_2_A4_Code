@@ -1,15 +1,15 @@
-import {HeaderComponent} from "../../shared/widgets/Header/Header";
-import {Page} from "../../shared/base/Page";
-import {SidebarComponent} from "../../shared/widgets/Sidebar/Sidebar";
-import {Mail, MailDetail} from "../../types/mail";
-import {MailListComponent} from "../../shared/widgets/MailList/MailList";
-import {Component} from "../../shared/base/Component";
-import {MailViewComponent} from "./components/MailView/MailView";
-import {ComposeModal} from "./components/ComposeModal/ComposeModal";
-import {fetchInboxMessages, fetchMessageById} from "./api/mailApi";
-import {MainLayout} from "../../app/components/MainLayout/MainLayout";
+﻿import { HeaderComponent } from "../../shared/widgets/Header/Header";
+import { Page } from "../../shared/base/Page";
+import { SidebarComponent } from "../../shared/widgets/Sidebar/Sidebar";
+import { Mail, MailDetail } from "../../types/mail";
+import { MailListComponent } from "../../shared/widgets/MailList/MailList";
+import { Component } from "../../shared/base/Component";
+import { MailViewComponent } from "./components/MailView/MailView";
+import { ComposeModal } from "./components/ComposeModal/ComposeModal";
+import { fetchInboxMessages, fetchMessageById, sendMessage } from "./api/mailApi";
+import { MainLayout } from "../../app/components/MainLayout/MainLayout";
 import "./views/InboxPage.scss";
-import template from "./views/InboxPage.hbs"
+import template from "./views/InboxPage.hbs";
 
 type InboxPageParams = {
     messageId?: string;
@@ -20,6 +20,8 @@ export class InboxPage extends Page {
     private mails: Mail[] = [];
     private messageId?: string;
     private isLoading = false;
+    private totalMessages = 0;
+    private unreadMessages = 0;
 
     constructor(params: InboxPageParams = {}) {
         super();
@@ -44,6 +46,7 @@ export class InboxPage extends Page {
         this.mailList = new MailListComponent({
             items: this.mails,
             onOpen: (id) => this.handleOpenMail(id),
+            emptyMessage: "РџРёСЃРµРј РїРѕРєР° РЅРµС‚",
         });
 
         return { header, sidebar, main: this.mailList };
@@ -69,14 +72,17 @@ export class InboxPage extends Page {
     private async loadMessages(): Promise<void> {
         this.isLoading = true;
         try {
-            this.mails = await fetchInboxMessages();
+            const summary = await fetchInboxMessages();
+            this.mails = summary.items;
+            this.totalMessages = summary.total;
+            this.unreadMessages = summary.unread;
             this.mailList.setProps({ items: this.mails });
 
             if (this.messageId) {
                 await this.showMail(this.messageId, false);
             }
         } catch (error) {
-            console.error("Failed to load inbox messages", error);
+            console.error("РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ СЃРїРёСЃРѕРє РїРёСЃРµРј", error);
         } finally {
             this.isLoading = false;
         }
@@ -103,7 +109,7 @@ export class InboxPage extends Page {
             const view = this.createMailView(detail);
             await this.updateSlot("main", view);
         } catch (error) {
-            console.error("Failed to load message", error);
+            console.error("РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ РїРёСЃСЊРјРѕ", error);
         }
     }
 
@@ -115,6 +121,7 @@ export class InboxPage extends Page {
             time: mail.time,
             body: mail.body,
             avatarUrl: mail.avatarUrl ?? null,
+            fromEmail: mail.fromEmail ?? mail.from,
             onBack: () => this.showList(true),
         });
     }
@@ -132,10 +139,7 @@ export class InboxPage extends Page {
     private openCompose(): void {
         const modal = new ComposeModal({
             onClose: () => this.closeCompose(),
-            onSend: (data) => {
-                console.log("send", data);
-                this.closeCompose();
-            },
+            onSend: (data) => this.handleSendMail(data),
         });
         this.updateSlot("modal", modal).then();
     }
@@ -144,4 +148,32 @@ export class InboxPage extends Page {
         const empty = document.createElement("div");
         this.updateSlot("modal", empty).then();
     }
+
+    private async handleSendMail(data: { to: string; subject: string; body: string }): Promise<void> {
+        const recipient = data.to.trim();
+        if (!recipient) {
+            console.warn("РЈРєР°Р¶РёС‚Рµ Р°РґСЂРµСЃ РїРѕР»СѓС‡Р°С‚РµР»СЏ");
+            return;
+        }
+
+        try {
+            await sendMessage({
+                to: recipient,
+                subject: data.subject ?? "",
+                body: data.body ?? "",
+            });
+            this.closeCompose();
+            this.messageId = undefined;
+            await this.loadMessages();
+            this.router.navigate("/inbox").then();
+        } catch (error) {
+            console.error("РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РїСЂР°РІРёС‚СЊ РїРёСЃСЊРјРѕ", error);
+        }
+    }
 }
+
+
+
+
+
+

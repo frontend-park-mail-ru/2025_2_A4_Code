@@ -43,4 +43,12 @@ export class RadioGroupComponent extends Component<Props> {
         const checked = this.element?.querySelector('input[type="radio"]:checked') as HTMLInputElement | null;
         return checked?.value ?? this.props.value;
     }
+
+    public setValue(value: string | undefined): void {
+        this.props = { ...this.props, value };
+        const inputs = Array.from(this.element?.querySelectorAll('input[type="radio"]') ?? []) as HTMLInputElement[];
+        inputs.forEach((input) => {
+            input.checked = value !== undefined && input.value === value;
+        });
+    }
 }

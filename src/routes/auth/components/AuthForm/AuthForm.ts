@@ -58,7 +58,7 @@ export class AuthFormComponent extends Component<Props> {
         const loginSlot = this.element?.querySelector('[data-slot="login"]') as HTMLElement | null;
         const passwordSlot = this.element?.querySelector('[data-slot="password"]') as HTMLElement | null;
         const submitSlot = this.element?.querySelector('[data-slot="submit"]') as HTMLElement | null;
-        const form = this.element?.querySelector('[data-form]') as HTMLFormElement | null;
+        const form = this.element as HTMLFormElement | null;
 
         if (loginSlot) {
             this.loginField.render();

@@ -6,3 +6,4 @@ export const AUTH_PAGE_TEXTS = {
     forgotPasswordText: "Забыли пароль?",
     submitLoginButtonText: "Войти",
 };
+

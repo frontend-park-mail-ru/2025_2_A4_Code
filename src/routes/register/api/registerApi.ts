@@ -1,11 +1,5 @@
-import {apiService} from "../../../features/ApiServices/ApiService";
-import {mockRegisterResponse} from "../../auth/api/mocks";
-
-type ApiResponse<T> = {
-    status: string;
-    message?: string;
-    body: T;
-};
+import { apiService } from "../../../features/ApiServices/ApiService";
+import type { ApiResponse } from "../../../features/ApiServices/types";
 
 export type RegisterPayload = {
     name: string;
@@ -15,19 +9,12 @@ export type RegisterPayload = {
     password: string;
 };
 
-const REGISTER_ENDPOINT = "/auth/signup";
+type RegisterResponse = ApiResponse<unknown>;
 
-export async function register(payload: RegisterPayload): Promise<{ message: string }> {
-    try {
-        const response = await apiService.request<ApiResponse<Record<string, unknown>>>(REGISTER_ENDPOINT, {
-            method: "POST",
-            body: payload,
-        });
-        return { message: response.message ?? "You have successfully registered" };
-    } catch (error) {
-        if (mockRegisterResponse) {
-            return { message: mockRegisterResponse.message };
-        }
-        throw error;
-    }
+export async function register(payload: RegisterPayload): Promise<RegisterResponse> {
+    return apiService.request<RegisterResponse>("/auth/signup", {
+        method: "POST",
+        body: payload,
+        skipAuthRefresh: true,
+    });
 }

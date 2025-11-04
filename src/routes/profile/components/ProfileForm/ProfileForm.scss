@@ -45,9 +45,15 @@
     }
   }
 
-  &__upload .ui-button {
-    font-size: 15px;
-    color: #5163eb;
+  &__upload {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    .ui-button {
+      font-size: 15px;
+      color: #5163eb;
+    }
   }
 
   &__fields {
@@ -63,6 +69,10 @@
     width: 100%;
   }
 
+  &__field--half .ui-input {
+    max-width: 220px;
+  }
+
   &__actions {
     display: flex;
     gap: 16px;
@@ -70,7 +80,7 @@
     margin-top: 12px;
 
     .ui-button {
-      min-width: 180px;
+      min-width: 160px;
     }
   }
 

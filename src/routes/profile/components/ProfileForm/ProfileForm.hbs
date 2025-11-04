@@ -1,10 +1,10 @@
 <div class="profile-form">
-  <h1 class="profile-form__title">Личные данные</h1>
+  <h1 class="profile-form__title">Профиль</h1>
 
   <div class="profile-form__content">
     <div class="profile-form__avatar">
       {{#if avatarUrl}}
-        <img src="{{avatarUrl}}" alt="{{name}}" />
+        <img src="{{avatarUrl}}" alt="{{fullName}}" />
       {{else}}
         <span>{{initials}}</span>
       {{/if}}
@@ -17,7 +17,6 @@
       <div class="profile-form__field" data-slot="middleName"></div>
       <div class="profile-form__field profile-form__field--half" data-slot="birthDate"></div>
       <div class="profile-form__field profile-form__field--half" data-slot="gender"></div>
-      <div class="profile-form__field" data-slot="city"></div>
 
       <div class="profile-form__actions">
         <div data-slot="save"></div>

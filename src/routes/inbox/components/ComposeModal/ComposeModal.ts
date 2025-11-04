@@ -1,5 +1,5 @@
-import {Component} from "../../../../shared/base/Component";
-import {ButtonComponent} from "../../../../shared/components/Button/Button";
+import { Component } from "../../../../shared/base/Component";
+import { ButtonComponent } from "../../../../shared/components/Button/Button";
 import template from "./ComposeModal.hbs";
 import "./ComposeModal.scss";
 
@@ -21,21 +21,21 @@ export class ComposeModal extends Component<Props> {
         super(props);
 
         this.attachButton = new ButtonComponent({
-            label: "Attach",
+            label: "Прикрепить файл",
             variant: "link",
             icon: '<img src="/img/modal-attach-file.svg" alt="" aria-hidden="true" />',
             onClick: () => this.handleAttach(),
         });
 
         this.draftButton = new ButtonComponent({
-            label: "Draft",
+            label: "В черновики",
             variant: "link",
             icon: '<img src="/img/modal-to-draft.svg" alt="" aria-hidden="true" />',
             onClick: () => this.handleSaveDraft(),
         });
 
         this.sendButton = new ButtonComponent({
-            label: "Send",
+            label: "Отправить",
             variant: "secondary",
             onClick: () => this.handleSend(),
         });
@@ -44,7 +44,7 @@ export class ComposeModal extends Component<Props> {
     protected renderTemplate(): string {
         return template({
             avatarUrl: this.props.avatarUrl ?? null,
-            avatarLabel: this.props.avatarLabel ?? "TS",
+            avatarLabel: this.props.avatarLabel ?? "П",
         });
     }
 
@@ -104,3 +104,4 @@ export class ComposeModal extends Component<Props> {
         await super.unmount();
     }
 }
+

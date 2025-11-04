@@ -1,4 +1,4 @@
-export interface Mail {
+﻿export interface Mail {
     id: string;
     from: string;
     subject: string;
@@ -13,11 +13,12 @@ export interface MailAttachment {
     name: string;
     fileType: string;
     size: number;
-    storagePath: string;
+    storagePath?: string | null;
 }
 
 export interface MailDetail extends Mail {
     body: string;
     threadId?: string;
     attachments?: MailAttachment[];
+    fromEmail?: string;
 }

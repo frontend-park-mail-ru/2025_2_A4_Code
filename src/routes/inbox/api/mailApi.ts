@@ -1,14 +1,19 @@
-import {apiService} from "../../../features/ApiServices/ApiService";
-import {Mail, MailDetail} from "../../../types/mail";
-import {inboxMessagesMock, mailDetailsMock} from "./mocks";
+﻿import { apiService } from "../../../features/ApiServices/ApiService";
+import type { ApiResponse } from "../../../features/ApiServices/types";
+import type { Mail, MailAttachment, MailDetail } from "../../../types/mail";
 
-type InboxApiBody = {
+type InboxApiResponse = {
     message_total: number;
     message_unread: number;
-    messages: ApiMessage[];
+    messages: InboxMessageDto[];
+    pagination: {
+        has_next: boolean;
+        next_last_message_id?: number;
+        next_last_datetime?: string;
+    };
 };
 
-type ApiMessage = {
+type InboxMessageDto = {
     id: string;
     sender: {
         email: string;
@@ -21,58 +26,93 @@ type ApiMessage = {
     is_read: boolean;
 };
 
-type MessageDetailBody = {
+type MessageDetailsDto = {
     topic: string;
     text: string;
     datetime: string;
-    sender: ApiMessage["sender"];
     thread_id?: string;
-    files?: Array<{
-        name: string;
-        file_type: string;
-        size: number;
-        storage_path: string;
-    }>;
+    sender?: {
+        email?: string;
+        username?: string;
+        avatar?: string | null;
+    };
+    email?: string;
+    username?: string;
+    avatar?: string | null;
+    files?: MessageFileDto[];
+    Files?: MessageFileDto[];
 };
 
-type ApiResponse<T> = {
-    status: string;
-    message?: string;
-    body: T;
+type MessageFileDto = {
+    name: string;
+    file_type: string;
+    size: number;
+    storage_path?: string | null;
+};
+
+type SendMessageRequest = {
+    topic: string;
+    text: string;
+    receivers: Array<{ email: string }>;
+    files: MessageFileDto[];
+};
+
+export type InboxSummary = {
+    total: number;
+    unread: number;
+    items: Mail[];
+    pagination: InboxApiResponse["pagination"];
+};
+
+export type SendMessagePayload = {
+    to: string;
+    subject: string;
+    body: string;
 };
 
 const INBOX_ENDPOINT = "/messages/inbox";
-const MESSAGE_DETAILS_ENDPOINT = (id: string) => `/messages/${id}`;
+const MESSAGE_ENDPOINT = (id: string) => `/messages/${id}`;
+const SEND_ENDPOINT = "/messages/send";
+const SENDER_FALLBACK = "Неизвестный отправитель";
 
-export async function fetchInboxMessages(): Promise<Mail[]> {
-    try {
-        const response = await apiService.request<ApiResponse<InboxApiBody>>(INBOX_ENDPOINT);
-        return response.body.messages.map(mapMessage);
-    } catch (error) {
-        if (inboxMessagesMock.length > 0) {
-            return inboxMessagesMock;
-        }
-        throw error;
-    }
+export async function fetchInboxMessages(): Promise<InboxSummary> {
+    const response = await apiService.request<ApiResponse<InboxApiResponse>>(INBOX_ENDPOINT);
+    return {
+        total: response.body.message_total,
+        unread: response.body.message_unread,
+        items: response.body.messages.map(mapInboxMessage),
+        pagination: response.body.pagination,
+    };
 }
 
 export async function fetchMessageById(id: string): Promise<MailDetail> {
-    try {
-        const response = await apiService.request<ApiResponse<MessageDetailBody>>(MESSAGE_DETAILS_ENDPOINT(id));
-        return mapMessageDetail(id, response.body);
-    } catch (error) {
-        const mock = mailDetailsMock[id];
-        if (mock) {
-            return mock;
-        }
-        throw error;
-    }
+    const response = await apiService.request<ApiResponse<MessageDetailsDto>>(MESSAGE_ENDPOINT(id));
+    return mapMessageDetails(id, response.body);
 }
 
-function mapMessage(apiMessage: ApiMessage): Mail {
+export async function sendMessage(payload: SendMessagePayload): Promise<void> {
+    const trimmedTo = payload.to.trim();
+    if (!trimmedTo) {
+        throw new Error("Recipient email is required");
+    }
+
+    const requestBody: SendMessageRequest = {
+        topic: payload.subject.trim(),
+        text: payload.body,
+        receivers: [{ email: trimmedTo }],
+        files: [],
+    };
+
+    await apiService.request<ApiResponse<unknown>>(SEND_ENDPOINT, {
+        method: "POST",
+        body: requestBody,
+    });
+}
+
+function mapInboxMessage(apiMessage: InboxMessageDto): Mail {
     return {
         id: apiMessage.id,
-        from: apiMessage.sender.username,
+        from: apiMessage.sender.username || apiMessage.sender.email,
         subject: apiMessage.topic,
         preview: apiMessage.snippet,
         time: apiMessage.datetime,
@@ -81,22 +121,37 @@ function mapMessage(apiMessage: ApiMessage): Mail {
     };
 }
 
-function mapMessageDetail(id: string, body: MessageDetailBody): MailDetail {
+function mapMessageDetails(id: string, dto: MessageDetailsDto): MailDetail {
+    const senderEmail = dto.sender?.email ?? dto.email ?? "";
+    const senderUsername = dto.sender?.username ?? dto.username ?? "";
+    const senderDisplay = senderUsername.trim().length > 0
+        ? senderUsername.trim()
+        : senderEmail.trim() || SENDER_FALLBACK;
+
     return {
         id,
-        from: body.sender.username,
-        subject: body.topic,
-        preview: body.text.slice(0, 120),
-        time: body.datetime,
-        avatarUrl: body.sender.avatar ?? null,
+        from: senderDisplay,
+        fromEmail: senderEmail.trim() || undefined,
+        subject: dto.topic,
+        preview: dto.text.slice(0, 120),
+        time: dto.datetime,
+        avatarUrl: dto.sender?.avatar ?? dto.avatar ?? null,
         isRead: true,
-        body: body.text.replace(/\n/g, "<br>"),
-        threadId: body.thread_id,
-        attachments: body.files?.map((file) => ({
-            name: file.name,
-            fileType: file.file_type,
-            size: file.size,
-            storagePath: file.storage_path,
-        })),
+        body: dto.text.replace(/\n/g, "<br>"),
+        threadId: dto.thread_id,
+        attachments: mapAttachments(dto.files ?? dto.Files),
     };
+}
+
+function mapAttachments(files: MessageFileDto[] | undefined): MailAttachment[] | undefined {
+    if (!files?.length) {
+        return undefined;
+    }
+
+    return files.map((file) => ({
+        name: file.name,
+        fileType: file.file_type,
+        size: file.size,
+        storagePath: file.storage_path ?? null,
+    }));
 }

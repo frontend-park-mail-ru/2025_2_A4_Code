@@ -1,9 +1,9 @@
-import {Component} from "../../../../shared/base/Component";
+import { Component } from "../../../../shared/base/Component";
 import template from "./RegisterForm.hbs";
 import "./RegisterForm.scss";
-import {InputFieldComponent} from "../../../../shared/components/InputField/InputField";
-import {RadioGroupComponent} from "../../../../shared/components/RadioGroup/RadioGroup";
-import {ButtonComponent} from "../../../../shared/components/Button/Button";
+import { InputFieldComponent } from "../../../../shared/components/InputField/InputField";
+import { RadioGroupComponent } from "../../../../shared/components/RadioGroup/RadioGroup";
+import { ButtonComponent } from "../../../../shared/components/Button/Button";
 
 type SubmitPayload = {
     name: string;
@@ -32,7 +32,7 @@ export class RegisterFormComponent extends Component<Props> {
 
         this.nameField = new InputFieldComponent({
             name: "name",
-            placeholder: "Ваше имя",
+            placeholder: "Имя",
             autocomplete: "name",
             required: true,
             variant: "underline",
@@ -40,11 +40,11 @@ export class RegisterFormComponent extends Component<Props> {
 
         this.loginField = new InputFieldComponent({
             name: "login",
-            placeholder: "Логин@flintmail.ru",
+            placeholder: "логин@flintmail.ru",
             required: true,
             variant: "underline",
         });
-        
+
         this.birthdateField = new InputFieldComponent({
             name: "birthdate",
             type: "date",
@@ -63,7 +63,7 @@ export class RegisterFormComponent extends Component<Props> {
         this.passwordField = new InputFieldComponent({
             name: "password",
             type: "password",
-            placeholder: "Новый пароль",
+            placeholder: "Пароль",
             required: true,
             autocomplete: "new-password",
             variant: "underline",
@@ -106,8 +106,8 @@ export class RegisterFormComponent extends Component<Props> {
         mount("passwordRepeat", this.passwordRepeatField);
         mount("submit", this.submitButton);
 
-        const form = this.element?.querySelector('[data-form]') as HTMLFormElement | null;
-        form?.addEventListener('submit', (event) => {
+        const form = this.element as HTMLFormElement | null;
+        form?.addEventListener("submit", (event) => {
             event.preventDefault();
             this.props.onSubmit?.({
                 name: this.nameField.getValue(),

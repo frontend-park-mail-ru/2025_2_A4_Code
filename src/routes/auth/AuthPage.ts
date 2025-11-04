@@ -56,14 +56,14 @@ export class AuthPage extends Page {
     private async handleSubmit(payload: LoginPayload) {
         try {
             const user = await login(payload);
-            console.log("Auth success", user);
+            console.log("Успешная авторизация", user);
             this.router.navigate("/inbox");
         } catch (error) {
-            console.error("Auth error", error);
+            console.error("Ошибка авторизации", error);
         }
     }
 
     private handleForgotPassword() {
-        console.log("Forgot password clicked");
+        console.log("Напоминание пароля пока не реализовано");
     }
 }
