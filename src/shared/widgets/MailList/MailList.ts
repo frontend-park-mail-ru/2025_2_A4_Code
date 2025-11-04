@@ -17,7 +17,7 @@ export class MailListComponent extends Component<Props> {
         super({
             items: props.items ?? [],
             onOpen: props.onOpen,
-            emptyMessage: props.emptyMessage ?? "Писем пока нет",
+            emptyMessage: props.emptyMessage ?? "No_emails_text",
         });
     }
 
@@ -44,7 +44,7 @@ export class MailListComponent extends Component<Props> {
         if (items.length === 0) {
             const empty = document.createElement("div");
             empty.className = "mail-list__empty";
-            empty.textContent = this.props.emptyMessage ?? "Писем пока нет";
+            empty.textContent = this.props.emptyMessage ?? "No_emails_text";
             container.appendChild(empty);
             return;
         }

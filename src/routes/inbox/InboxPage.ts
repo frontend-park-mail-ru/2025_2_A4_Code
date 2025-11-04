@@ -1,4 +1,4 @@
-﻿import { HeaderComponent } from "../../shared/widgets/Header/Header";
+import { HeaderComponent } from "../../shared/widgets/Header/Header";
 import { Page } from "../../shared/base/Page";
 import { SidebarComponent } from "../../shared/widgets/Sidebar/Sidebar";
 import { Mail, MailDetail } from "../../types/mail";
@@ -46,7 +46,7 @@ export class InboxPage extends Page {
         this.mailList = new MailListComponent({
             items: this.mails,
             onOpen: (id) => this.handleOpenMail(id),
-            emptyMessage: "РџРёСЃРµРј РїРѕРєР° РЅРµС‚",
+            emptyMessage: "no_emails_text",
         });
 
         return { header, sidebar, main: this.mailList };
@@ -82,7 +82,7 @@ export class InboxPage extends Page {
                 await this.showMail(this.messageId, false);
             }
         } catch (error) {
-            console.error("РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ СЃРїРёСЃРѕРє РїРёСЃРµРј", error);
+            console.error("Не удалось загрузить список писем", error);
         } finally {
             this.isLoading = false;
         }
@@ -104,12 +104,12 @@ export class InboxPage extends Page {
         try {
             this.messageId = id;
             const detail = await fetchMessageById(id);
-            this.mailList.setProps({ items: this.mails });
+            this.markMailAsRead(id);
 
             const view = this.createMailView(detail);
             await this.updateSlot("main", view);
         } catch (error) {
-            console.error("РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ РїРёСЃСЊРјРѕ", error);
+            console.error("Не удалось открыть письмо", error);
         }
     }
 
@@ -136,6 +136,23 @@ export class InboxPage extends Page {
         await this.updateSlot("main", this.mailList);
     }
 
+    private markMailAsRead(id: string): void {
+        let changed = false;
+
+        this.mails = this.mails.map((mail) => {
+            if (mail.id === id && !mail.isRead) {
+                changed = true;
+                return { ...mail, isRead: true };
+            }
+            return mail;
+        });
+
+        if (changed) {
+            this.unreadMessages = Math.max(0, this.unreadMessages - 1);
+            this.mailList.setProps({ items: this.mails });
+        }
+    }
+
     private openCompose(): void {
         const modal = new ComposeModal({
             onClose: () => this.closeCompose(),
@@ -152,7 +169,7 @@ export class InboxPage extends Page {
     private async handleSendMail(data: { to: string; subject: string; body: string }): Promise<void> {
         const recipient = data.to.trim();
         if (!recipient) {
-            console.warn("РЈРєР°Р¶РёС‚Рµ Р°РґСЂРµСЃ РїРѕР»СѓС‡Р°С‚РµР»СЏ");
+            console.warn("Укажите адрес получателя");
             return;
         }
 
@@ -167,7 +184,7 @@ export class InboxPage extends Page {
             await this.loadMessages();
             this.router.navigate("/inbox").then();
         } catch (error) {
-            console.error("РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РїСЂР°РІРёС‚СЊ РїРёСЃСЊРјРѕ", error);
+            console.error("Не удалось отправить письмо", error);
         }
     }
 }
