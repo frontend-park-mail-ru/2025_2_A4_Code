@@ -10,12 +10,19 @@ type Props = {
     onSend?: (data: { to: string; subject: string; body: string }) => void;
     onAttachFile?: () => void;
     onSaveDraft?: () => void;
+    initialTo?: string;
+    initialSubject?: string;
+    initialBody?: string;
+    focusField?: "to" | "subject" | "body";
 };
 
 export class ComposeModal extends Component<Props> {
     private readonly attachButton: ButtonComponent;
     private readonly draftButton: ButtonComponent;
     private readonly sendButton: ButtonComponent;
+    private toInput: HTMLInputElement | null = null;
+    private subjectInput: HTMLInputElement | null = null;
+    private bodyTextarea: HTMLTextAreaElement | null = null;
 
     constructor(props: Props = {}) {
         super(props);
@@ -77,16 +84,53 @@ export class ComposeModal extends Component<Props> {
             this.sendButton.render();
             this.sendButton.mount(sendSlot).then();
         }
+
+        this.toInput = root.querySelector('[data-field="to"]') as HTMLInputElement | null;
+        this.subjectInput = root.querySelector('[data-field="subject"]') as HTMLInputElement | null;
+        this.bodyTextarea = root.querySelector('[data-field="body"]') as HTMLTextAreaElement | null;
+
+        this.applyInitialValues();
+        this.focusInitialField();
     }
 
     private handleSend(): void {
-        const root = this.element as HTMLElement | null;
-        if (!root) return;
-
-        const to = (root.querySelector('[data-field="to"]') as HTMLInputElement | null)?.value ?? "";
-        const subject = (root.querySelector('[data-field="subject"]') as HTMLInputElement | null)?.value ?? "";
-        const body = (root.querySelector('[data-field="body"]') as HTMLTextAreaElement | null)?.value ?? "";
+        const to = this.toInput?.value ?? "";
+        const subject = this.subjectInput?.value ?? "";
+        const body = this.bodyTextarea?.value ?? "";
         this.props.onSend?.({ to, subject, body });
+    }
+
+    private applyInitialValues(): void {
+        if (this.toInput) {
+            this.toInput.value = this.props.initialTo ?? "";
+        }
+
+        if (this.subjectInput) {
+            this.subjectInput.value = this.props.initialSubject ?? "";
+        }
+
+        if (this.bodyTextarea) {
+            this.bodyTextarea.value = this.props.initialBody ?? "";
+        }
+    }
+
+    private focusInitialField(): void {
+        const focus = this.props.focusField ?? "to";
+        let target: HTMLInputElement | HTMLTextAreaElement | null;
+
+        if (focus === "subject") {
+            target = this.subjectInput;
+        } else if (focus === "body") {
+            target = this.bodyTextarea;
+        } else {
+            target = this.toInput;
+        }
+
+        target?.focus();
+        if (focus === "body" && this.bodyTextarea) {
+            const length = this.bodyTextarea.value.length;
+            this.bodyTextarea.setSelectionRange(length, length);
+        }
     }
 
     private handleAttach(): void {
@@ -101,7 +145,9 @@ export class ComposeModal extends Component<Props> {
         await this.attachButton.unmount();
         await this.draftButton.unmount();
         await this.sendButton.unmount();
+        this.toInput = null;
+        this.subjectInput = null;
+        this.bodyTextarea = null;
         await super.unmount();
     }
 }
-
