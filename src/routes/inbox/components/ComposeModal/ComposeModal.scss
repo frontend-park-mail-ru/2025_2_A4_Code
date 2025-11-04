@@ -11,15 +11,18 @@
 
 .compose-modal {
   position: relative;
-  width: min(720px, 100%);
+  width: min(900px, 100%);
   background: #ffffff;
-  border-radius: 24px;
+  border-radius: 12px;
   box-shadow: 0 24px 60px rgba(20, 28, 60, 0.18);
-  padding: 32px;
+  padding-top: 32px;
+  padding-left: 32px;
+  padding-right: 32px;
+  padding-bottom: 16px;
   display: flex;
   flex-direction: column;
   gap: 24px;
-
+  
   &__close {
     position: absolute;
     top: 20px;
@@ -87,15 +90,22 @@
 }
 
 .compose-modal__inputs {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+.compose-modal__inputs-text{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 16px; 
+  color: #000000;
 }
 
 .compose-modal__input {
   width: 100%;
   border: none;
+  width: 500px;
   border-bottom: 1px solid #dbe1f1;
   padding: 12px 4px;
   font-size: 16px;
@@ -105,11 +115,9 @@
 }
 
 .compose-modal__input::placeholder {
-  color: #8f96ad;
 }
 
 .compose-modal__input:focus {
-  border-color: #2d7cff;
 }
 
 .compose-modal__actions {
@@ -121,6 +129,7 @@
 
 .compose-modal__action-slot {
   display: inline-flex;
+  margin-right: 32px;
 }
 
 @media (max-width: 600px) {
@@ -131,19 +140,23 @@
 
 .compose-modal__textarea {
   width: calc(100% + 64px);
-  min-height: 220px;
+  min-height: 350px;
+  max-height: min(600px, 60vh);
   border: none;
   border-top: 1px solid #dbe1f1;
   border-bottom: 1px solid #dbe1f1;
   border-radius: 0;
-  padding: 20px 32px;
-  font-size: 15px;
+  padding: 32px 32px;
+  font-size: 16px;
   color: #1f2544;
-  resize: vertical;
-  background: #fdfdff;
+  background: #ffffff;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease;
   margin: 0 -32px;
+  margin-bottom: -8px;
+  line-height: 1.5;
+  overflow-y: auto;
+  resize: vertical;
 }
 
 .compose-modal__textarea::placeholder {
@@ -151,10 +164,6 @@
 }
 
 .compose-modal__textarea:focus {
-  border-top-color: #2d7cff;
-  border-bottom-color: #2d7cff;
-  box-shadow: 0 0 0 3px rgba(45, 124, 255, 0.12);
-  background: #ffffff;
 }
 
 .compose-modal__footer {
@@ -164,4 +173,7 @@
 
 .compose-modal__send-slot {
   display: inline-flex;
+  width: 137px;
+  height: 40px;
+  border-radius: 10px;
 }

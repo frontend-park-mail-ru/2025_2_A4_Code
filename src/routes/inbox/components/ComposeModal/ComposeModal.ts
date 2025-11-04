@@ -28,7 +28,7 @@ export class ComposeModal extends Component<Props> {
         });
 
         this.draftButton = new ButtonComponent({
-            label: "В черновики",
+            label: "Сохранить в черновики",
             variant: "link",
             icon: '<img src="/img/modal-to-draft.svg" alt="" aria-hidden="true" />',
             onClick: () => this.handleSaveDraft(),
@@ -36,7 +36,7 @@ export class ComposeModal extends Component<Props> {
 
         this.sendButton = new ButtonComponent({
             label: "Отправить",
-            variant: "secondary",
+            variant: "primary",
             onClick: () => this.handleSend(),
         });
     }
@@ -44,7 +44,7 @@ export class ComposeModal extends Component<Props> {
     protected renderTemplate(): string {
         return template({
             avatarUrl: this.props.avatarUrl ?? null,
-            avatarLabel: this.props.avatarLabel ?? "П",
+            avatarLabel: this.props.avatarLabel ?? "",
         });
     }
 

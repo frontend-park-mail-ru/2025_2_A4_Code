@@ -1,19 +1,23 @@
 .avatar-menu {
   display: flex;
   flex-direction: column;
-  padding: 6px 0;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  width: 191px;
+  height: 137px;
+  gap: 4px;
 
   &__item {
-    padding: 2px 8px;
+    padding-left: 12px;
   }
 
   .ui-button {
     width: 100%;
     justify-content: flex-start;
     gap: 12px;
-    padding: 8px 12px;
+    padding: 10px;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 16px;
     color: #1f2544;
 
     &:hover:not(:disabled) {
@@ -23,7 +27,7 @@
   }
 
   .ui-button__icon img {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
   }
 }

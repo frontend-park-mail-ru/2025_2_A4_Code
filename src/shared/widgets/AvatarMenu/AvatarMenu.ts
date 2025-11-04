@@ -24,7 +24,7 @@ export class AvatarMenu extends Component<Props> {
             icon: '<img src="/img/menu-profile-logo.svg" alt="" aria-hidden="true" />',
             onClick: () => this.props.onProfile?.(),
         });
-
+        
         this.settingsButton = new ButtonComponent({
             label: "Настройки",
             variant: "link",

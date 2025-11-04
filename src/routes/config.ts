@@ -12,24 +12,28 @@ const routeDefinitions = [
         layoutKey: "auth",
         createLayout: () => new AuthLayout(),
         createPage: () => new AuthPage(),
+        guestOnly: true,
     },
     {
         path: "/register",
         layoutKey: "auth",
         createLayout: () => new AuthLayout(),
         createPage: () => new RegisterPage(),
+        guestOnly: true,
     },
     {
         path: "/inbox/:messageId?",
         layoutKey: "main",
         createLayout: () => new MainLayout(),
         createPage: (params: Record<string, string>) => new InboxPage({ messageId: params.messageId }),
+        requiresAuth: true,
     },
     {
         path: "/profile",
         layoutKey: "main",
         createLayout: () => new MainLayout(),
         createPage: () => new ProfilePage(),
+        requiresAuth: true,
     },
 ];
 

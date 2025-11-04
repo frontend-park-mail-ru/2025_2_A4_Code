@@ -1,6 +1,7 @@
 ﻿import { apiService } from "../../../features/ApiServices/ApiService";
 import type { ApiResponse } from "../../../features/ApiServices/types";
 import type { Mail, MailAttachment, MailDetail } from "../../../types/mail";
+import { formatDateTimeFromBackend } from "../../../utils";
 
 type InboxApiResponse = {
     message_total: number;
@@ -115,7 +116,7 @@ function mapInboxMessage(apiMessage: InboxMessageDto): Mail {
         from: apiMessage.sender.username || apiMessage.sender.email,
         subject: apiMessage.topic,
         preview: apiMessage.snippet,
-        time: apiMessage.datetime,
+        time: formatDateTimeFromBackend(apiMessage.datetime),
         avatarUrl: apiMessage.sender.avatar ?? null,
         isRead: apiMessage.is_read,
     };
@@ -134,7 +135,7 @@ function mapMessageDetails(id: string, dto: MessageDetailsDto): MailDetail {
         fromEmail: senderEmail.trim() || undefined,
         subject: dto.topic,
         preview: dto.text.slice(0, 120),
-        time: dto.datetime,
+        time: formatDateTimeFromBackend(dto.datetime),
         avatarUrl: dto.sender?.avatar ?? dto.avatar ?? null,
         isRead: true,
         body: dto.text.replace(/\n/g, "<br>"),

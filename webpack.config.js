@@ -10,7 +10,8 @@ export default {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js',
-        clean: true
+        clean: true,
+        publicPath: '/',
     },
     mode: 'development',
     devServer: {

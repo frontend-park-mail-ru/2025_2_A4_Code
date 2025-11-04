@@ -58,6 +58,10 @@ export class App {
             await page.mount(this.rootElement, { skipAppend: true });
         }
 
+        if (Object.keys(params).length > 0) {
+            await page.update(params);
+        }
+
         this.activePage = page;
         this.activeLayout = layout;
         this.activeRouteConfig = config;

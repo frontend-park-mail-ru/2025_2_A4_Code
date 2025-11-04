@@ -4,6 +4,8 @@ import { ProfileSidebarComponent } from "./components/ProfileSidebar/ProfileSide
 import { ProfileFormComponent } from "./components/ProfileForm/ProfileForm";
 import { MainLayout } from "../../app/components/MainLayout/MainLayout";
 import { fetchProfile, ProfileData, updateProfile, uploadProfileAvatar } from "./api";
+import { logout } from "../auth/api";
+import { authManager } from "../../infra";
 import "./views/ProfilePage.scss";
 
 type PlaceholderProfile = {
@@ -59,7 +61,7 @@ export class ProfilePage extends Page {
             avatarImageUrl: DEFAULT_PLACEHOLDER.avatarUrl,
             userName: DEFAULT_PLACEHOLDER.fullName,
             userEmail: DEFAULT_PLACEHOLDER.email,
-            onLogout: () => console.log("logout"),
+            onLogout: () => this.handleLogout(),
         });
     }
 
@@ -157,6 +159,17 @@ export class ProfilePage extends Page {
         }
 
         this.applyProfile(this.profile);
+    }
+
+    private async handleLogout(): Promise<void> {
+        try {
+            await logout();
+        } catch (error) {
+            console.error("Failed to logout", error);
+        } finally {
+            authManager.setAuthenticated(false);
+            this.router.navigate("/auth").then();
+        }
     }
 
     private applyProfile(profile: ProfileData): void {

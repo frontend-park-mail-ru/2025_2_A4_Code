@@ -19,10 +19,12 @@ type Props = {
 
 const DEFAULT_FOLDERS: Folder[] = [
     { id: "inbox", name: "Входящие", count: 0, icon: "/img/folder-inbox.svg" },
+    { id: "trash", name: "Диалоги", icon: "img/folder-dialog.svg" },
     { id: "sent", name: "Отправленные", icon: "/img/folder-sent.svg" },
     { id: "drafts", name: "Черновики", icon: "/img/folder-drafts.svg" },
     { id: "spam", name: "Спам", icon: "/img/folder-spam.svg" },
     { id: "trash", name: "Корзина", icon: "img/folder-trash.svg" },
+    { id: "trash", name: "Создать папку", icon: "img/folder-add.svg" },
 ];
 
 export class SidebarComponent extends Component<Props> {

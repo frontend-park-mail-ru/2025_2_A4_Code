@@ -8,6 +8,8 @@ import { MailViewComponent } from "./components/MailView/MailView";
 import { ComposeModal } from "./components/ComposeModal/ComposeModal";
 import { fetchInboxMessages, fetchMessageById, sendMessage } from "./api/mailApi";
 import { MainLayout } from "../../app/components/MainLayout/MainLayout";
+import { logout } from "../auth/api";
+import { authManager } from "../../infra";
 import "./views/InboxPage.scss";
 import template from "./views/InboxPage.hbs";
 
@@ -35,7 +37,7 @@ export class InboxPage extends Page {
     protected getSlotContent(): { [slotName: string]: HTMLElement | Component } {
         const header = new HeaderComponent({
             onSearch: (query) => console.log("search", query),
-            onLogout: () => console.log("logout"),
+            onLogout: () => this.handleLogout(),
         });
 
         const sidebar = new SidebarComponent({
@@ -187,10 +189,15 @@ export class InboxPage extends Page {
             console.error("Не удалось отправить письмо", error);
         }
     }
+
+    private async handleLogout(): Promise<void> {
+        try {
+            await logout();
+        } catch (error) {
+            console.error("Failed to logout", error);
+        } finally {
+            authManager.setAuthenticated(false);
+            this.router.navigate("/auth").then();
+        }
+    }
 }
-
-
-
-
-
-

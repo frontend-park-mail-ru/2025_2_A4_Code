@@ -1,11 +1,14 @@
-import {Layout} from "../shared/base/Layout";
-import {Page} from "../shared/base/Page";
+import { Layout } from "../shared/base/Layout";
+import { Page } from "../shared/base/Page";
+import { authManager } from "./AuthManager";
 
 export type RouteConfig = {
     path: string;
     createPage: (params: Record<string, string>) => Page;
     layoutKey: string;
     createLayout: () => Layout;
+    requiresAuth?: boolean;
+    guestOnly?: boolean;
 };
 
 export type NavigatePayload = {
@@ -58,6 +61,12 @@ export class Router {
 
         if (match && this.onNavigateCallback) {
             const { config, params } = match;
+
+            const accessAllowed = await this.ensureRouteAccess(config, normalizedPath, options);
+            if (!accessAllowed) {
+                return;
+            }
+
             const layout = this.getOrCreateLayout(config);
 
             if (!options.skipHistory) {
@@ -175,5 +184,43 @@ export class Router {
             return url.slice(0, -1);
         }
         return url;
+    }
+
+    private async ensureRouteAccess(
+        config: RouteConfig,
+        currentPath: string,
+        _options: NavigateOptions
+    ): Promise<boolean> {
+        const requiresAuth = config.requiresAuth ?? false;
+        const guestOnly = config.guestOnly ?? false;
+
+        if (!requiresAuth && !guestOnly) {
+            return true;
+        }
+
+        const status = authManager.getStatus();
+        let isAuthenticated: boolean;
+
+        if (status === "unknown") {
+            isAuthenticated = await authManager.ensureAuthenticated();
+        } else {
+            isAuthenticated = status === "authenticated";
+        }
+
+        if (requiresAuth && !isAuthenticated) {
+            if (currentPath !== "/auth") {
+                await this.navigate("/auth", { replace: true });
+            }
+            return false;
+        }
+
+        if (guestOnly && isAuthenticated) {
+            if (currentPath !== "/inbox") {
+                await this.navigate("/inbox", { replace: true });
+            }
+            return false;
+        }
+
+        return true;
     }
 }

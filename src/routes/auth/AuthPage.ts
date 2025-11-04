@@ -4,6 +4,7 @@ import {AUTH_PAGE_TEXTS} from "./constants";
 import {ButtonComponent} from "../../shared/components/Button/Button";
 import {login} from "./api";
 import {LoginPayload} from "./api/authApi";
+import {authManager} from "../../infra";
 import "./views/AuthPage.scss";
 
 export class AuthPage extends Page {
@@ -57,8 +58,10 @@ export class AuthPage extends Page {
         try {
             const user = await login(payload);
             console.log("Успешная авторизация", user);
+            authManager.setAuthenticated(true);
             this.router.navigate("/inbox");
         } catch (error) {
+            authManager.setAuthenticated(false);
             console.error("Ошибка авторизации", error);
         }
     }

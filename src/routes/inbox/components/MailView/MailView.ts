@@ -111,10 +111,10 @@ export class MailViewComponent extends Component<Props> {
             initials,
             avatarUrl: avatarUrl ?? null,
             fromEmail: this.props.fromEmail ?? from,
-            recipient: this.props.recipient ?? "вам",
+            recipient: this.props.recipient ?? "Вам",
         });
     }
-
+    
     protected afterRender(): void {
         if (!this.element) {
             return;
