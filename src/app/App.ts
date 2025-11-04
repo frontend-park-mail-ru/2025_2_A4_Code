@@ -1,7 +1,7 @@
-import {Router, NavigatePayload, RouteConfig} from "../infra";
-import {setupRoutes} from "../routes/config";
-import {Page} from "../shared/base/Page";
-import {Layout} from "../shared/base/Layout";
+import { Router, NavigatePayload, RouteConfig } from "@infra";
+import { setupRoutes } from "@pages/config";
+import { Page } from "@shared/base/Page";
+import { Layout } from "@shared/base/Layout";
 
 export class App {
     private rootElement: HTMLElement;
@@ -28,7 +28,6 @@ export class App {
     }
 
     async init(): Promise<void> {
-        
     }
 
     private async handleNavigate({ layout, params, config }: NavigatePayload): Promise<void> {

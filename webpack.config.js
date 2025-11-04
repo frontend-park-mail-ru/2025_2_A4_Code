@@ -1,6 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,7 +25,9 @@ export default {
         rules: [
             {
                 test: /\.ts$/,
-                use: 'ts-loader',
+                use: {
+                    loader: 'babel-loader',
+                },
                 exclude: /node_modules/
             },
             {
@@ -58,6 +61,30 @@ export default {
             }
         ]
     },
-    resolve: { extensions: ['.ts', '.js', '.hbs'] },
-    plugins: [new HtmlWebpackPlugin({ template: './public/index.html' })]
+    resolve: {
+        extensions: ['.ts', '.js', '.hbs'],
+        alias: {
+            '@app': path.resolve(__dirname, 'src/app'),
+            '@pages': path.resolve(__dirname, 'src/pages'),
+            '@features': path.resolve(__dirname, 'src/features'),
+            '@shared': path.resolve(__dirname, 'src/shared'),
+            '@entities': path.resolve(__dirname, 'src/entities'),
+            '@infra': path.resolve(__dirname, 'src/infra'),
+            '@utils': path.resolve(__dirname, 'src/utils'),
+            '@types': path.resolve(__dirname, 'src/types'),
+        },
+    },
+    plugins: [
+        new HtmlWebpackPlugin({ template: './public/index.html' }),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, 'public'),
+                    globOptions: {
+                        ignore: ['**/index.html'],
+                    },
+                },
+            ],
+        }),
+    ]
 };

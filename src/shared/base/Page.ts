@@ -1,5 +1,5 @@
 import {Component} from "./Component";
-import {Router} from "../../infra";
+import {Router} from "@infra";
 import {Layout, SlotContent} from "./Layout";
 
 type MountOptions = {

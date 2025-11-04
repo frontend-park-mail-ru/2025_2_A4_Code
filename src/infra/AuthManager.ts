@@ -1,4 +1,4 @@
-import { fetchProfile } from "../routes/profile/api";
+import { fetchProfile } from "@entities/profile";
 
 type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
 

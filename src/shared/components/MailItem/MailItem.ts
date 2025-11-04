@@ -2,6 +2,7 @@ import {Component} from "../../base/Component";
 import {Mail} from "../../../types/mail";
 import template from "./MailItem.hbs";
 import "./MailItem.scss";
+import { getInitials } from "../../../utils/person";
 
 type Props = {
     mail: Mail;
@@ -53,7 +54,8 @@ export class MailItemComponent extends Component<Props> {
     };
 
     private getInitials(): string {
-        return (this.props.mail.from?.trim().charAt(0) ?? '?').toUpperCase();
+        const initials = getInitials(this.props.mail.from ?? "", "?");
+        return initials ? initials[0] : "?";
     }
 
     public async unmount(): Promise<void> {

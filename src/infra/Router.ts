@@ -81,7 +81,6 @@ export class Router {
             return;
         }
 
-        // fallback to appropriate route
         const status = authManager.getStatus();
         const target = status === "authenticated" ? "/inbox" : "/auth";
         console.warn(`Router: route not found, redirecting to ${target}`);

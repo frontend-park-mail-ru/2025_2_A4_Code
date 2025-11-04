@@ -4,8 +4,14 @@ import "./Header.scss";
 import { SearchInputComponent } from "../../components/SearchInput/SearchInput";
 import { AvatarButtonComponent } from "../../components/AvatarButton/AvatarButton";
 import { AvatarMenu } from "../AvatarMenu";
-import { Router } from "../../../infra";
-import { fetchProfile } from "../../../routes/profile/api";
+import { Router } from "@infra";
+import {
+    getCachedProfilePreview,
+    loadProfilePreview,
+    primeProfilePreview,
+    type ProfilePreview,
+} from "@features/profile";
+import { getInitials } from "@utils/person";
 
 type Props = {
     onSearch?: (query: string) => void;
@@ -20,18 +26,7 @@ type Props = {
     showSearch?: boolean;
 };
 
-type HeaderProfileState = {
-    avatarUrl: string | null;
-    initials: string;
-    fullName: string;
-    email: string;
-};
-
-type HeaderProfileInfo = HeaderProfileState & {
-    expiresAt: number;
-};
-
-const PROFILE_CACHE_TTL_MS = 14 * 60 * 1000;
+type HeaderProfileState = ProfilePreview;
 
 export class HeaderComponent extends Component<Props> {
     private readonly searchInput?: SearchInputComponent;
@@ -42,9 +37,6 @@ export class HeaderComponent extends Component<Props> {
     private showSearch: boolean;
     private readonly router = Router.getInstance();
     private hasRequestedProfile = false;
-
-    private static profileCache: HeaderProfileInfo | null = null;
-    private static profilePromise: Promise<HeaderProfileInfo> | null = null;
 
     private outsideClickHandler = (event: MouseEvent) => {
         const target = event.target as Node | null;
@@ -87,7 +79,7 @@ export class HeaderComponent extends Component<Props> {
 
         const profileInfo = this.extractProfileInfo();
         if (profileInfo) {
-            HeaderComponent.updateProfileCache(profileInfo);
+            primeProfilePreview(profileInfo);
             this.hasRequestedProfile = true;
         }
 
@@ -165,7 +157,7 @@ export class HeaderComponent extends Component<Props> {
 
         const profileInfo = this.extractProfileInfo();
         if (profileInfo) {
-            HeaderComponent.updateProfileCache(profileInfo);
+            primeProfilePreview(profileInfo);
             this.hasRequestedProfile = true;
         }
 
@@ -215,24 +207,32 @@ export class HeaderComponent extends Component<Props> {
             return;
         }
 
-        const cached = HeaderComponent.getCacheEntry();
-        if (this.hasRequestedProfile && cached) {
+        const cached = getCachedProfilePreview();
+        if (cached) {
+            if (!this.hasRequestedProfile) {
+                this.applyProfilePreview(cached);
+                this.hasRequestedProfile = true;
+            }
             return;
         }
 
         try {
             this.hasRequestedProfile = true;
-            const info = await HeaderComponent.loadProfileInfo();
-            this.setProps({
-                avatarImageUrl: info.avatarUrl,
-                avatarLabel: info.initials,
-                userName: info.fullName,
-                userEmail: info.email,
-            });
+            const info = await loadProfilePreview();
+            this.applyProfilePreview(info);
         } catch (error) {
             this.hasRequestedProfile = false;
             console.error("Failed to load profile data for header", error);
         }
+    }
+
+    private applyProfilePreview(preview: ProfilePreview): void {
+        this.setProps({
+            avatarImageUrl: preview.avatarUrl,
+            avatarLabel: preview.initials,
+            userName: preview.fullName,
+            userEmail: preview.email,
+        });
     }
 
     private extractProfileInfo(): HeaderProfileState | null {
@@ -244,8 +244,8 @@ export class HeaderComponent extends Component<Props> {
             return null;
         }
 
-        const initialsRaw = this.props.avatarLabel ?? (fullName ? HeaderComponent.computeInitials(fullName) : "");
-        const initials = initialsRaw || "--";
+        const initials =
+            (this.props.avatarLabel ?? "").trim() || (fullName ? getInitials(fullName) : "--");
 
         return {
             avatarUrl,
@@ -255,75 +255,4 @@ export class HeaderComponent extends Component<Props> {
         };
     }
 
-    private static async loadProfileInfo(): Promise<HeaderProfileInfo> {
-        const cached = HeaderComponent.getCacheEntry();
-        if (cached) {
-            return cached;
-        }
-
-        if (!HeaderComponent.profilePromise) {
-            HeaderComponent.profilePromise = fetchProfile()
-                .then((profile) => {
-                    const fullName = (profile.fullName || profile.username).trim() || profile.username;
-                    const email = profile.email;
-                    const avatarUrl = profile.avatarUrl ?? null;
-                    const initials = HeaderComponent.computeInitials(fullName);
-
-                    return HeaderComponent.setProfileCache({
-                        avatarUrl,
-                        initials,
-                        fullName,
-                        email,
-                    });
-                })
-                .catch((error) => {
-                    HeaderComponent.profilePromise = null;
-                    throw error;
-                });
-        }
-
-        return HeaderComponent.profilePromise;
-    }
-
-    private static computeInitials(value: string): string {
-        const initials = value
-            .split(" ")
-            .map((part) => part.trim())
-            .filter(Boolean)
-            .map((part) => part[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase();
-
-        return initials || "--";
-    }
-
-    public static updateProfileCache(info: HeaderProfileState): void {
-        HeaderComponent.setProfileCache(info);
-    }
-
-    private static setProfileCache(info: HeaderProfileState): HeaderProfileInfo {
-        const entry: HeaderProfileInfo = {
-            ...info,
-            expiresAt: Date.now() + PROFILE_CACHE_TTL_MS,
-        };
-        HeaderComponent.profileCache = entry;
-        HeaderComponent.profilePromise = Promise.resolve(entry);
-        return entry;
-    }
-
-    private static getCacheEntry(): HeaderProfileInfo | null {
-        const cache = HeaderComponent.profileCache;
-        if (!cache) {
-            return null;
-        }
-
-        if (cache.expiresAt <= Date.now()) {
-            HeaderComponent.profileCache = null;
-            HeaderComponent.profilePromise = null;
-            return null;
-        }
-
-        return cache;
-    }
 }
