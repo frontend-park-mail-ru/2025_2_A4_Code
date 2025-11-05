@@ -30,6 +30,8 @@ type Props = EditableValues & {
 };
 
 const MAX_AVATAR_SIZE = 5 << 20; // 5 MB
+const UPLOAD_BUTTON_DEFAULT_LABEL = "Загрузить фото";
+const UPLOAD_BUTTON_LOADING_LABEL = "Загрузка...";
 
 export class ProfileFormComponent extends Component<Props> {
     private readonly firstNameField: InputFieldComponent;
@@ -101,7 +103,7 @@ export class ProfileFormComponent extends Component<Props> {
         });
 
         this.uploadButton = new ButtonComponent({
-            label: "Загрузить фото",
+            label: UPLOAD_BUTTON_DEFAULT_LABEL,
             variant: "secondary",
             onClick: () => this.handleUploadClick(),
         });
@@ -249,6 +251,7 @@ export class ProfileFormComponent extends Component<Props> {
 
         this.clearFieldError(field);
         this.updateFullNameFromValues(this.currentValues);
+        this.updateUploadButton();
         this.updateButtons();
     }
 
@@ -332,8 +335,9 @@ export class ProfileFormComponent extends Component<Props> {
     }
 
     private getUploadButtonLabel(): string {
-        return this.props.isAvatarUploading ? "Загрузка..." : "Загрузить фото";
+        return this.props.isAvatarUploading ? UPLOAD_BUTTON_LOADING_LABEL : UPLOAD_BUTTON_DEFAULT_LABEL;
     }
+
 
 
     private updateButtons(): void {
@@ -462,6 +466,5 @@ export class ProfileFormComponent extends Component<Props> {
     }
 
 }
-
 
 
