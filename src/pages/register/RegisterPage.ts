@@ -65,6 +65,7 @@ export class RegisterPage extends Page {
             return;
         }
         this.form.clearErrors();
+        this.form.setFormError(null);
 
         const requestPayload: RegisterPayload = {
             name: payload.name.trim(),
@@ -78,7 +79,27 @@ export class RegisterPage extends Page {
             await register(requestPayload);
             this.router.navigate("/auth");
         } catch (error) {
+            const message = this.extractErrorMessage(error);
+            this.form.setFormError(message);
             console.error("Failed to register", error);
         }
+    }
+
+    private extractErrorMessage(error: unknown): string {
+        if (error instanceof Error) {
+            const raw = error.message?.trim();
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    if (typeof parsed?.message === "string" && parsed.message.trim().length > 0) {
+                        return parsed.message.trim();
+                    }
+                } catch {
+                    // ignore json parse errors
+                }
+                return raw;
+            }
+        }
+        return "Не удалось завершить регистрацию. Попробуйте ещё раз.";
     }
 }

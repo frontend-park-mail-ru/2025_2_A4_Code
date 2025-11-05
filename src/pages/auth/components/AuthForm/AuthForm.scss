@@ -10,6 +10,23 @@
     gap: 32px;
     margin-top: 32px;
   }
+
+  &__error {
+    min-height: 20px;
+    color: var(--color-error, #d14343);
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: -12px;
+    margin-bottom: 32px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+
+    &--visible {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
   
   &__forgot {
     align-self: flex-start;

@@ -27,6 +27,8 @@ export class RegisterFormComponent extends Component<Props> {
     private readonly passwordField: InputFieldComponent;
     private readonly passwordRepeatField: InputFieldComponent;
     private readonly submitButton: ButtonComponent;
+    private errorContainer: HTMLElement | null = null;
+    private generalError: string | null = null;
 
     constructor(props: Props = {}) {
         super(props);
@@ -125,9 +127,13 @@ export class RegisterFormComponent extends Component<Props> {
             };
             this.props.onSubmit?.(payload);
         });
+
+        this.errorContainer = this.element?.querySelector('[data-slot="error"]') as HTMLElement | null;
+        this.updateGeneralError();
     }
 
     public applyErrors(errors: FieldError<keyof RegisterFormFields>[]): void {
+        this.setFormError(null);
         const map = new Map<keyof RegisterFormFields, string>();
         errors.forEach((error) => map.set(error.field, error.message));
         this.setFieldError("name", map.get("name") ?? null);
@@ -135,6 +141,9 @@ export class RegisterFormComponent extends Component<Props> {
         this.setFieldError("birthdate", map.get("birthdate") ?? null);
         this.setFieldError("password", map.get("password") ?? null);
         this.setFieldError("passwordRepeat", map.get("passwordRepeat") ?? null);
+        if (errors.length === 0) {
+            this.setFormError(null);
+        }
     }
 
     public clearErrors(): void {
@@ -143,6 +152,12 @@ export class RegisterFormComponent extends Component<Props> {
         this.setFieldError("birthdate", null);
         this.setFieldError("password", null);
         this.setFieldError("passwordRepeat", null);
+        this.setFormError(null);
+    }
+
+    public setFormError(message: string | null): void {
+        this.generalError = message?.trim() || null;
+        this.updateGeneralError();
     }
 
     private setFieldError(field: keyof RegisterFormFields, message: string | null): void {
@@ -170,4 +185,14 @@ export class RegisterFormComponent extends Component<Props> {
     private clearFieldError(field: keyof RegisterFormFields): void {
         this.setFieldError(field, null);
     }
+
+    private updateGeneralError(): void {
+        if (!this.errorContainer) {
+            return;
+        }
+        const message = this.generalError;
+        this.errorContainer.textContent = message ?? "";
+        this.errorContainer.classList.toggle("register-form__error--visible", Boolean(message));
+    }
 }
+

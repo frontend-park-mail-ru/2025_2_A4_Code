@@ -55,18 +55,40 @@ export class AuthPage extends Page {
     }
 
     private async handleSubmit(payload: LoginPayload) {
+        this.form.clearErrors();
+        this.form.setFormError(null);
+
         try {
             await login(payload);
             authManager.setAuthenticated(true);
-            this.form.clearErrors();
             this.router.navigate("/inbox");
         } catch (error) {
             authManager.setAuthenticated(false);
+            const message = this.extractErrorMessage(error);
+            this.form.setFormError(message);
             console.error("Failed to login", error);
         }
     }
 
     private handleForgotPassword() {
         console.log("Reset password flow is not implemented yet.");
+    }
+
+    private extractErrorMessage(error: unknown): string {
+        if (error instanceof Error) {
+            const raw = error.message?.trim();
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    if (typeof parsed?.message === "string" && parsed.message.trim().length > 0) {
+                        return parsed.message.trim();
+                    }
+                } catch {
+                    // ignore parse errors
+                }
+                return raw;
+            }
+        }
+        return "Не удалось выполнить вход. Проверьте данные и попробуйте снова.";
     }
 }

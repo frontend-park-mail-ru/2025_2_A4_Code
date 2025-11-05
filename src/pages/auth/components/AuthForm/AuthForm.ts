@@ -20,6 +20,8 @@ export class AuthFormComponent extends Component<Props> {
     private loginField: InputFieldComponent;
     private passwordField: InputFieldComponent;
     private submitButton: ButtonComponent;
+    private errorContainer: HTMLElement | null = null;
+    private generalError: string | null = null;
 
     constructor(props: Props = {}) {
         super(props);
@@ -96,18 +98,31 @@ export class AuthFormComponent extends Component<Props> {
                 this.props.onSubmit?.(payload);
             }
         });
+
+        this.errorContainer = this.element?.querySelector('[data-slot="error"]') as HTMLElement | null;
+        this.updateGeneralError();
     }
 
     public applyErrors(errors: FieldError<keyof SubmitPayload>[]): void {
+        this.setFormError(null);
         const map = new Map<keyof SubmitPayload, string>();
         errors.forEach((error) => map.set(error.field, error.message));
         this.setFieldError("login", map.get("login") ?? null);
         this.setFieldError("password", map.get("password") ?? null);
+        if (errors.length === 0) {
+            this.setFormError(null);
+        }
     }
 
     public clearErrors(): void {
         this.setFieldError("login", null);
         this.setFieldError("password", null);
+        this.setFormError(null);
+    }
+
+    public setFormError(message: string | null): void {
+        this.generalError = message?.trim() || null;
+        this.updateGeneralError();
     }
 
     private setFieldError(field: keyof SubmitPayload, message: string | null): void {
@@ -121,4 +136,14 @@ export class AuthFormComponent extends Component<Props> {
     private clearFieldError(field: keyof SubmitPayload): void {
         this.setFieldError(field, null);
     }
+
+    private updateGeneralError(): void {
+        if (!this.errorContainer) {
+            return;
+        }
+        const message = this.generalError;
+        this.errorContainer.textContent = message ?? "";
+        this.errorContainer.classList.toggle("auth-form__error--visible", Boolean(message));
+    }
 }
+

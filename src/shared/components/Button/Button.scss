@@ -30,6 +30,7 @@
     background: transparent;
     color: #5163eb;
     border: 2px solid #5163eb;
+    border-radius: 10px;
 
     &:hover:not(:disabled) {
       background: rgba(81, 99, 235, 0.05);
