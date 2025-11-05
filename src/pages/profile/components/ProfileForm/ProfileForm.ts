@@ -324,12 +324,17 @@ export class ProfileFormComponent extends Component<Props> {
     private updateUploadButton(): void {
         const isUploading = Boolean(this.props.isAvatarUploading);
         this.uploadButton.setProps({
-            label: isUploading ? "Загрузка..." : "Загрузить фото",
+            label: this.getUploadButtonLabel(),
             disabled: isUploading,
             variant: "secondary",
             onClick: () => this.handleUploadClick(),
         });
     }
+
+    private getUploadButtonLabel(): string {
+        return this.props.isAvatarUploading ? "Загрузка..." : "Загрузить фото";
+    }
+
 
     private updateButtons(): void {
         const isSubmitting = Boolean(this.props.isSubmitting);
@@ -457,5 +462,6 @@ export class ProfileFormComponent extends Component<Props> {
     }
 
 }
+
 
 

@@ -52,7 +52,7 @@ export class ProfileSidebarComponent extends Component<Props> {
             name: this.props.name,
             email: this.props.email,
             avatarUrl: this.props.avatarUrl ?? null,
-            initials: getInitials(this.props.name, "��"),
+            initials: getInitials(this.props.name, "--"),
         });
     }
 
@@ -122,7 +122,7 @@ export class ProfileSidebarComponent extends Component<Props> {
         const avatarContainer = this.element?.querySelector(".profile-sidebar__avatar") as HTMLElement | null;
         if (!avatarContainer) return;
 
-        const initials = getInitials(this.props.name, "��");
+        const initials = getInitials(this.props.name, "--");
         const avatarUrl = this.props.avatarUrl ?? null;
         avatarContainer.innerHTML = "";
 
@@ -139,6 +139,6 @@ export class ProfileSidebarComponent extends Component<Props> {
     }
 
     private getInitials(name: string): string {
-        return getInitials(name, "��");
+        return getInitials(name, "--");
     }
 }
