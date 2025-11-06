@@ -1,9 +1,9 @@
-import { Component } from "../../base/Component";
+import { Component } from "@shared/base/Component";
 import template from "./Header.hbs";
 import "./Header.scss";
-import { SearchInputComponent } from "../../components/SearchInput/SearchInput";
-import { AvatarButtonComponent } from "../../components/AvatarButton/AvatarButton";
-import { AvatarMenu } from "../AvatarMenu";
+import { SearchInputComponent } from "@shared/components/SearchInput/SearchInput";
+import { AvatarButtonComponent } from "@shared/components/AvatarButton/AvatarButton";
+import { AvatarMenu } from "@shared/widgets/AvatarMenu/AvatarMenu";
 import { Router } from "@infra";
 import {
     getCachedProfilePreview,
@@ -12,6 +12,7 @@ import {
     type ProfilePreview,
 } from "@features/profile";
 import { getInitials } from "@utils/person";
+import { HEADER_TEXTS } from "@shared/constants/texts";
 
 type Props = {
     onSearch?: (query: string) => void;
@@ -55,14 +56,14 @@ export class HeaderComponent extends Component<Props> {
         this.showSearch = props.showSearch ?? true;
         if (this.showSearch) {
             this.searchInput = new SearchInputComponent({
-                placeholder: props.searchPlaceholder ?? "Поиск",
+                placeholder: props.searchPlaceholder ?? HEADER_TEXTS.defaultSearchPlaceholder,
                 debounce: 300,
                 onInput: (value) => this.props.onSearch?.(value),
             });
         }
 
         this.avatarButton = new AvatarButtonComponent({
-            label: props.avatarLabel ?? " ",
+            label: props.avatarLabel ?? HEADER_TEXTS.defaultAvatarLabel,
             imageUrl: props.avatarImageUrl ?? null,
             onClick: (event) => this.toggleMenu(event),
         });
@@ -135,12 +136,12 @@ export class HeaderComponent extends Component<Props> {
         }
 
         this.searchInput?.setProps({
-            placeholder: this.props.searchPlaceholder ?? "Поиск",
+            placeholder: this.props.searchPlaceholder ?? HEADER_TEXTS.defaultSearchPlaceholder,
             onInput: (value) => this.props.onSearch?.(value),
         });
 
         this.avatarButton.setProps({
-            label: this.props.avatarLabel ?? " ",
+            label: this.props.avatarLabel ?? HEADER_TEXTS.defaultAvatarLabel,
             imageUrl: this.props.avatarImageUrl ?? null,
             onClick: (event) => this.toggleMenu(event),
         });

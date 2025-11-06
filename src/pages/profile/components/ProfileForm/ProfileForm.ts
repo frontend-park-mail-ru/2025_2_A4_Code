@@ -1,11 +1,12 @@
-import { Component } from "../../../../shared/base/Component";
-import { InputFieldComponent } from "../../../../shared/components/InputField/InputField";
-import { RadioGroupComponent } from "../../../../shared/components/RadioGroup/RadioGroup";
-import { ButtonComponent } from "../../../../shared/components/Button/Button";
+﻿import { Component } from "@shared/base/Component";
+import { InputFieldComponent } from "@shared/components/InputField/InputField";
+import { RadioGroupComponent } from "@shared/components/RadioGroup/RadioGroup";
+import { ButtonComponent } from "@shared/components/Button/Button";
 import template from "./ProfileForm.hbs";
 import "./ProfileForm.scss";
-import type { FieldError, ProfileFormFields } from "../../../../utils";
-import { getInitials } from "../../../../utils/person";
+import type { FieldError, ProfileFormFields } from "@utils";
+import { getInitials } from "@utils/person";
+import { PROFILE_FORM_TEXTS } from "@pages/constants/texts";
 
 type Gender = "male" | "female" | "";
 
@@ -30,8 +31,8 @@ type Props = EditableValues & {
 };
 
 const MAX_AVATAR_SIZE = 5 << 20; // 5 MB
-const UPLOAD_BUTTON_DEFAULT_LABEL = "Загрузить фото";
-const UPLOAD_BUTTON_LOADING_LABEL = "Загрузка...";
+const UPLOAD_BUTTON_DEFAULT_LABEL = "Р—Р°РіСЂСѓР·РёС‚СЊ С„РѕС‚Рѕ";
+const UPLOAD_BUTTON_LOADING_LABEL = "Р—Р°РіСЂСѓР·РєР°...";
 
 export class ProfileFormComponent extends Component<Props> {
     private readonly firstNameField: InputFieldComponent;
@@ -63,28 +64,28 @@ export class ProfileFormComponent extends Component<Props> {
         this.currentValues = { ...this.initialValues };
 
         this.firstNameField = new InputFieldComponent({
-            label: "Имя",
+            label: "РРјСЏ",
             name: "firstName",
             variant: "filled",
             onInput: (value) => this.handleInputChange("firstName", value),
         });
 
         this.lastNameField = new InputFieldComponent({
-            label: "Фамилия",
+            label: "Р¤Р°РјРёР»РёСЏ",
             name: "lastName",
             variant: "filled",
             onInput: (value) => this.handleInputChange("lastName", value),
         });
 
         this.middleNameField = new InputFieldComponent({
-            label: "Отчество",
+            label: "РћС‚С‡РµСЃС‚РІРѕ",
             name: "middleName",
             variant: "filled",
             onInput: (value) => this.handleInputChange("middleName", value),
         });
 
         this.birthDateField = new InputFieldComponent({
-            label: "Дата рождения",
+            label: "Р”Р°С‚Р° СЂРѕР¶РґРµРЅРёСЏ",
             name: "birthDate",
             type: "date",
             variant: "filled",
@@ -93,10 +94,10 @@ export class ProfileFormComponent extends Component<Props> {
 
         this.genderField = new RadioGroupComponent({
             name: "gender",
-            label: "Пол",
+            label: "РџРѕР»",
             options: [
-                { label: "Мужской", value: "male" },
-                { label: "Женский", value: "female" },
+                { label: "РњСѓР¶СЃРєРѕР№", value: "male" },
+                { label: "Р–РµРЅСЃРєРёР№", value: "female" },
             ],
             value: this.props.gender ?? "",
             onChange: (value) => this.handleInputChange("gender", value),
@@ -109,13 +110,13 @@ export class ProfileFormComponent extends Component<Props> {
         });
 
         this.saveButton = new ButtonComponent({
-            label: "Сохранить",
+            label: "РЎРѕС…СЂР°РЅРёС‚СЊ",
             variant: "primary",
             onClick: () => this.handleSave(),
         });
 
         this.cancelButton = new ButtonComponent({
-            label: "Отменить",
+            label: "РћС‚РјРµРЅРёС‚СЊ",
             variant: "secondary",
             onClick: () => this.handleCancel(),
         });
@@ -346,14 +347,14 @@ export class ProfileFormComponent extends Component<Props> {
         const hasChanges = this.isDirty();
 
         this.saveButton.setProps({
-            label: isSubmitting ? "Сохраняем..." : "Сохранить",
+            label: isSubmitting ? "РЎРѕС…СЂР°РЅСЏРµРј..." : "РЎРѕС…СЂР°РЅРёС‚СЊ",
             disabled: isSubmitting || isUploading || !hasChanges,
             variant: "primary",
             onClick: () => this.handleSave(),
         });
 
         this.cancelButton.setProps({
-            label: "Отменить",
+            label: "РћС‚РјРµРЅРёС‚СЊ",
             disabled: isSubmitting,
             variant: "secondary",
             onClick: () => this.handleCancel(),
@@ -418,7 +419,7 @@ export class ProfileFormComponent extends Component<Props> {
         }
 
         if (file.size > MAX_AVATAR_SIZE) {
-            console.warn("Размер файла превышает 5 МБ");
+            console.warn("Р Р°Р·РјРµСЂ С„Р°Р№Р»Р° РїСЂРµРІС‹С€Р°РµС‚ 5 РњР‘");
             this.fileInput!.value = "";
             return;
         }
@@ -466,5 +467,6 @@ export class ProfileFormComponent extends Component<Props> {
     }
 
 }
+
 
 

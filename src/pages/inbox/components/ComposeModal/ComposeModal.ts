@@ -1,8 +1,9 @@
-import {Component} from "../../../../shared/base/Component";
-import {ButtonComponent} from "../../../../shared/components/Button/Button";
+﻿import { Component } from "@shared/base/Component";
+import { ButtonComponent } from "@shared/components/Button/Button";
 import template from "./ComposeModal.hbs";
 import "./ComposeModal.scss";
-import {validateRecipientAddress} from "../../../../utils";
+import { validateRecipientAddress } from "@utils";
+import { COMPOSE_MODAL_TEXTS } from "@shared/constants/texts";
 
 type Props = {
     onClose?: () => void;
@@ -29,21 +30,21 @@ export class ComposeModal extends Component<Props> {
         super(props);
 
         this.attachButton = new ButtonComponent({
-            label: "Прикрепить файл",
+            label: COMPOSE_MODAL_TEXTS.attachFile,
             variant: "link",
             icon: '<img src="/img/modal-attach-file.svg" alt="" aria-hidden="true" />',
             onClick: () => this.handleAttach(),
         });
 
         this.draftButton = new ButtonComponent({
-            label: "Сохранить черновик",
+            label: COMPOSE_MODAL_TEXTS.saveDraft,
             variant: "link",
             icon: '<img src="/img/modal-to-draft.svg" alt="" aria-hidden="true" />',
             onClick: () => this.handleSaveDraft(),
         });
 
         this.sendButton = new ButtonComponent({
-            label: "Отправить",
+            label: COMPOSE_MODAL_TEXTS.send,
             variant: "primary",
             onClick: () => this.handleSend(),
         });
@@ -107,7 +108,7 @@ export class ComposeModal extends Component<Props> {
             return;
         }
 
-        this.props.onSend?.({to, subject, body});
+        this.props.onSend?.({ to, subject, body });
     }
 
     private applyInitialValues(): void {

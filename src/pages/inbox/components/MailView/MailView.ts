@@ -1,5 +1,5 @@
-import { Component } from "../../../../shared/base/Component";
-import { ButtonComponent } from "../../../../shared/components/Button/Button";
+﻿import { Component } from "@shared/base/Component";
+import { ButtonComponent } from "@shared/components/Button/Button";
 import template from "./MailView.hbs";
 import "./MailView.scss";
 
@@ -28,35 +28,35 @@ export class MailViewComponent extends Component<Props> {
                 "back",
                 this.createToolbarButton({
                     icon: '<img src="/img/message-back.svg" alt="" aria-hidden="true" />',
-                    ariaLabel: "Назад",
+                    ariaLabel: "РќР°Р·Р°Рґ",
                     onClick: () => this.props.onBack?.(),
                 }),
             ],
             [
                 "delete",
                 this.createToolbarButton({
-                    label: "Удалить",
+                    label: "РЈРґР°Р»РёС‚СЊ",
                     icon: '<img src="/img/message-delete.svg" alt="" aria-hidden="true" />',
                 }),
             ],
             [
                 "folder",
                 this.createToolbarButton({
-                    label: "В папку",
+                    label: "Р’ РїР°РїРєСѓ",
                     icon: '<img src="/img/message-in-folder.svg" alt="" aria-hidden="true" />',
                 }),
             ],
             [
                 "spam",
                 this.createToolbarButton({
-                    label: "Спам",
+                    label: "РЎРїР°Рј",
                     icon: '<img src="/img/message-to-spam.svg" alt="" aria-hidden="true" />',
                 }),
             ],
             [
                 "reply",
                 this.createToolbarButton({
-                    label: "Ответить",
+                    label: "РћС‚РІРµС‚РёС‚СЊ",
                     icon: '<img src="/img/message-reply.svg" alt="" aria-hidden="true" />',
                     onClick: () => this.props.onReply?.(),
                 }),
@@ -64,7 +64,7 @@ export class MailViewComponent extends Component<Props> {
             [
                 "forward",
                 this.createToolbarButton({
-                    label: "Переслать",
+                    label: "РџРµСЂРµСЃР»Р°С‚СЊ",
                     icon: '<img src="/img/message-forward.svg" alt="" aria-hidden="true" />',
                     onClick: () => this.props.onForward?.(),
                 }),
@@ -115,7 +115,7 @@ export class MailViewComponent extends Component<Props> {
             initials,
             avatarUrl: avatarUrl ?? null,
             fromEmail: this.props.fromEmail ?? from,
-            recipient: this.props.recipient ?? "вам",
+            recipient: this.props.recipient ?? "РІР°Рј",
         });
     }
 

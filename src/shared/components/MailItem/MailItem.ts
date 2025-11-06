@@ -1,8 +1,8 @@
-import {Component} from "../../base/Component";
-import {Mail} from "../../../types/mail";
+import {Component} from "@shared/base/Component";
+import {Mail} from "@app-types/mail";
 import template from "./MailItem.hbs";
 import "./MailItem.scss";
-import { getInitials } from "../../../utils/person";
+import { getInitials } from "@utils/person";
 
 type Props = {
     mail: Mail;
@@ -71,3 +71,4 @@ export class MailItemComponent extends Component<Props> {
         await super.unmount();
     }
 }
+

@@ -1,11 +1,11 @@
-import { Page } from "../../shared/base/Page";
-import { HeaderComponent } from "../../shared/widgets/Header/Header";
+import { Page } from "@shared/base/Page";
+import { HeaderComponent } from "@shared/widgets/Header/Header";
 import { ProfileSidebarComponent } from "./components/ProfileSidebar/ProfileSidebar";
 import { ProfileFormComponent } from "./components/ProfileForm/ProfileForm";
-import { MainLayout } from "../../app/components/MainLayout/MainLayout";
+import { MainLayout } from "@app/components/MainLayout/MainLayout";
 import { fetchProfile, type ProfileData, updateProfile, uploadProfileAvatar } from "@entities/profile";
 import { deriveProfilePreview, primeProfilePreview } from "@features/profile";
-import { logout } from "../auth/api";
+import { performLogout } from "@features/auth";
 import { authManager } from "@infra";
 import { validateProfileForm } from "@utils/validation";
 import "./views/ProfilePage.scss";
@@ -185,7 +185,7 @@ export class ProfilePage extends Page {
 
     private async handleLogout(): Promise<void> {
         try {
-            await logout();
+            await performLogout();
         } catch (error) {
             console.error("Failed to logout", error);
         } finally {
@@ -258,4 +258,5 @@ export class ProfilePage extends Page {
         }
     }
 }
+
 

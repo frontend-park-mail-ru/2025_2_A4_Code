@@ -1,12 +1,12 @@
-import { HeaderComponent } from "../../shared/widgets/Header/Header";
-import { Page } from "../../shared/base/Page";
-import { SidebarComponent } from "../../shared/widgets/Sidebar/Sidebar";
-import { MailListComponent } from "../../shared/widgets/MailList/MailList";
-import { Component } from "../../shared/base/Component";
+import { HeaderComponent } from "@shared/widgets/Header/Header";
+import { Page } from "@shared/base/Page";
+import { SidebarComponent } from "@shared/widgets/Sidebar/Sidebar";
+import { MailListComponent } from "@shared/widgets/MailList/MailList";
+import { Component } from "@shared/base/Component";
 import { MailViewComponent } from "./components/MailView/MailView";
 import { ComposeModal } from "./components/ComposeModal/ComposeModal";
-import { MainLayout } from "../../app/components/MainLayout/MainLayout";
-import { logout } from "../auth/api";
+import { MainLayout } from "@app/components/MainLayout/MainLayout";
+import { performLogout } from "@features/auth";
 import { authManager } from "@infra";
 import "./views/InboxPage.scss";
 import template from "./views/InboxPage.hbs";
@@ -287,7 +287,7 @@ export class InboxPage extends Page {
 
     private async handleLogout(): Promise<void> {
         try {
-            await logout();
+            await performLogout();
         } catch (error) {
             console.error("Failed to logout", error);
         } finally {
@@ -305,3 +305,4 @@ export class InboxPage extends Page {
         return Number.isFinite(parsed) ? parsed : null;
     }
 }
+

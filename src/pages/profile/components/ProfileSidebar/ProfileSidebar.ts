@@ -1,9 +1,10 @@
-﻿import { Component } from "../../../../shared/base/Component";
+﻿import { Component } from "@shared/base/Component";
 import template from "./ProfileSidebar.hbs";
 import "./ProfileSidebar.scss";
 import { ProfileSidebarTabItem } from "./components/ProfileSidebarTabItem";
-import { ButtonComponent } from "../../../../shared/components/Button/Button";
-import { getInitials } from "../../../../utils/person";
+import { ButtonComponent } from "@shared/components/Button/Button";
+import { getInitials } from "@utils/person";
+import { PROFILE_SIDEBAR_TEXTS } from "@pages/constants/texts";
 
 type TabId = "personal" | "interface";
 
@@ -16,19 +17,6 @@ type Props = {
     onTabChange?: (tabId: TabId) => void;
 };
 
-const TABS = [
-    {
-        id: "personal" as const,
-        label: "Личные данные",
-        icon: "/img/profile-sidebar-personal-logo.svg",
-    },
-    {
-        id: "interface" as const,
-        label: "Интерфейс",
-        icon: "/img/profile-sidebar-interface-logo.svg",
-    },
-];
-
 export class ProfileSidebarComponent extends Component<Props> {
     private readonly tabs = new Map<TabId, ProfileSidebarTabItem>();
     private readonly backButton: ButtonComponent;
@@ -40,7 +28,7 @@ export class ProfileSidebarComponent extends Component<Props> {
         });
 
         this.backButton = new ButtonComponent({
-            label: "К письмам",
+            label: PROFILE_SIDEBAR_TEXTS.backButtonLabel,
             variant: "link",
             icon: '<img src="/img/arrow-left.svg" alt="" aria-hidden="true" />',
             onClick: () => this.props.onNavigateInbox?.(),
@@ -60,9 +48,9 @@ export class ProfileSidebarComponent extends Component<Props> {
         const tabsRoot = this.element?.querySelector('[data-slot="tabs"]') as HTMLElement | null;
         if (tabsRoot) {
             tabsRoot.innerHTML = "";
-            TABS.forEach((tab) => {
+            PROFILE_SIDEBAR_TEXTS.tabs.forEach((tab) => {
                 const component = new ProfileSidebarTabItem({
-                    id: tab.id,
+                    id: tab.id as TabId,
                     label: tab.label,
                     icon: tab.icon,
                     active: this.props.activeTab === tab.id,
@@ -70,7 +58,7 @@ export class ProfileSidebarComponent extends Component<Props> {
                 });
                 component.render();
                 component.mount(tabsRoot).then();
-                this.tabs.set(tab.id, component);
+                this.tabs.set(tab.id as TabId, component);
             });
         }
 
@@ -136,9 +124,5 @@ export class ProfileSidebarComponent extends Component<Props> {
             placeholder.textContent = initials;
             avatarContainer.appendChild(placeholder);
         }
-    }
-
-    private getInitials(name: string): string {
-        return getInitials(name, "--");
     }
 }

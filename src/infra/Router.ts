@@ -1,5 +1,5 @@
-import { Layout } from "../shared/base/Layout";
-import { Page } from "../shared/base/Page";
+﻿import { Layout } from "@shared/base/Layout";
+import { Page } from "@shared/base/Page";
 import { authManager } from "./AuthManager";
 
 export type RouteConfig = {
@@ -211,3 +211,4 @@ export class Router {
         return true;
     }
 }
+

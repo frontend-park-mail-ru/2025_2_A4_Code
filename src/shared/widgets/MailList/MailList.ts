@@ -1,8 +1,9 @@
-import { Component } from "../../base/Component";
+import { Component } from "@shared/base/Component";
 import template from "./MailList.hbs";
 import "./MailList.scss";
-import { MailItemComponent } from "../../components/MailItem/MailItem";
-import { Mail } from "../../../types/mail";
+import { MailItemComponent } from "@shared/components/MailItem/MailItem";
+import { Mail } from "@app-types/mail";
+import { MAIL_LIST_TEXTS } from "@shared/constants/texts";
 
 type Props = {
     items?: Mail[];
@@ -17,7 +18,7 @@ export class MailListComponent extends Component<Props> {
         super({
             items: props.items ?? [],
             onOpen: props.onOpen,
-            emptyMessage: props.emptyMessage ?? "No_emails_text",
+            emptyMessage: props.emptyMessage ?? MAIL_LIST_TEXTS.emptyMessage,
         });
     }
 
@@ -44,7 +45,7 @@ export class MailListComponent extends Component<Props> {
         if (items.length === 0) {
             const empty = document.createElement("div");
             empty.className = "mail-list__empty";
-            empty.textContent = this.props.emptyMessage ?? "No_emails_text";
+            empty.textContent = this.props.emptyMessage ?? MAIL_LIST_TEXTS.emptyMessage;
             container.appendChild(empty);
             return;
         }
@@ -79,4 +80,5 @@ export class MailListComponent extends Component<Props> {
         await super.unmount();
     }
 }
+
 

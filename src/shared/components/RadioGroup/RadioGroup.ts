@@ -1,4 +1,4 @@
-import {Component} from "../../base/Component";
+import {Component} from "@shared/base/Component";
 import template from "./RadioGroup.hbs";
 import "./RadioGroup.scss";
 

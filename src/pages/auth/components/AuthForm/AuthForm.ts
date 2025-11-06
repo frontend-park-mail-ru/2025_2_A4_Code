@@ -1,10 +1,10 @@
-import { Component } from "../../../../shared/base/Component";
+import { Component } from "@shared/base/Component";
 import template from "./AuthForm.hbs";
 import "./AuthForm.scss";
-import { AUTH_PAGE_TEXTS } from "../../constants";
-import { InputFieldComponent } from "../../../../shared/components/InputField/InputField";
-import { ButtonComponent } from "../../../../shared/components/Button/Button";
-import { FieldError, validateLoginForm } from "../../../../utils";
+import { AUTH_PAGE_TEXTS } from "@pages/constants/texts";
+import { InputFieldComponent } from "@shared/components/InputField/InputField";
+import { ButtonComponent } from "@shared/components/Button/Button";
+import { FieldError, validateLoginForm } from "@utils";
 
 type SubmitPayload = {
     login: string;
@@ -146,4 +146,5 @@ export class AuthFormComponent extends Component<Props> {
         this.errorContainer.classList.toggle("auth-form__error--visible", Boolean(message));
     }
 }
+
 

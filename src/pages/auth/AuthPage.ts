@@ -1,15 +1,15 @@
-import { Page } from "../../shared/base/Page";
+﻿import { Page } from "@shared/base/Page";
 import { AuthFormComponent } from "./components";
-import { AUTH_PAGE_TEXTS } from "./constants";
-import { ButtonComponent } from "../../shared/components/Button/Button";
-import { login } from "./api";
-import { LoginPayload } from "./api/authApi";
+import { AUTH_PAGE_TEXTS } from "@pages/constants/texts";
+import { ButtonComponent } from "@shared/components/Button/Button";
+import { authenticate } from "@features/auth";
+import type { LoginPayload } from "@entities/auth";
 import { authManager } from "@infra";
 import "./views/AuthPage.scss";
 
 export class AuthPage extends Page {
-    private form: AuthFormComponent;
-    private registerButton: ButtonComponent;
+    private readonly form: AuthFormComponent;
+    private readonly registerButton: ButtonComponent;
 
     constructor() {
         super();
@@ -54,41 +54,22 @@ export class AuthPage extends Page {
         return { content };
     }
 
-    private async handleSubmit(payload: LoginPayload) {
+    private async handleSubmit(payload: LoginPayload): Promise<void> {
         this.form.clearErrors();
         this.form.setFormError(null);
 
-        try {
-            await login(payload);
-            authManager.setAuthenticated(true);
+        const result = await authenticate(payload);
+        authManager.setAuthenticated(result.success);
+
+        if (result.success) {
             this.router.navigate("/inbox");
-        } catch (error) {
-            authManager.setAuthenticated(false);
-            const message = this.extractErrorMessage(error);
-            this.form.setFormError(message);
-            console.error("Failed to login", error);
+            return;
         }
+
+        this.form.setFormError(result.message);
     }
 
-    private handleForgotPassword() {
+    private handleForgotPassword(): void {
         console.log("Reset password flow is not implemented yet.");
-    }
-
-    private extractErrorMessage(error: unknown): string {
-        if (error instanceof Error) {
-            const raw = error.message?.trim();
-            if (raw) {
-                try {
-                    const parsed = JSON.parse(raw);
-                    if (typeof parsed?.message === "string" && parsed.message.trim().length > 0) {
-                        return parsed.message.trim();
-                    }
-                } catch {
-                    // ignore parse errors
-                }
-                return raw;
-            }
-        }
-        return "Не удалось выполнить вход. Проверьте данные и попробуйте снова.";
     }
 }

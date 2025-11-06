@@ -1,4 +1,4 @@
-import {Component} from "../../../../../../shared/base/Component";
+﻿import {Component} from "@shared/base/Component";
 import template from "./ProfileSidebarTabItem.hbs";
 import "./ProfileSidebarTabItem.scss";
 
@@ -55,3 +55,4 @@ export class ProfileSidebarTabItem extends Component<Props> {
         iconContainer.style.backgroundImage = `url(${this.props.icon})`;
     }
 }
+

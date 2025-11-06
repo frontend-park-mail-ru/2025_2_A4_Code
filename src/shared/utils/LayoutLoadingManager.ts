@@ -1,4 +1,4 @@
-import { Layout } from "../base/Layout";
+import { Layout } from "@shared/base/Layout";
 
 type LoadableLayout = Layout & { setLoading?(loading: boolean): void };
 

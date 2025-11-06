@@ -1,7 +1,11 @@
-﻿import {Component} from "../../base/Component";
+﻿import { Component } from "@shared/base/Component";
 import template from "./Sidebar.hbs";
 import "./Sidebar.scss";
-import {SidebarFolderItem, SidebarFolderItemProps} from "../../components/SidebarFolderItem/SidebarFolderItem";
+import {
+    SidebarFolderItem,
+    type SidebarFolderItemProps,
+} from "@shared/components/SidebarFolderItem/SidebarFolderItem";
+import { SIDEBAR_TEXTS } from "@shared/constants/texts";
 
 export type Folder = {
     id: string;
@@ -17,16 +21,6 @@ type Props = {
     onFolderSelect?: (folderId: string) => void;
 };
 
-const DEFAULT_FOLDERS: Folder[] = [
-    { id: "inbox", name: "Входящие", count: 0, icon: "/img/folder-inbox.svg" },
-    { id: "conversations", name: "Диалоги", icon: "/img/folder-dialog.svg" },
-    { id: "sent", name: "Отправленные", icon: "/img/folder-sent.svg" },
-    { id: "drafts", name: "Черновики", icon: "/img/folder-drafts.svg" },
-    { id: "spam", name: "Спам", icon: "/img/folder-spam.svg" },
-    { id: "trash", name: "Корзина", icon: "/img/folder-trash.svg" },
-    { id: "custom", name: "Новая папка", icon: "/img/folder-add.svg" },
-];
-
 export class SidebarComponent extends Component<Props> {
     private composeHandler?: (event: Event) => void;
     private foldersRoot?: HTMLElement | null;
@@ -34,15 +28,17 @@ export class SidebarComponent extends Component<Props> {
 
     constructor(props: Props = {}) {
         super({
-            folders: props.folders ?? DEFAULT_FOLDERS,
-            activeFolderId: props.activeFolderId ?? DEFAULT_FOLDERS[0].id,
+            folders: props.folders ?? SIDEBAR_TEXTS.defaultFolders,
+            activeFolderId: props.activeFolderId ?? SIDEBAR_TEXTS.defaultFolders[0].id,
             onCompose: props.onCompose,
             onFolderSelect: props.onFolderSelect,
         });
     }
 
     protected renderTemplate(): string {
-        return template({});
+        return template({
+            composeButtonText: SIDEBAR_TEXTS.composeButton,
+        });
     }
 
     protected afterRender(): void {
@@ -55,7 +51,7 @@ export class SidebarComponent extends Component<Props> {
                 event.preventDefault();
                 this.props.onCompose?.();
             };
-            composeBtn.addEventListener('click', this.composeHandler);
+            composeBtn.addEventListener("click", this.composeHandler);
         }
 
         this.renderFolders();
@@ -69,13 +65,13 @@ export class SidebarComponent extends Component<Props> {
     private renderFolders(): void {
         if (!this.foldersRoot) return;
 
-        const folders = this.props.folders ?? DEFAULT_FOLDERS;
+        const folders = this.props.folders ?? SIDEBAR_TEXTS.defaultFolders;
 
         for (const [, item] of this.folderItems) {
             item.unmount().then();
         }
         this.folderItems.clear();
-        this.foldersRoot.innerHTML = '';
+        this.foldersRoot.innerHTML = "";
 
         folders.forEach((folder) => {
             const itemProps: SidebarFolderItemProps = {
@@ -97,7 +93,7 @@ export class SidebarComponent extends Component<Props> {
         const composeBtn = element?.querySelector('[data-compose]') as HTMLElement | null;
 
         if (composeBtn && this.composeHandler) {
-            composeBtn.removeEventListener('click', this.composeHandler);
+            composeBtn.removeEventListener("click", this.composeHandler);
             this.composeHandler = undefined;
         }
 
@@ -109,4 +105,3 @@ export class SidebarComponent extends Component<Props> {
         await super.unmount();
     }
 }
-

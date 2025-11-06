@@ -1,7 +1,8 @@
-import { Component } from "../../base/Component";
-import { ButtonComponent } from "../../components/Button/Button";
+import { Component } from "@shared/base/Component";
+import { ButtonComponent } from "@shared/components/Button/Button";
 import template from "./AvatarMenu.hbs";
 import "./AvatarMenu.scss";
+import { AVATAR_MENU_TEXTS } from "@shared/constants/texts";
 
 type Props = {
     onProfile?: () => void;
@@ -18,7 +19,7 @@ export class AvatarMenu extends Component<Props> {
         super(props);
 
         this.profileButton = new ButtonComponent({
-            label: "Профиль",
+            label: AVATAR_MENU_TEXTS.profile,
             variant: "link",
             fullWidth: true,
             icon: '<img src="/img/menu-profile-logo.svg" alt="" aria-hidden="true" />',
@@ -26,7 +27,7 @@ export class AvatarMenu extends Component<Props> {
         });
         
         this.settingsButton = new ButtonComponent({
-            label: "Настройки",
+            label: AVATAR_MENU_TEXTS.settings,
             variant: "link",
             fullWidth: true,
             icon: '<img src="/img/menu-settings-logo.svg" alt="" aria-hidden="true" />',
@@ -34,7 +35,7 @@ export class AvatarMenu extends Component<Props> {
         });
 
         this.logoutButton = new ButtonComponent({
-            label: "Выйти",
+            label: AVATAR_MENU_TEXTS.logout,
             variant: "link",
             fullWidth: true,
             icon: '<img src="/img/menu-logout-logo.svg" alt="" aria-hidden="true" />',
@@ -56,17 +57,17 @@ export class AvatarMenu extends Component<Props> {
         this.props = { ...this.props, ...newProps };
 
         this.profileButton.setProps({
-            label: "Профиль",
+            label: AVATAR_MENU_TEXTS.profile,
             onClick: () => this.props.onProfile?.(),
         });
 
         this.settingsButton.setProps({
-            label: "Настройки",
+            label: AVATAR_MENU_TEXTS.settings,
             onClick: () => this.props.onSettings?.(),
         });
 
         this.logoutButton.setProps({
-            label: "Выйти",
+            label: AVATAR_MENU_TEXTS.logout,
             onClick: () => this.props.onLogout?.(),
         });
     }

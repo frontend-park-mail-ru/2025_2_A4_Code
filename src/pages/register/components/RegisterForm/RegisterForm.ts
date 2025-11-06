@@ -1,10 +1,11 @@
-import { Component } from "../../../../shared/base/Component";
+﻿import { Component } from "@shared/base/Component";
 import template from "./RegisterForm.hbs";
 import "./RegisterForm.scss";
-import { InputFieldComponent } from "../../../../shared/components/InputField/InputField";
-import { RadioGroupComponent } from "../../../../shared/components/RadioGroup/RadioGroup";
-import { ButtonComponent } from "../../../../shared/components/Button/Button";
-import type { FieldError, RegisterFormFields } from "../../../../utils";
+import { InputFieldComponent } from "@shared/components/InputField/InputField";
+import { RadioGroupComponent } from "@shared/components/RadioGroup/RadioGroup";
+import { ButtonComponent } from "@shared/components/Button/Button";
+import type { FieldError, RegisterFormFields } from "@utils";
+import { REGISTER_FORM_TEXTS } from "@pages/constants/texts";
 
 type SubmitPayload = {
     name: string;
@@ -35,7 +36,7 @@ export class RegisterFormComponent extends Component<Props> {
 
         this.nameField = new InputFieldComponent({
             name: "name",
-            placeholder: "Имя",
+            placeholder: REGISTER_FORM_TEXTS.namePlaceholder,
             autocomplete: "name",
             required: true,
             variant: "underline",
@@ -44,7 +45,7 @@ export class RegisterFormComponent extends Component<Props> {
 
         this.loginField = new InputFieldComponent({
             name: "login",
-            placeholder: "login@flintmail.ru",
+            placeholder: REGISTER_FORM_TEXTS.loginPlaceholder,
             required: true,
             variant: "underline",
             onInput: () => this.clearFieldError("login"),
@@ -59,17 +60,17 @@ export class RegisterFormComponent extends Component<Props> {
 
         this.genderGroup = new RadioGroupComponent({
             name: "gender",
-            label: "Пол",
+            label: REGISTER_FORM_TEXTS.genderLabel,
             options: [
-                { label: "Мужской", value: "male" },
-                { label: "Женский", value: "female" },
+                { label: REGISTER_FORM_TEXTS.genderOptions.male, value: "male" },
+                { label: REGISTER_FORM_TEXTS.genderOptions.female, value: "female" },
             ],
         });
 
         this.passwordField = new InputFieldComponent({
             name: "password",
             type: "password",
-            placeholder: "Пароль",
+            placeholder: REGISTER_FORM_TEXTS.passwordPlaceholder,
             required: true,
             autocomplete: "new-password",
             variant: "underline",
@@ -79,7 +80,7 @@ export class RegisterFormComponent extends Component<Props> {
         this.passwordRepeatField = new InputFieldComponent({
             name: "passwordRepeat",
             type: "password",
-            placeholder: "Повторите пароль",
+            placeholder: REGISTER_FORM_TEXTS.passwordRepeatPlaceholder,
             required: true,
             autocomplete: "new-password",
             variant: "underline",
@@ -88,7 +89,7 @@ export class RegisterFormComponent extends Component<Props> {
 
         this.submitButton = new ButtonComponent({
             type: "submit",
-            label: "Зарегистрироваться",
+            label: REGISTER_FORM_TEXTS.submitLabel,
             variant: "primary",
             fullWidth: true,
         });
@@ -195,4 +196,3 @@ export class RegisterFormComponent extends Component<Props> {
         this.errorContainer.classList.toggle("register-form__error--visible", Boolean(message));
     }
 }
-

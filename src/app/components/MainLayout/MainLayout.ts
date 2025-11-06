@@ -1,7 +1,7 @@
-import template from "../MainLayout/MainLayout.hbs";
+import template from "./MainLayout.hbs";
 import "./MainLayout.scss";
-import {Layout, SlotContent} from "../../../shared/base/Layout";
-import {Component as BaseComponent} from "../../../shared/base/Component";
+import {Layout, SlotContent} from "@shared/base/Layout";
+import {Component as BaseComponent} from "@shared/base/Component";
 
 export class MainLayout extends Layout {
     private mainElement: HTMLElement | null = null;
@@ -100,3 +100,4 @@ export class MainLayout extends Layout {
         modalRoot.classList.toggle('main-layout__modal-root--active', hasModal);
     }
 }
+

@@ -1,13 +1,15 @@
-import { Page } from "../../shared/base/Page";
+﻿import { Page } from "@shared/base/Page";
 import { RegisterFormComponent } from "./components";
-import { ButtonComponent } from "../../shared/components/Button/Button";
-import { register, RegisterPayload } from "./api";
-import { formatDateToBackend, normalizeUsername, validateRegisterForm } from "../../utils";
+import { ButtonComponent } from "@shared/components/Button/Button";
+import { registerUser } from "@features/auth";
+import type { RegisterPayload } from "@entities/auth";
+import { formatDateToBackend, normalizeUsername, validateRegisterForm } from "@utils";
+import { REGISTER_PAGE_TEXTS } from "@pages/constants/texts";
 import "./views/RegisterPage.scss";
 
 export class RegisterPage extends Page {
-    private form: RegisterFormComponent;
-    private authButton: ButtonComponent;
+    private readonly form: RegisterFormComponent;
+    private readonly authButton: ButtonComponent;
 
     constructor() {
         super();
@@ -17,7 +19,7 @@ export class RegisterPage extends Page {
 
         this.authButton = new ButtonComponent({
             variant: "secondary",
-            label: "У меня уже есть аккаунт",
+            label: REGISTER_PAGE_TEXTS.switchToAuthButton,
             onClick: () => this.router.navigate("/auth"),
             fullWidth: true,
         });
@@ -33,7 +35,7 @@ export class RegisterPage extends Page {
 
         const title = document.createElement("h1");
         title.className = "register-page__title";
-        title.textContent = "Регистрация";
+        title.textContent = REGISTER_PAGE_TEXTS.headerText;
         content.appendChild(title);
 
         const formWrapper = document.createElement("div");
@@ -58,12 +60,13 @@ export class RegisterPage extends Page {
         gender?: string;
         password: string;
         passwordRepeat: string;
-    }) {
+    }): Promise<void> {
         const errors = validateRegisterForm(payload);
         this.form.applyErrors(errors);
         if (errors.length > 0) {
             return;
         }
+
         this.form.clearErrors();
         this.form.setFormError(null);
 
@@ -71,35 +74,16 @@ export class RegisterPage extends Page {
             name: payload.name.trim(),
             username: normalizeUsername(payload.login),
             birthday: formatDateToBackend(payload.birthdate),
-            gender: (payload.gender as "male" | "female") ?? "male",
+            gender: (payload.gender as RegisterPayload["gender"]) ?? "male",
             password: payload.password,
         };
 
-        try {
-            await register(requestPayload);
-            this.router.navigate("/auth");
-        } catch (error) {
-            const message = this.extractErrorMessage(error);
-            this.form.setFormError(message);
-            console.error("Failed to register", error);
+        const result = await registerUser(requestPayload);
+        if (!result.success) {
+            this.form.setFormError(result.message);
+            return;
         }
-    }
 
-    private extractErrorMessage(error: unknown): string {
-        if (error instanceof Error) {
-            const raw = error.message?.trim();
-            if (raw) {
-                try {
-                    const parsed = JSON.parse(raw);
-                    if (typeof parsed?.message === "string" && parsed.message.trim().length > 0) {
-                        return parsed.message.trim();
-                    }
-                } catch {
-                    // ignore json parse errors
-                }
-                return raw;
-            }
-        }
-        return "Не удалось завершить регистрацию. Попробуйте ещё раз.";
+        this.router.navigate("/auth");
     }
 }
