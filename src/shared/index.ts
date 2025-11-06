@@ -4,6 +4,7 @@ export { Page } from "./base/Page";
 
 export { LayoutLoadingManager } from "./utils/LayoutLoadingManager";
 export { extractApiErrorMessage } from "./utils/apiError";
+export { getOnlineStatus, subscribeToOnlineStatus } from "./utils/onlineStatus";
 
 export { ApiService, apiService, type RequestOptions } from "./api/ApiService";
 export type { ApiResponse } from "./api/types";
@@ -18,6 +19,7 @@ export {
     SidebarFolderItem,
     type SidebarFolderItemProps,
 } from "./components/SidebarFolderItem/SidebarFolderItem";
+export { OfflinePlaceholderComponent } from "./components/OfflinePlaceholder/OfflinePlaceholder";
 
 export { HeaderComponent } from "./widgets/Header/Header";
 export { MailListComponent } from "./widgets/MailList/MailList";

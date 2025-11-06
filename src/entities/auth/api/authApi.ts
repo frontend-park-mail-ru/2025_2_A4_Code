@@ -31,13 +31,6 @@ export async function logout(): Promise<VoidResponse> {
     });
 }
 
-export async function refreshAuth(): Promise<VoidResponse> {
-    return apiService.request<VoidResponse>("/auth/refresh", {
-        method: "POST",
-        skipAuthRefresh: true,
-    });
-}
-
 export async function register(payload: RegisterPayload): Promise<VoidResponse> {
     return apiService.request<VoidResponse>("/auth/signup", {
         method: "POST",

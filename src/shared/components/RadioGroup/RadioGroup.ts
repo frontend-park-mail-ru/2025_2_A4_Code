@@ -13,17 +13,19 @@ type Props = {
     options: Option[];
     value?: string;
     onChange?: (value: string) => void;
+    disabled?: boolean;
 };
 
 export class RadioGroupComponent extends Component<Props> {
     protected renderTemplate(): string {
-        const {name, label, options, value} = this.props;
+        const {name, label, options, value, disabled} = this.props;
         return template({
             name,
             label,
             options: options.map(option => ({
                 ...option,
                 checked: option.value === value,
+                disabled,
             })),
         });
     }
@@ -49,6 +51,14 @@ export class RadioGroupComponent extends Component<Props> {
         const inputs = Array.from(this.element?.querySelectorAll('input[type="radio"]') ?? []) as HTMLInputElement[];
         inputs.forEach((input) => {
             input.checked = value !== undefined && input.value === value;
+        });
+    }
+
+    public setDisabled(disabled: boolean): void {
+        this.props = { ...this.props, disabled };
+        const inputs = Array.from(this.element?.querySelectorAll('input[type="radio"]') ?? []) as HTMLInputElement[];
+        inputs.forEach((input) => {
+            input.disabled = disabled;
         });
     }
 }

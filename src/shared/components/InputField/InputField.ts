@@ -14,6 +14,7 @@ type Props = {
     onInput?: (value: string) => void;
     variant?: "filled" | "underline";
     hint?: string;
+    disabled?: boolean;
 };
 
 export class InputFieldComponent extends Component<Props> {
@@ -36,6 +37,7 @@ export class InputFieldComponent extends Component<Props> {
             required: this.props.required,
             autocomplete: this.props.autocomplete,
             variant: this.props.variant ?? "filled",
+            disabled: this.props.disabled ?? false,
         });
     }
 
@@ -79,6 +81,14 @@ export class InputFieldComponent extends Component<Props> {
         } else {
             errorEl.textContent = "";
             errorEl.hidden = true;
+        }
+    }
+
+    public setDisabled(disabled: boolean): void {
+        this.props = { ...this.props, disabled };
+        const input = this.element?.querySelector('[data-input]') as HTMLInputElement | null;
+        if (input) {
+            input.disabled = disabled;
         }
     }
 }

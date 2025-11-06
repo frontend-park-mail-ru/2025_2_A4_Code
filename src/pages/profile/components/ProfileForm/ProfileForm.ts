@@ -7,6 +7,7 @@ import "./ProfileForm.scss";
 import type { FieldError, ProfileFormFields } from "@utils";
 import { getInitials } from "@utils/person";
 import { PROFILE_FORM_TEXTS } from "@pages/constants/texts";
+import { getOnlineStatus, subscribeToOnlineStatus } from "@shared/utils/onlineStatus";
 
 type Gender = "male" | "female" | "";
 
@@ -31,8 +32,8 @@ type Props = EditableValues & {
 };
 
 const MAX_AVATAR_SIZE = 5 << 20; // 5 MB
-const UPLOAD_BUTTON_DEFAULT_LABEL = "Р—Р°РіСЂСѓР·РёС‚СЊ С„РѕС‚Рѕ";
-const UPLOAD_BUTTON_LOADING_LABEL = "Р—Р°РіСЂСѓР·РєР°...";
+const UPLOAD_BUTTON_DEFAULT_LABEL = PROFILE_FORM_TEXTS.uploadButtonDefault;
+const UPLOAD_BUTTON_LOADING_LABEL = PROFILE_FORM_TEXTS.uploadButtonLoading;
 
 export class ProfileFormComponent extends Component<Props> {
     private readonly firstNameField: InputFieldComponent;
@@ -49,6 +50,8 @@ export class ProfileFormComponent extends Component<Props> {
     private initialValues: EditableValues;
     private currentValues: EditableValues;
     private fieldErrors: Partial<Record<keyof EditableValues, string>> = {};
+    private isOnline: boolean = getOnlineStatus();
+    private unsubscribeOnline?: () => void;
 
     constructor(props: Props) {
         super({
@@ -64,28 +67,28 @@ export class ProfileFormComponent extends Component<Props> {
         this.currentValues = { ...this.initialValues };
 
         this.firstNameField = new InputFieldComponent({
-            label: "РРјСЏ",
+            label: PROFILE_FORM_TEXTS.firstNameLabel,
             name: "firstName",
             variant: "filled",
             onInput: (value) => this.handleInputChange("firstName", value),
         });
 
         this.lastNameField = new InputFieldComponent({
-            label: "Р¤Р°РјРёР»РёСЏ",
+            label: PROFILE_FORM_TEXTS.lastNameLabel,
             name: "lastName",
             variant: "filled",
             onInput: (value) => this.handleInputChange("lastName", value),
         });
 
         this.middleNameField = new InputFieldComponent({
-            label: "РћС‚С‡РµСЃС‚РІРѕ",
+            label: PROFILE_FORM_TEXTS.middleNameLabel,
             name: "middleName",
             variant: "filled",
             onInput: (value) => this.handleInputChange("middleName", value),
         });
 
         this.birthDateField = new InputFieldComponent({
-            label: "Р”Р°С‚Р° СЂРѕР¶РґРµРЅРёСЏ",
+            label: PROFILE_FORM_TEXTS.birthDateLabel,
             name: "birthDate",
             type: "date",
             variant: "filled",
@@ -94,10 +97,10 @@ export class ProfileFormComponent extends Component<Props> {
 
         this.genderField = new RadioGroupComponent({
             name: "gender",
-            label: "РџРѕР»",
+            label: PROFILE_FORM_TEXTS.genderLabel,
             options: [
-                { label: "РњСѓР¶СЃРєРѕР№", value: "male" },
-                { label: "Р–РµРЅСЃРєРёР№", value: "female" },
+                { label: PROFILE_FORM_TEXTS.genderOptions.male, value: "male" },
+                { label: PROFILE_FORM_TEXTS.genderOptions.female, value: "female" },
             ],
             value: this.props.gender ?? "",
             onChange: (value) => this.handleInputChange("gender", value),
@@ -110,15 +113,21 @@ export class ProfileFormComponent extends Component<Props> {
         });
 
         this.saveButton = new ButtonComponent({
-            label: "РЎРѕС…СЂР°РЅРёС‚СЊ",
+            label: PROFILE_FORM_TEXTS.saveButtonLabel,
             variant: "primary",
             onClick: () => this.handleSave(),
         });
 
         this.cancelButton = new ButtonComponent({
-            label: "РћС‚РјРµРЅРёС‚СЊ",
+            label: PROFILE_FORM_TEXTS.cancelButtonLabel,
             variant: "secondary",
             onClick: () => this.handleCancel(),
+        });
+
+        this.applyOnlineState();
+        this.unsubscribeOnline = subscribeToOnlineStatus((online) => {
+            this.isOnline = online;
+            this.applyOnlineState();
         });
     }
 
@@ -127,6 +136,7 @@ export class ProfileFormComponent extends Component<Props> {
             fullName: this.props.fullName,
             avatarUrl: this.props.avatarUrl ?? null,
             initials: getInitials(this.props.fullName),
+            title: PROFILE_FORM_TEXTS.title,
         });
     }
 
@@ -147,6 +157,7 @@ export class ProfileFormComponent extends Component<Props> {
         this.updateAvatar();
         this.updateUploadButton();
         this.updateButtons();
+        this.applyOnlineState();
     }
 
     public setProfile(values: Partial<Props>): void {
@@ -163,6 +174,7 @@ export class ProfileFormComponent extends Component<Props> {
         this.updateAvatar();
         this.updateUploadButton();
         this.updateButtons();
+        this.applyOnlineState();
     }
 
     public setAvatarUrl(avatarUrl: string | null): void {
@@ -180,6 +192,7 @@ export class ProfileFormComponent extends Component<Props> {
         };
         this.updateUploadButton();
         this.updateButtons();
+        this.applyOnlineState();
     }
 
     public setSubmitting(isSubmitting: boolean): void {
@@ -188,9 +201,12 @@ export class ProfileFormComponent extends Component<Props> {
             isSubmitting,
         };
         this.updateButtons();
+        this.applyOnlineState();
     }
 
     public async unmount(): Promise<void> {
+        this.unsubscribeOnline?.();
+        this.unsubscribeOnline = undefined;
         if (this.fileInput) {
             this.fileInput.removeEventListener("change", this.handleFileChange);
             this.fileInput = null;
@@ -329,7 +345,7 @@ export class ProfileFormComponent extends Component<Props> {
         const isUploading = Boolean(this.props.isAvatarUploading);
         this.uploadButton.setProps({
             label: this.getUploadButtonLabel(),
-            disabled: isUploading,
+            disabled: isUploading || !this.isOnline,
             variant: "secondary",
             onClick: () => this.handleUploadClick(),
         });
@@ -347,15 +363,15 @@ export class ProfileFormComponent extends Component<Props> {
         const hasChanges = this.isDirty();
 
         this.saveButton.setProps({
-            label: isSubmitting ? "РЎРѕС…СЂР°РЅСЏРµРј..." : "РЎРѕС…СЂР°РЅРёС‚СЊ",
-            disabled: isSubmitting || isUploading || !hasChanges,
+            label: isSubmitting ? PROFILE_FORM_TEXTS.saveButtonLoading : PROFILE_FORM_TEXTS.saveButtonLabel,
+            disabled: isSubmitting || isUploading || !hasChanges || !this.isOnline,
             variant: "primary",
             onClick: () => this.handleSave(),
         });
 
         this.cancelButton.setProps({
-            label: "РћС‚РјРµРЅРёС‚СЊ",
-            disabled: isSubmitting,
+            label: PROFILE_FORM_TEXTS.cancelButtonLabel,
+            disabled: isSubmitting || !this.isOnline,
             variant: "secondary",
             onClick: () => this.handleCancel(),
         });
@@ -406,7 +422,7 @@ export class ProfileFormComponent extends Component<Props> {
     }
 
     private handleUploadClick(): void {
-        if (this.props.isAvatarUploading) {
+        if (this.props.isAvatarUploading || !this.isOnline) {
             return;
         }
         this.fileInput?.click();
@@ -419,7 +435,7 @@ export class ProfileFormComponent extends Component<Props> {
         }
 
         if (file.size > MAX_AVATAR_SIZE) {
-            console.warn("Р Р°Р·РјРµСЂ С„Р°Р№Р»Р° РїСЂРµРІС‹С€Р°РµС‚ 5 РњР‘");
+            console.warn(PROFILE_FORM_TEXTS.avatarTooLargeWarning);
             this.fileInput!.value = "";
             return;
         }
@@ -466,7 +482,21 @@ export class ProfileFormComponent extends Component<Props> {
         return "";
     }
 
+    private applyOnlineState(): void {
+        const inputsDisabled = !this.isOnline;
+        this.firstNameField.setDisabled(inputsDisabled);
+        this.lastNameField.setDisabled(inputsDisabled);
+        this.middleNameField.setDisabled(inputsDisabled);
+        this.birthDateField.setDisabled(inputsDisabled);
+        this.genderField.setDisabled(inputsDisabled);
+
+        if (this.fileInput) {
+            this.fileInput.disabled = inputsDisabled;
+        }
+
+        this.updateUploadButton();
+        this.updateButtons();
+    }
+
 }
-
-
 

@@ -1,0 +1,31 @@
+.offline-placeholder {
+  padding: 48px 24px;
+  text-align: center;
+  color: #1f2544;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+
+  &__icon {
+    width: 88px;
+    height: 88px;
+  }
+
+  &__title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  &__message {
+    margin: 0;
+    color: #5d6381;
+    max-width: 320px;
+  }
+
+  &__action {
+    margin-top: 16px;
+  }
+}

@@ -2,15 +2,19 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
+import webpack from 'webpack';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default {
-    entry: './src/index.ts',
+    entry: {
+        main: './src/index.ts',
+        sw: './src/serviceWorker/sw.ts',
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js',
+        filename: (pathData) => (pathData.chunk && pathData.chunk.name === 'sw' ? 'sw.js' : 'bundle.js'),
         clean: true,
         publicPath: '/',
     },
@@ -75,7 +79,10 @@ export default {
         },
     },
     plugins: [
-        new HtmlWebpackPlugin({ template: './public/index.html' }),
+        new HtmlWebpackPlugin({
+            template: './public/index.html',
+            chunks: ['main'],
+        }),
         new CopyWebpackPlugin({
             patterns: [
                 {
@@ -86,5 +93,29 @@ export default {
                 },
             ],
         }),
+        new (class PublicAssetsManifestPlugin {
+            apply(compiler) {
+                compiler.hooks.thisCompilation.tap('PublicAssetsManifestPlugin', (compilation) => {
+                    compilation.hooks.processAssets.tap(
+                        {
+                            name: 'PublicAssetsManifestPlugin',
+                            stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+                        },
+                        (assets) => {
+                            const images = Object.keys(assets)
+                                .filter((filename) => filename.startsWith('img/'))
+                                .filter((filename) => /\.(png|jpe?g|svg|gif|webp|ico)$/.test(filename))
+                                .map((filename) => `/${filename}`);
+
+                            const manifest = JSON.stringify({ images }, null, 2);
+                            compilation.emitAsset(
+                                'public-assets-manifest.json',
+                                new webpack.sources.RawSource(manifest)
+                            );
+                        }
+                    );
+                });
+            }
+        })(),
     ]
 };

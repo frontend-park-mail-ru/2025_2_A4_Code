@@ -2,6 +2,7 @@
 import { RegisterFormComponent } from "./components";
 import { ButtonComponent } from "@shared/components/Button/Button";
 import { registerUser } from "@features/auth";
+import { authManager } from "@infra";
 import type { RegisterPayload } from "@entities/auth";
 import { formatDateToBackend, normalizeUsername, validateRegisterForm } from "@utils";
 import { REGISTER_PAGE_TEXTS } from "@pages/constants/texts";
@@ -84,6 +85,7 @@ export class RegisterPage extends Page {
             return;
         }
 
-        this.router.navigate("/auth");
+        authManager.setAuthenticated(true);
+        await this.router.navigate("/inbox");
     }
 }

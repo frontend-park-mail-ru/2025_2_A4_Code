@@ -6,6 +6,7 @@ import {
     type SidebarFolderItemProps,
 } from "@shared/components/SidebarFolderItem/SidebarFolderItem";
 import { SIDEBAR_TEXTS } from "@shared/constants/texts";
+import { getOnlineStatus, subscribeToOnlineStatus } from "@shared/utils/onlineStatus";
 
 export type Folder = {
     id: string;
@@ -25,6 +26,9 @@ export class SidebarComponent extends Component<Props> {
     private composeHandler?: (event: Event) => void;
     private foldersRoot?: HTMLElement | null;
     private folderItems: Map<string, SidebarFolderItem> = new Map();
+    private composeButton?: HTMLElement | null;
+    private isOnline: boolean = getOnlineStatus();
+    private unsubscribeOnline?: () => void;
 
     constructor(props: Props = {}) {
         super({
@@ -45,13 +49,25 @@ export class SidebarComponent extends Component<Props> {
         const element = this.element!;
         const composeBtn = element.querySelector('[data-compose]') as HTMLElement | null;
         this.foldersRoot = element.querySelector('[data-slot="folders"]') as HTMLElement | null;
+        this.composeButton = composeBtn;
 
         if (composeBtn) {
             this.composeHandler = (event: Event) => {
                 event.preventDefault();
+                if (!this.isOnline) {
+                    return;
+                }
                 this.props.onCompose?.();
             };
             composeBtn.addEventListener("click", this.composeHandler);
+            this.updateComposeAvailability();
+        }
+
+        if (!this.unsubscribeOnline) {
+            this.unsubscribeOnline = subscribeToOnlineStatus((online) => {
+                this.isOnline = online;
+                this.updateComposeAvailability();
+            });
         }
 
         this.renderFolders();
@@ -97,11 +113,24 @@ export class SidebarComponent extends Component<Props> {
             this.composeHandler = undefined;
         }
 
+        this.unsubscribeOnline?.();
+        this.unsubscribeOnline = undefined;
+
         for (const [, item] of this.folderItems) {
             await item.unmount();
         }
         this.folderItems.clear();
 
         await super.unmount();
+    }
+
+    private updateComposeAvailability(): void {
+        if (!this.composeButton) {
+            return;
+        }
+
+        const button = this.composeButton as HTMLButtonElement;
+        button.disabled = !this.isOnline;
+        button.setAttribute("aria-disabled", this.isOnline ? "false" : "true");
     }
 }

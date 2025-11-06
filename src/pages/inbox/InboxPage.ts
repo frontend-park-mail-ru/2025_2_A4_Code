@@ -1,4 +1,4 @@
-import { HeaderComponent } from "@shared/widgets/Header/Header";
+﻿import { HeaderComponent } from "@shared/widgets/Header/Header";
 import { Page } from "@shared/base/Page";
 import { SidebarComponent } from "@shared/widgets/Sidebar/Sidebar";
 import { MailListComponent } from "@shared/widgets/MailList/MailList";
@@ -14,6 +14,8 @@ import { InboxStore, InboxState, buildForwardDraft, buildReplyDraft } from "@fea
 import type { ComposeDraft } from "@features/inbox";
 import { LayoutLoadingManager } from "@shared/utils/LayoutLoadingManager";
 import type { MailDetail } from "@app-types/mail";
+import { OfflinePlaceholderComponent } from "@shared/components/OfflinePlaceholder/OfflinePlaceholder";
+import { INBOX_PAGE_TEXTS } from "@pages/constants/texts";
 
 type InboxPageParams = {
     messageId?: string;
@@ -36,6 +38,8 @@ export class InboxPage extends Page {
     private unsubscribeFromStore?: () => void;
     private lastErrorMessage: string | null = null;
     private initialMessageId?: string;
+    private offlinePlaceholder: OfflinePlaceholderComponent | null = null;
+    private showingOfflinePlaceholder = false;
 
     constructor(params: InboxPageParams = {}) {
         super();
@@ -54,7 +58,7 @@ export class InboxPage extends Page {
         this.mailList = new MailListComponent({
             items: [],
             onOpen: (id) => this.handleOpenMail(id),
-            emptyMessage: "Пока писем нет.",
+            emptyMessage: INBOX_PAGE_TEXTS.emptyList,
         });
     }
 
@@ -130,6 +134,16 @@ export class InboxPage extends Page {
             this.lastErrorMessage = null;
         }
 
+        if (state.offlineSelectionFallback && state.selectedMailId) {
+            this.renderOfflinePlaceholder();
+            return;
+        }
+
+        if (this.showingOfflinePlaceholder && !state.offlineSelectionFallback) {
+            this.showingOfflinePlaceholder = false;
+            this.offlinePlaceholder = null;
+        }
+
         this.mailList.setProps({ items: state.mails });
 
         if (state.selectedMail && state.selectedMailId) {
@@ -151,7 +165,26 @@ export class InboxPage extends Page {
         this.mailView = this.createMailView(mail);
         this.lastRenderedMail = mail;
         this.showingList = false;
+        this.showingOfflinePlaceholder = false;
+        this.offlinePlaceholder = null;
         this.updateSlot("main", this.mailView).then();
+    }
+
+    private renderOfflinePlaceholder(): void {
+        if (!this.offlinePlaceholder) {
+            this.offlinePlaceholder = new OfflinePlaceholderComponent({
+                title: INBOX_PAGE_TEXTS.offlineMailTitle,
+                message: INBOX_PAGE_TEXTS.offlineMailMessage,
+                actionLabel: INBOX_PAGE_TEXTS.offlineBackAction,
+                onAction: () => this.handleBackToList(),
+            });
+        }
+
+        this.showingList = false;
+        this.showingOfflinePlaceholder = true;
+        this.mailView = null;
+        this.lastRenderedMail = null;
+        this.updateSlot("main", this.offlinePlaceholder!).then();
     }
 
     private createMailView(mail: MailDetail): MailViewComponent {
@@ -229,7 +262,7 @@ export class InboxPage extends Page {
     private async handleSendMail(data: ComposePayload): Promise<void> {
         const recipient = data.to.trim();
         if (!recipient) {
-            console.warn("Recipient email is required");
+            console.warn(INBOX_PAGE_TEXTS.recipientRequired);
             return;
         }
 
@@ -246,7 +279,7 @@ export class InboxPage extends Page {
     private async handleReplySubmit(mail: MailDetail, data: ComposePayload): Promise<void> {
         const recipient = data.to.trim();
         if (!recipient) {
-            console.warn("Recipient email is required");
+            console.warn(INBOX_PAGE_TEXTS.recipientRequired);
             return;
         }
 
@@ -272,7 +305,7 @@ export class InboxPage extends Page {
     private async handleForwardSubmit(data: ComposePayload): Promise<void> {
         const recipient = data.to.trim();
         if (!recipient) {
-            console.warn("Recipient email is required");
+            console.warn(INBOX_PAGE_TEXTS.recipientRequired);
             return;
         }
 
@@ -292,7 +325,7 @@ export class InboxPage extends Page {
             console.error("Failed to logout", error);
         } finally {
             authManager.setAuthenticated(false);
-            this.router.navigate("/auth").then();
+            this.router.navigate("/auth", { replace: true }).then();
         }
     }
 
@@ -305,4 +338,6 @@ export class InboxPage extends Page {
         return Number.isFinite(parsed) ? parsed : null;
     }
 }
+
+
 

@@ -46,7 +46,7 @@ function buildReplyBody(mail: MailDetail): string {
     const quotedLines = splitLines(plainText).map((line) => (line.length > 0 ? `> ${line}` : ">"));
     const quotedBody = quotedLines.join("\n");
     const sender = mail.fromEmail ? `${mail.from} <${mail.fromEmail}>` : mail.from;
-    const timestamp = mail.time ? `On ${mail.time}, ${sender} wrote:` : `${sender} wrote:`;
+    const timestamp = mail.time ? `В ${mail.time}, ${sender} написал:` : `${sender} написал:`;
 
     const parts: string[] = ["", "", timestamp];
     if (quotedBody.length > 0) {

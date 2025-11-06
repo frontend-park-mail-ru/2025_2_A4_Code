@@ -21,16 +21,15 @@ export class App {
         setupRoutes(this.router);
 
         this.router.onNavigate(async (payload) => {
-            await this.handleNavigate(payload);
+            await this.initNavigate(payload);
         });
 
         this.router.start();
     }
 
-    async init(): Promise<void> {
-    }
+    async init(): Promise<void> { }
 
-    private async handleNavigate({ layout, params, config }: NavigatePayload): Promise<void> {
+    private async initNavigate({ layout, params, config }: NavigatePayload): Promise<void> {
         if (!this.rootElement) return;
 
         const reuseLayout = this.activeLayout === layout && !!layout.getElement();

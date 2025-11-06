@@ -1,0 +1,43 @@
+export const APP_CACHE_PREFIX = "flintmail-app-shell-";
+export const DATA_CACHE_PREFIX = "flintmail-data-";
+
+export const APP_CACHE_VERSION = "v2";
+export const DATA_CACHE_VERSION = "v2";
+
+export const APP_CACHE_NAME = `${APP_CACHE_PREFIX}${APP_CACHE_VERSION}`;
+export const DATA_CACHE_NAME = `${DATA_CACHE_PREFIX}${DATA_CACHE_VERSION}`;
+
+export const PUBLIC_ASSETS: string[] = [
+    "/",
+    "/index.html",
+    "/bundle.js",
+    "/css/normalize.css",
+    "/public-assets-manifest.json",
+    "/img/arrow-left.svg",
+    "/img/background.jpg",
+    "/img/close-modal.svg",
+    "/img/folder-add.svg",
+    "/img/folder-dialog.svg",
+    "/img/folder-drafts.svg",
+    "/img/folder-inbox.svg",
+    "/img/folder-sent.svg",
+    "/img/folder-spam.svg",
+    "/img/folder-trash.svg",
+    "/img/logo.svg",
+    "/img/menu-logout-logo.svg",
+    "/img/menu-profile-logo.svg",
+    "/img/menu-settings-logo.svg",
+    "/img/message-back.svg",
+    "/img/message-delete.svg",
+    "/img/message-forward.svg",
+    "/img/message-in-folder.svg",
+    "/img/message-reply.svg",
+    "/img/message-to-spam.svg",
+    "/img/modal-attach-file.svg",
+    "/img/modal-to-draft.svg",
+    "/img/profile-sidebar-interface-logo.svg",
+    "/img/profile-sidebar-personal-logo.svg",
+    "/img/search-logo.svg",
+    "/img/search-normal.png",
+    "/img/working-offline.svg",
+];

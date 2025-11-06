@@ -1,4 +1,4 @@
-export const AUTH_PAGE_TEXTS = {
+﻿export const AUTH_PAGE_TEXTS = {
     headerText: "Войти в почту",
     registrationButtonText: "Зарегистрироваться",
     loginInputPlaceholder: "Логин или email",
@@ -64,7 +64,11 @@ export const PROFILE_SIDEBAR_TEXTS = {
 
 export const INBOX_PAGE_TEXTS = {
     emptyList: "Пока писем нет.",
-    recipientRequired: "Нужно указать получателя письма",
+    recipientRequired: "Укажите email получателя",
+    offlineMailTitle: "Письмо недоступно офлайн",
+    offlineMailMessage:
+        "Мы покажем содержимое, как только появится соединение с интернетом. Пока можно вернуться во входящие.",
+    offlineBackAction: "Вернуться к письмам",
 } as const;
 
 export const MAIL_VIEW_TEXTS = {

@@ -171,5 +171,6 @@ function isValidPastDate(value: string): boolean {
     }
     const date = new Date(timestamp);
     const now = new Date();
-    return date <= now;
+    const oldPast = new Date(1890, 0, 0);
+    return date <= now && date > oldPast;
 }

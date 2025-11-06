@@ -4,7 +4,12 @@ import { ProfileSidebarComponent } from "./components/ProfileSidebar/ProfileSide
 import { ProfileFormComponent } from "./components/ProfileForm/ProfileForm";
 import { MainLayout } from "@app/components/MainLayout/MainLayout";
 import { fetchProfile, type ProfileData, updateProfile, uploadProfileAvatar } from "@entities/profile";
-import { deriveProfilePreview, primeProfilePreview } from "@features/profile";
+import {
+    deriveProfilePreview,
+    primeProfilePreview,
+    saveProfileCache,
+    getProfileCache,
+} from "@features/profile";
 import { performLogout } from "@features/auth";
 import { authManager } from "@infra";
 import { validateProfileForm } from "@utils/validation";
@@ -40,6 +45,7 @@ export class ProfilePage extends Page {
     private readonly header: HeaderComponent;
     private profile: ProfileData | null = null;
     private globalLoadingDepth = 0;
+    private profileLoadPromise: Promise<void> | null = null;
 
     constructor() {
         super();
@@ -86,6 +92,12 @@ export class ProfilePage extends Page {
             this.layout.setSidebarWidth("240px");
         }
 
+        const cachedProfile = getProfileCache();
+        if (cachedProfile) {
+            const normalizedCached = this.normalizeProfile(cachedProfile);
+            this.applyProfile(normalizedCached);
+        }
+
         await this.loadProfile();
     }
 
@@ -94,12 +106,25 @@ export class ProfilePage extends Page {
             this.layout.setContentBackground(true);
             this.layout.setSidebarWidth(null);
         }
+        this.profileLoadPromise = null;
         await super.unmount();
     }
 
     private async loadProfile(): Promise<void> {
+        if (this.profileLoadPromise) {
+            return this.profileLoadPromise;
+        }
+
+        this.profileLoadPromise = this.performProfileLoad().finally(() => {
+            this.profileLoadPromise = null;
+        });
+
+        await this.profileLoadPromise;
+    }
+
+    private async performProfileLoad(): Promise<void> {
+        this.beginGlobalLoading();
         try {
-            this.beginGlobalLoading();
             const fetchedProfile = await fetchProfile();
             const normalizedProfile = this.normalizeProfile(fetchedProfile);
             this.applyProfile(normalizedProfile);
@@ -190,7 +215,7 @@ export class ProfilePage extends Page {
             console.error("Failed to logout", error);
         } finally {
             authManager.setAuthenticated(false);
-            this.router.navigate("/auth").then();
+            this.router.navigate("/auth", { replace: true }).then();
         }
     }
 
@@ -199,6 +224,7 @@ export class ProfilePage extends Page {
         const resolvedAvatar = avatarUrl ?? null;
 
         this.profile = profile;
+        saveProfileCache(profile);
 
         this.sidebar.setProps({
             name: fullName,

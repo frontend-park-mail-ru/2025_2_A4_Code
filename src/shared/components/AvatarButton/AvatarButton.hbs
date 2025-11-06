@@ -1,7 +1,14 @@
 <button type="button" class="header__avatar-btn" data-avatar-button>
     {{#if imageUrl}}
-        <img class="header__avatar header__avatar--image" src="{{imageUrl}}" alt="{{label}}" loading="lazy" decoding="async" />
+        <img
+            class="header__avatar header__avatar--image"
+            src="{{imageUrl}}"
+            alt="{{label}}"
+            loading="lazy"
+            decoding="async"
+            data-avatar-content="image"
+        />
     {{else}}
-        <span class="header__avatar">{{label}}</span>
+        <span class="header__avatar" data-avatar-content="initials">{{label}}</span>
     {{/if}}
 </button>

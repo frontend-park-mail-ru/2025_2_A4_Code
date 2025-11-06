@@ -54,6 +54,12 @@
     }
   }
 
+  &__avatar-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   &__from {
     min-width: 0;
     font-weight: 700;

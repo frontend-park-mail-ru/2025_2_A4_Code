@@ -1,3 +1,6 @@
+import { setOnlineStatus } from "@shared/utils/onlineStatus";
+import { DATA_CACHE_PREFIX } from "../../serviceWorker/cacheConfig";
+
 export interface RequestOptions extends Omit<RequestInit, "body" | "headers"> {
     parseJson?: boolean;
     body?: unknown;
@@ -9,6 +12,19 @@ declare global {
     interface Window {
         __API_BASE_URL__?: string;
     }
+}
+
+const OFFLINE_HEADER = "X-Flintmail-Offline";
+
+export class OfflineError extends Error {
+    constructor(message = "не в сети") {
+        super(message);
+        this.name = "OfflineError";
+    }
+}
+
+export function isOfflineError(error: unknown): error is OfflineError {
+    return error instanceof OfflineError;
 }
 
 export class ApiService {
@@ -72,6 +88,13 @@ export class ApiService {
                 ...rest,
             });
 
+            setOnlineStatus(true);
+
+            if (response.headers.get(OFFLINE_HEADER) === "1") {
+                setOnlineStatus(false);
+                throw new OfflineError();
+            }
+
             if (
                 response.status === 401 &&
                 !skipAuthRefresh &&
@@ -100,6 +123,28 @@ export class ApiService {
 
             return (await response.json()) as T;
         } catch (error) {
+            const navigatorOffline = typeof navigator !== "undefined" && !navigator.onLine;
+
+            if (error instanceof OfflineError) {
+                setOnlineStatus(false);
+                throw error;
+            }
+
+            if (navigatorOffline) {
+                setOnlineStatus(false);
+                throw new OfflineError();
+            }
+
+            if (error instanceof TypeError) {
+                setOnlineStatus(false);
+            }
+
+            const fallback = await this.tryReadFromCache<T>(requestUrl, parseJson);
+            if (fallback !== undefined) {
+                setOnlineStatus(false);
+                return fallback;
+            }
+
             console.error("[api] error", { method, url: requestUrl, error });
             throw error;
         }
@@ -148,11 +193,45 @@ export class ApiService {
             return false;
         }
     }
+
+    private async tryReadFromCache<T>(url: string, parseJson: boolean): Promise<T | undefined> {
+        if (!parseJson || typeof caches === "undefined") {
+            return undefined;
+        }
+
+        try {
+            const cacheKeys = await caches.keys();
+            for (const key of cacheKeys) {
+                if (!key.startsWith(DATA_CACHE_PREFIX)) {
+                    continue;
+                }
+
+                const cache = await caches.open(key);
+                const cachedResponse = await cache.match(url);
+                if (!cachedResponse) {
+                    continue;
+                }
+
+                const clone = cachedResponse.clone();
+                const contentType = clone.headers.get("content-type") ?? "";
+
+                if (contentType === "" || contentType.includes("application/json")) {
+                    return (await clone.json()) as T;
+                }
+            }
+        } catch (cacheError) {
+            console.warn("[api] cache lookup failed", cacheError);
+        }
+
+        return undefined;
+    }
 }
 
-const runtimeBaseUrl = typeof window !== "undefined" && typeof window.__API_BASE_URL__ === "string"
-    ? window.__API_BASE_URL__
-    : 'http://localhost:5000';
+const runtimeBaseUrl =
+    (typeof window !== "undefined" && typeof window.__API_BASE_URL__ === "string"
+        ? window.__API_BASE_URL__
+        : undefined) ||
+    "";
 
 export const apiService = new ApiService(runtimeBaseUrl);
 export type { ApiResponse } from './types';

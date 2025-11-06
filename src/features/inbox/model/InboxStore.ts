@@ -1,6 +1,7 @@
 import { fetchInboxMessages, fetchMessageById, replyToMessage, sendMessage } from "@entities/mail";
 import type { Mail, MailDetail } from "@app-types/mail";
 import type { ReplyMessagePayload, SendMessagePayload } from "@entities/mail";
+import { isOfflineError } from "@shared/api/ApiService";
 
 type InboxSubscriber = (state: InboxState) => void;
 
@@ -14,6 +15,7 @@ export type InboxState = {
     loadingSelection: boolean;
     mutating: boolean;
     error: string | null;
+    offlineSelectionFallback: boolean;
 };
 
 const initialState: InboxState = {
@@ -26,6 +28,7 @@ const initialState: InboxState = {
     loadingSelection: false,
     mutating: false,
     error: null,
+    offlineSelectionFallback: false,
 };
 
 export class InboxStore {
@@ -80,6 +83,7 @@ export class InboxStore {
                     loadingList: false,
                     selectedMailId: matchedMail ? state.selectedMailId : undefined,
                     selectedMail: matchedMail ? nextSelectedMail : null,
+                    offlineSelectionFallback: matchedMail ? state.offlineSelectionFallback : false,
                 };
             });
         } catch (error) {
@@ -119,11 +123,13 @@ export class InboxStore {
                     loadingSelection: false,
                     mails: updatedMails,
                     unread: wasUnread ? Math.max(0, state.unread - 1) : state.unread,
+                    offlineSelectionFallback: false,
                 };
             });
 
             return detail;
         } catch (error) {
+            const offlineFallback = isOfflineError(error);
             this.setState((state) => {
                 if (state.selectedMailId !== id) {
                     return state;
@@ -132,7 +138,8 @@ export class InboxStore {
                 return {
                     ...state,
                     loadingSelection: false,
-                    error: toErrorMessage(error),
+                    error: offlineFallback ? null : toErrorMessage(error),
+                    offlineSelectionFallback: offlineFallback,
                 };
             });
             throw error;
@@ -144,6 +151,7 @@ export class InboxStore {
             ...state,
             selectedMailId: undefined,
             selectedMail: null,
+            offlineSelectionFallback: false,
         }));
     }
 

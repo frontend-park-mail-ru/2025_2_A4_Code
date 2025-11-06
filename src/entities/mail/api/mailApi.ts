@@ -1,4 +1,4 @@
-import { apiService } from "@shared/api/ApiService";
+﻿import { apiService } from "@shared/api/ApiService";
 import type { ApiResponse } from "@shared/api/types";
 import type { Mail, MailAttachment, MailDetail } from "@app-types/mail";
 import { formatDateTimeFromBackend } from "@utils";
@@ -86,6 +86,7 @@ export type ReplyMessagePayload = {
     rootMessageId: number;
     threadRoot: number;
 };
+
 const INBOX_ENDPOINT = "/messages/inbox";
 const MESSAGE_ENDPOINT = (id: string) => `/messages/${id}`;
 const SEND_ENDPOINT = "/messages/send";
@@ -193,3 +194,4 @@ function mapAttachments(files: MessageFileDto[] | undefined): MailAttachment[] |
         storagePath: file.storage_path ?? null,
     }));
 }
+
