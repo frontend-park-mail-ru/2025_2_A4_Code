@@ -1,0 +1,20 @@
+<label class="input-field input-field--{{variant}}">
+    {{#if label}}
+        <span class="input-field__label">{{label}}</span>
+    {{/if}}
+    <input
+        class="input-field__control"
+        type="{{type}}"
+        name="{{name}}"
+        placeholder="{{placeholder}}"
+        value="{{value}}"
+        {{#if autocomplete}}autocomplete="{{autocomplete}}" {{/if}}
+        {{#if required}}required{{/if}}
+        {{#if disabled}}disabled{{/if}}
+        data-input
+    />
+    {{#if hint}}
+        <span class="input-field__hint">{{hint}}</span>
+    {{/if}}
+    <span class="input-field__error" data-error {{#unless error}}hidden{{/unless}}>{{error}}</span>
+</label>

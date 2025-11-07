@@ -1,0 +1,71 @@
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 14px 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: box-shadow .15s ease, transform .15s ease;
+  min-width: 140px;
+  text-decoration: none;
+  
+  &--primary {
+    background: #5163eb;
+    color: #ffffff;
+    border: 2px solid #5163eb;
+    border-radius: 10px;
+    
+    &:hover:not(:disabled) {
+      background: #4959d5;
+      border: 2px solid #4959d5;
+    }
+  }
+  
+  &--secondary {
+    background: transparent;
+    color: #5163eb;
+    border: 2px solid #5163eb;
+    border-radius: 10px;
+
+    &:hover:not(:disabled) {
+      background: rgba(81, 99, 235, 0.05);
+    }
+  }
+
+  &--link {
+    padding: 0;
+    min-width: auto;
+    background: transparent;
+    color: #000000;
+    border: none;
+    box-shadow: none;
+    font-size: 16px;
+    font-weight: 600;
+    gap: 6px;
+
+    &:hover:not(:disabled) {
+      color: #5163eb;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+    box-shadow: none;
+  }
+}
+
+.ui-button--block {
+  width: 100%;
+}
+
+.ui-button__icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+}

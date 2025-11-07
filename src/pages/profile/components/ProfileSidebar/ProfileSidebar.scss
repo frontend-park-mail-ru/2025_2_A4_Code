@@ -1,0 +1,76 @@
+.profile-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 28px 16px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  color: #1f2544;
+  text-align: center;
+
+  &__avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(160deg, rgba(81, 99, 235, 0.25), rgba(116, 197, 255, 0.35));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    span {
+      font-size: 36px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__name {
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  &__email {
+    font-size: 14px;
+    color: #5a6285;
+    text-align: center;
+  }
+
+  &__tabs {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    align-items: stretch;
+  }
+
+  &__back {
+    margin-top: 12px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    .ui-button {
+      color: #5163eb;
+      font-size: 15px;
+      gap: 10px;
+    }
+
+    .ui-button__icon img {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}

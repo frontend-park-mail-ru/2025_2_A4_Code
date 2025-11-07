@@ -1,0 +1,64 @@
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-top: 32px;
+  }
+
+  &__error {
+    min-height: 20px;
+    color: var(--color-error, #d14343);
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: -12px;
+    margin-bottom: 32px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+
+    &--visible {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+  
+  &__forgot {
+    align-self: flex-start;
+    font-size: 14px;
+    color: #5163eb;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color .15s ease;
+    margin-top: 8px;
+    margin-bottom: 40px;
+    
+    &:hover {
+      color: #3242b0;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: -16px;
+
+    &:hover {
+      
+    }
+    
+    .ui-button {
+      width: 100%;
+    }
+  }
+}
+
+.auth-form__field {
+  position: relative;
+}

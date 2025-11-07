@@ -1,0 +1,29 @@
+.header__search {
+  position: relative;
+  flex: 0 0 auto;
+  width: 518px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  background: #E2E7F0;
+  border-radius: 12px;
+  padding: 0 16px 0 44px;
+  box-sizing: border-box;
+  background-image: url("../../../../public/img/search-normal.png");
+  background-repeat: no-repeat;
+  background-position: 16px center;
+}
+
+.header__search-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  outline: none;
+  margin-left: 8px;
+}
+
+.header__search-input::placeholder {
+  color: rgba(39, 43, 53, 0.6);
+}

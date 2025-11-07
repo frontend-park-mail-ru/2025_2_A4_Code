@@ -1,0 +1,36 @@
+<div class="mail-view">
+  <div class="mail-view__toolbar">
+    <div class="mail-view__toolbar-slot mail-view__toolbar-slot--icon" data-slot="back"></div>
+    <div class="mail-view__toolbar-slot" data-slot="reply"></div>
+    <div class="mail-view__toolbar-slot" data-slot="forward"></div>
+    <div class="mail-view__toolbar-slot" data-slot="folder"></div>
+    <div class="mail-view__toolbar-slot" data-slot="delete"></div>
+    <div class="mail-view__toolbar-slot" data-slot="spam"></div>
+    
+  </div>
+
+  <h1 class="mail-view__subject">{{subject}}</h1>
+
+  <div class="mail-view__summary">
+  <div class="mail-view__avatar" data-avatar>
+    {{#if avatarUrl}}
+      <img src="{{avatarUrl}}" alt="{{from}}" loading="lazy" decoding="async" data-avatar-image />
+    {{/if}}
+    <span class="mail-view__avatar-initials" data-avatar-initials>{{initials}}</span>
+  </div>
+
+    <div class="mail-view__details">
+      <div class="mail-view__details-row">
+        <span class="mail-view__from">{{from}}</span>
+        <span class="mail-view__email">{{fromEmail}}</span>
+      </div>
+      <div class="mail-view__details-row">
+        <span class="mail-view__label">{{recipientLabel}}</span>
+        <span class="mail-view__recipient">{{recipient}}</span>
+        <span class="mail-view__time">{{time}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mail-view__body">{{{body}}}</div>
+</div>

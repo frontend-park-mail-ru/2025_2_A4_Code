@@ -1,0 +1,56 @@
+.auth-layout {
+  background: url('../../../../public/img/background.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Nunito Sans', sans-serif;
+  padding: 12px;
+
+  &__panel {
+    background-color: #ffffff;
+    width: min(450px, 100%);
+    height: 830px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px;
+    padding-right: 50px;
+    box-sizing: border-box;
+    padding-bottom: 150px;
+  }
+  
+  &__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-direction: column;
+    font-size: 40px;
+    color: #5163eb;
+    text-decoration: none;
+  }
+
+  &__logo-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+  }
+
+  &__logo-text {
+    letter-spacing: 0.02em;
+  }
+
+  &__content {
+    width: 100%;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+  }
+}

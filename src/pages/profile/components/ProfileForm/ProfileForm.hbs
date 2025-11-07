@@ -1,0 +1,28 @@
+﻿<div class="profile-form">
+  <h1 class="profile-form__title">{{title}}</h1>
+
+  <div class="profile-form__content">
+    <div class="profile-form__avatar">
+      {{#if avatarUrl}}
+        <img src="{{avatarUrl}}" alt="{{fullName}}" loading="lazy" decoding="async" />
+      {{else}}
+        <span>{{initials}}</span>
+      {{/if}}
+      <div class="profile-form__upload" data-slot="upload"></div>
+      <p class="profile-form__avatar-error" data-avatar-error></p>
+    </div>
+
+    <div class="profile-form__fields">
+      <div class="profile-form__field" data-slot="firstName"></div>
+      <div class="profile-form__field" data-slot="lastName"></div>
+      <div class="profile-form__field" data-slot="middleName"></div>
+      <div class="profile-form__field profile-form__field--half" data-slot="birthDate"></div>
+      <div class="profile-form__field profile-form__field--half" data-slot="gender"></div>
+
+      <div class="profile-form__actions">
+        <div data-slot="save"></div>
+        <div data-slot="cancel"></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,12 +1,13 @@
 # compiled output
-dist
 tmp
+dist
 
 # dependencies
 node_modules
 
 # IDEs and editors
 /.idea
+.idea
 .project
 .classpath
 .c9/
@@ -15,6 +16,7 @@ node_modules
 *.sublime-workspace
 
 # IDE - VSCode
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

@@ -1,0 +1,24 @@
+<article class="mail-item {{#unless isRead}}mail-item--unread{{/unless}}" data-mail-id="{{id}}">
+    <div class="mail-item__left">
+        <div class="mail-item__status" aria-hidden="true"></div>
+        <div class="mail-item__avatar-wrapper" data-avatar-root>
+            {{#if avatarUrl}}
+                <div
+                    class="mail-item__avatar mail-item__avatar--placeholder"
+                    data-avatar-placeholder
+                >
+                    {{initials}}
+                </div>
+            {{else}}
+                <div class="mail-item__avatar mail-item__avatar--placeholder">
+                    {{initials}}
+                </div>
+            {{/if}}
+        </div>
+        <span class="mail-item__from" title="{{from}}">{{from}}</span>
+    </div>
+
+    <span class="mail-item__subject" title="{{subject}}">{{subject}}</span>
+    <span class="mail-item__preview" title="{{preview}}">{{preview}}</span>
+    <time class="mail-item__time">{{time}}</time>
+</article>

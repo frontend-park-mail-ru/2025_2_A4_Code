@@ -1,0 +1,18 @@
+<fieldset class="radio-group">
+    <div class="radio-group__options">
+        <legend class="radio-group__label">{{label}}</legend>
+        {{#each options}}
+            <label class="radio-group__option">
+                <input
+                    type="radio"
+                    name="{{../name}}"
+                    value="{{value}}"
+                    {{#if checked}}checked{{/if}}
+                    {{#if disabled}}disabled{{/if}}
+                    data-value="{{value}}"
+                />
+                <span>{{label}}</span>
+            </label>
+        {{/each}}
+    </div>
+</fieldset>

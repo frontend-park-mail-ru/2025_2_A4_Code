@@ -1,0 +1,10 @@
+<li
+  class="profile-sidebar-tab {{#if active}}profile-sidebar-tab--active{{/if}} {{#if disabled}}profile-sidebar-tab--disabled{{/if}}"
+  data-tab-id="{{id}}"
+  role="button"
+  tabindex="{{#if disabled}}-1{{else}}0{{/if}}"
+  aria-disabled="{{#if disabled}}true{{else}}false{{/if}}"
+>
+  <div class="profile-sidebar-tab__icon" data-icon></div>
+  <span class="profile-sidebar-tab__label">{{label}}</span>
+</li>
