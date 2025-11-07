@@ -224,14 +224,14 @@ async function fetchDocumentWithFallback(cache: Cache, request: Request): Promis
         return response;
     } catch (error) {
         warnLog("document:network-failed", request.url, error);
-        if (shouldServeOfflinePage(error)) {
-            debugLog("document:offline-page", request.url);
-            return offlinePageResponse();
-        }
         const shell = await matchAppShell(cache);
         if (shell) {
             debugLog("document:shell-fallback", request.url);
             return shell;
+        }
+        if (shouldServeOfflinePage(error)) {
+            debugLog("document:offline-page", request.url);
+            return offlinePageResponse();
         }
         return offlinePageResponse();
     }
