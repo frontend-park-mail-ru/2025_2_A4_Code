@@ -2,6 +2,7 @@
 import type { ApiResponse } from "@shared/api/types";
 import type { Mail, MailAttachment, MailDetail } from "@app-types/mail";
 import { formatDateTimeFromBackend } from "@utils";
+import { ensureHttpsAssetUrl } from "@shared/utils/url";
 
 type InboxApiResponse = {
     message_total: number;
@@ -155,7 +156,7 @@ function mapInboxMessage(apiMessage: InboxMessageDto): Mail {
         subject: apiMessage.topic,
         preview: apiMessage.snippet,
         time: formatDateTimeFromBackend(apiMessage.datetime),
-        avatarUrl: apiMessage.sender.avatar ?? null,
+        avatarUrl: ensureHttpsAssetUrl(apiMessage.sender.avatar),
         isRead: apiMessage.is_read,
     };
 }
@@ -174,7 +175,7 @@ function mapMessageDetails(id: string, dto: MessageDetailsDto): MailDetail {
         subject: dto.topic,
         preview: dto.text.slice(0, 120),
         time: formatDateTimeFromBackend(dto.datetime),
-        avatarUrl: dto.sender?.avatar ?? dto.avatar ?? null,
+        avatarUrl: ensureHttpsAssetUrl(dto.sender?.avatar ?? dto.avatar ?? null),
         isRead: true,
         body: dto.text.replace(/\n/g, "<br>"),
         threadId: dto.thread_id,

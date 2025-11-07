@@ -1,6 +1,7 @@
 import { apiService } from "@shared/api/ApiService";
 import type { ApiResponse } from "@shared/api/types";
 import { formatDateFromBackend, formatDateToBackend } from "@utils";
+import { ensureHttpsAssetUrl } from "@shared/utils/url";
 
 type ProfileResponseBody = {
     username: string;
@@ -51,7 +52,7 @@ function resolveAssetUrl(path: string | null | undefined): string | null {
     }
 
     if (ABSOLUTE_URL_REGEX.test(path)) {
-        return path;
+        return ensureHttpsAssetUrl(path);
     }
 
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;
@@ -66,7 +67,7 @@ function resolveAssetUrl(path: string | null | undefined): string | null {
         }
     }
 
-    return `${baseUrl}${normalizedPath}`;
+    return ensureHttpsAssetUrl(`${baseUrl}${normalizedPath}`);
 }
 
 function mapProfileResponse(body: ProfileResponseBody): ProfileData {
@@ -112,7 +113,7 @@ export async function uploadProfileAvatar(file: File): Promise<string> {
         body: formData,
     });
 
-    return resolveAssetUrl(response.body.avatar_path) ?? response.body.avatar_path ?? "";
+    return resolveAssetUrl(response.body.avatar_path) ?? ensureHttpsAssetUrl(response.body.avatar_path) ?? "";
 }
 
 export async function updateProfile(payload: UpdateProfilePayload): Promise<ProfileData> {
