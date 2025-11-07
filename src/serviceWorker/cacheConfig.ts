@@ -12,7 +12,6 @@ export const PUBLIC_ASSETS: string[] = [
     "/index.html",
     "/bundle.js",
     "/css/normalize.css",
-    "/public-assets-manifest.json",
     "/img/arrow-left.svg",
     "/img/background.jpg",
     "/img/close-modal.svg",

@@ -14,6 +14,12 @@
     background: rgba(81, 99, 235, 0.08);
   }
 
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: default;
+  }
+
   &--active {
     background: rgba(81, 99, 235, 0.14);
     color: #5163eb;

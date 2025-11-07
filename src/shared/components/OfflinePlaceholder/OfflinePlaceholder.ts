@@ -18,7 +18,6 @@ export class OfflinePlaceholderComponent extends Component<Props> {
         return template({
             title: this.props.title ?? "Нет подключения к сети",
             message: this.props.message ?? "Контент станет доступен, когда соединение восстановится.",
-            icon: this.props.icon ?? "/img/working-offline.svg",
         });
     }
 

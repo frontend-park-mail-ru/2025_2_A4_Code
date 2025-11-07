@@ -85,7 +85,7 @@ export function validateRegisterForm(values: RegisterFormFields): FieldError<key
 
     if (!login) {
         errors.push({ field: "login", message: LOGIN_EMPTY_ERROR });
-    } else if (!EMAIL_REGEX.test(login) || !EMAIL_SAFE_REGEX.test(login)) {
+    } else if (!USER_LOGIN_REGEX.test(login)) {
         errors.push({ field: "login", message: LOGIN_NOT_ALLOWED_ERROR});
     }
 

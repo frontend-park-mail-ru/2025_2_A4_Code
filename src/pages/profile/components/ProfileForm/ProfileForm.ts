@@ -8,6 +8,7 @@ import type { FieldError, ProfileFormFields } from "@utils";
 import { getInitials } from "@utils/person";
 import { PROFILE_FORM_TEXTS } from "@pages/constants/texts";
 import { getOnlineStatus, subscribeToOnlineStatus } from "@shared/utils/onlineStatus";
+import { probeOnlineStatus } from "@shared/utils/networkProbe";
 
 type Gender = "male" | "female" | "";
 
@@ -125,6 +126,7 @@ export class ProfileFormComponent extends Component<Props> {
         });
 
         this.applyOnlineState();
+        this.requestConnectivityProbe();
         this.unsubscribeOnline = subscribeToOnlineStatus((online) => {
             this.isOnline = online;
             this.applyOnlineState();
@@ -158,6 +160,7 @@ export class ProfileFormComponent extends Component<Props> {
         this.updateUploadButton();
         this.updateButtons();
         this.applyOnlineState();
+        this.requestConnectivityProbe();
     }
 
     public setProfile(values: Partial<Props>): void {
@@ -193,6 +196,7 @@ export class ProfileFormComponent extends Component<Props> {
         this.updateUploadButton();
         this.updateButtons();
         this.applyOnlineState();
+        this.requestConnectivityProbe();
     }
 
     public setSubmitting(isSubmitting: boolean): void {
@@ -202,6 +206,7 @@ export class ProfileFormComponent extends Component<Props> {
         };
         this.updateButtons();
         this.applyOnlineState();
+        this.requestConnectivityProbe();
     }
 
     public async unmount(): Promise<void> {
@@ -273,13 +278,16 @@ export class ProfileFormComponent extends Component<Props> {
     }
 
     private handleSave(): void {
-        if (this.props.isSubmitting || this.props.isAvatarUploading || !this.isDirty()) {
+        if (!this.isOnline || this.props.isSubmitting || this.props.isAvatarUploading || !this.isDirty()) {
             return;
         }
         this.props.onSubmit?.({ ...this.currentValues });
     }
 
     private handleCancel(): void {
+        if (!this.isOnline) {
+            return;
+        }
         this.currentValues = { ...this.initialValues };
         this.setFieldValues(this.currentValues);
         this.updateFullNameFromValues(this.currentValues);
@@ -311,7 +319,9 @@ export class ProfileFormComponent extends Component<Props> {
         let imageEl = avatarContainer.querySelector("img") as HTMLImageElement | null;
         let placeholderEl = avatarContainer.querySelector("span") as HTMLElement | null;
 
-        if (this.props.avatarUrl) {
+        const showImage = Boolean(this.props.avatarUrl && this.isOnline);
+
+        if (showImage) {
             if (!imageEl) {
                 imageEl = document.createElement("img");
                 if (uploadSlot) {
@@ -496,7 +506,17 @@ export class ProfileFormComponent extends Component<Props> {
 
         this.updateUploadButton();
         this.updateButtons();
+        this.updateAvatar();
     }
 
+    public refreshOnlineState(): void {
+        this.isOnline = getOnlineStatus();
+        this.applyOnlineState();
+        this.requestConnectivityProbe();
+    }
+
+    private requestConnectivityProbe(): void {
+        void (probeOnlineStatus().catch(() => undefined));
+    }
 }
 

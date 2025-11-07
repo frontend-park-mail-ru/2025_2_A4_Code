@@ -7,6 +7,7 @@ import {
 } from "@shared/components/SidebarFolderItem/SidebarFolderItem";
 import { SIDEBAR_TEXTS } from "@shared/constants/texts";
 import { getOnlineStatus, subscribeToOnlineStatus } from "@shared/utils/onlineStatus";
+import { probeOnlineStatus } from "@shared/utils/networkProbe";
 
 export type Folder = {
     id: string;
@@ -61,6 +62,7 @@ export class SidebarComponent extends Component<Props> {
             };
             composeBtn.addEventListener("click", this.composeHandler);
             this.updateComposeAvailability();
+            this.requestConnectivityProbe();
         }
 
         if (!this.unsubscribeOnline) {
@@ -132,5 +134,10 @@ export class SidebarComponent extends Component<Props> {
         const button = this.composeButton as HTMLButtonElement;
         button.disabled = !this.isOnline;
         button.setAttribute("aria-disabled", this.isOnline ? "false" : "true");
+        button.tabIndex = this.isOnline ? 0 : -1;
+    }
+
+    private requestConnectivityProbe(): void {
+        void probeOnlineStatus().catch(() => undefined);
     }
 }

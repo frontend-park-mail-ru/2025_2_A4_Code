@@ -93,29 +93,5 @@ export default {
                 },
             ],
         }),
-        new (class PublicAssetsManifestPlugin {
-            apply(compiler) {
-                compiler.hooks.thisCompilation.tap('PublicAssetsManifestPlugin', (compilation) => {
-                    compilation.hooks.processAssets.tap(
-                        {
-                            name: 'PublicAssetsManifestPlugin',
-                            stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
-                        },
-                        (assets) => {
-                            const images = Object.keys(assets)
-                                .filter((filename) => filename.startsWith('img/'))
-                                .filter((filename) => /\.(png|jpe?g|svg|gif|webp|ico)$/.test(filename))
-                                .map((filename) => `/${filename}`);
-
-                            const manifest = JSON.stringify({ images }, null, 2);
-                            compilation.emitAsset(
-                                'public-assets-manifest.json',
-                                new webpack.sources.RawSource(manifest)
-                            );
-                        }
-                    );
-                });
-            }
-        })(),
     ]
 };

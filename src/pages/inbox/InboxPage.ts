@@ -163,6 +163,7 @@ export class InboxPage extends Page {
 
     private renderMailView(mail: MailDetail): void {
         this.mailView = this.createMailView(mail);
+        this.mailView.refreshOnlineState();
         this.lastRenderedMail = mail;
         this.showingList = false;
         this.showingOfflinePlaceholder = false;

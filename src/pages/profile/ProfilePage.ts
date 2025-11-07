@@ -91,12 +91,8 @@ export class ProfilePage extends Page {
             this.layout.setContentBackground(false);
             this.layout.setSidebarWidth("240px");
         }
-
-        const cachedProfile = getProfileCache();
-        if (cachedProfile) {
-            const normalizedCached = this.normalizeProfile(cachedProfile);
-            this.applyProfile(normalizedCached);
-        }
+        this.form.refreshOnlineState();
+        this.applyCachedProfile();
 
         await this.loadProfile();
     }
@@ -130,6 +126,7 @@ export class ProfilePage extends Page {
             this.applyProfile(normalizedProfile);
         } catch (error) {
             console.error("Failed to load profile", error);
+            this.showInitialsFallback();
         } finally {
             this.endGlobalLoading();
         }
@@ -282,6 +279,27 @@ export class ProfilePage extends Page {
         if (this.layout instanceof MainLayout) {
             this.layout.setLoading(this.globalLoadingDepth > 0);
         }
+    }
+
+    private applyCachedProfile(): void {
+        const cachedProfile = getProfileCache();
+        if (!cachedProfile) {
+            return;
+        }
+
+        const normalizedCached = this.normalizeProfile(cachedProfile);
+        this.applyProfile(normalizedCached);
+    }
+
+    private showInitialsFallback(): void {
+        this.sidebar.setProps({ avatarUrl: null });
+        this.form.setAvatarUrl(null);
+
+        const preview = this.profile ? deriveProfilePreview(this.profile) : null;
+        this.header.setProps({
+            avatarImageUrl: null,
+            avatarLabel: preview?.initials ?? "--",
+        });
     }
 }
 

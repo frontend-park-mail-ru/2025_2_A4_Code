@@ -16,6 +16,7 @@ import {
     saveProfileCache,
     clearProfileCache,
 } from "@features/profile";
+import { clearAllCookies } from "@shared/utils/cookies";
 
 export type AuthResult = { success: true } | { success: false; message: string };
 
@@ -53,6 +54,7 @@ export async function performLogout(): Promise<void> {
     try {
         await logout();
     } finally {
+        clearAllCookies();
         clearProfileCache();
         await clearCachedData();
     }

@@ -16,7 +16,7 @@ export const REGISTER_PAGE_TEXTS = {
 
 export const REGISTER_FORM_TEXTS = {
     namePlaceholder: "Имя",
-    loginPlaceholder: "login@flintmail.ru",
+    loginPlaceholder: "Логин",
     genderLabel: "Пол",
     genderOptions: {
         male: "Мужской",
@@ -81,3 +81,4 @@ export const MAIL_VIEW_TEXTS = {
     recipientLabel: "Кому:",
     recipientFallback: "вам",
 } as const;
+

@@ -7,6 +7,7 @@ type Props = {
     label: string;
     icon: string;
     active?: boolean;
+    disabled?: boolean;
     onSelect?: (id: string) => void;
 };
 
@@ -16,6 +17,7 @@ export class ProfileSidebarTabItem extends Component<Props> {
             id: this.props.id,
             label: this.props.label,
             active: this.props.active,
+            disabled: this.props.disabled,
         });
     }
 
@@ -30,6 +32,9 @@ export class ProfileSidebarTabItem extends Component<Props> {
 
         if (!this.element) return;
         this.element.classList.toggle("profile-sidebar-tab--active", !!this.props.active);
+        this.element.classList.toggle("profile-sidebar-tab--disabled", !!this.props.disabled);
+        this.element.setAttribute("aria-disabled", this.props.disabled ? "true" : "false");
+        this.element.tabIndex = this.props.disabled ? -1 : 0;
 
         const labelEl = this.element.querySelector(".profile-sidebar-tab__label");
         if (labelEl) {
@@ -45,6 +50,9 @@ export class ProfileSidebarTabItem extends Component<Props> {
     }
 
     private handleClick = () => {
+        if (this.props.disabled) {
+            return;
+        }
         this.props.onSelect?.(this.props.id);
     };
 

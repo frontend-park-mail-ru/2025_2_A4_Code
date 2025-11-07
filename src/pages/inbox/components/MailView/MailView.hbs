@@ -12,13 +12,12 @@
   <h1 class="mail-view__subject">{{subject}}</h1>
 
   <div class="mail-view__summary">
-    <div class="mail-view__avatar">
-      {{#if avatarUrl}}
-        <img src="{{avatarUrl}}" alt="{{from}}" loading="lazy" decoding="async" />
-      {{else}}
-        <span>{{initials}}</span>
-      {{/if}}
-    </div>
+  <div class="mail-view__avatar" data-avatar>
+    {{#if avatarUrl}}
+      <img src="{{avatarUrl}}" alt="{{from}}" loading="lazy" decoding="async" data-avatar-image />
+    {{/if}}
+    <span class="mail-view__avatar-initials" data-avatar-initials>{{initials}}</span>
+  </div>
 
     <div class="mail-view__details">
       <div class="mail-view__details-row">
