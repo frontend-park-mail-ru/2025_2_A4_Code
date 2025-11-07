@@ -32,7 +32,7 @@ type Props = EditableValues & {
     onCancel?: () => void;
 };
 
-const MAX_AVATAR_SIZE = 5 << 20; // 5 MB
+const MAX_AVATAR_SIZE = 1 << 20; // 1 MB
 const UPLOAD_BUTTON_DEFAULT_LABEL = PROFILE_FORM_TEXTS.uploadButtonDefault;
 const UPLOAD_BUTTON_LOADING_LABEL = PROFILE_FORM_TEXTS.uploadButtonLoading;
 
@@ -53,6 +53,7 @@ export class ProfileFormComponent extends Component<Props> {
     private fieldErrors: Partial<Record<keyof EditableValues, string>> = {};
     private isOnline: boolean = getOnlineStatus();
     private unsubscribeOnline?: () => void;
+    private avatarErrorMessage: string | null = null;
 
     constructor(props: Props) {
         super({
@@ -161,6 +162,7 @@ export class ProfileFormComponent extends Component<Props> {
         this.updateButtons();
         this.applyOnlineState();
         this.requestConnectivityProbe();
+        this.updateAvatarError();
     }
 
     public setProfile(values: Partial<Props>): void {
@@ -178,6 +180,7 @@ export class ProfileFormComponent extends Component<Props> {
         this.updateUploadButton();
         this.updateButtons();
         this.applyOnlineState();
+        this.setAvatarError(null);
     }
 
     public setAvatarUrl(avatarUrl: string | null): void {
@@ -444,8 +447,10 @@ export class ProfileFormComponent extends Component<Props> {
             return;
         }
 
+        this.setAvatarError(null);
         if (file.size > MAX_AVATAR_SIZE) {
             console.warn(PROFILE_FORM_TEXTS.avatarTooLargeWarning);
+            this.setAvatarError(PROFILE_FORM_TEXTS.avatarTooLargeWarning);
             this.fileInput!.value = "";
             return;
         }
@@ -453,6 +458,28 @@ export class ProfileFormComponent extends Component<Props> {
         this.props.onAvatarSelect?.(file);
         this.fileInput!.value = "";
     };
+
+    private setAvatarError(message: string | null): void {
+        this.avatarErrorMessage = message;
+        this.updateAvatarError();
+    }
+
+    private updateAvatarError(): void {
+        if (!this.element) {
+            return;
+        }
+        const node = this.element.querySelector("[data-avatar-error]") as HTMLElement | null;
+        if (!node) {
+            return;
+        }
+        if (this.avatarErrorMessage) {
+            node.textContent = this.avatarErrorMessage;
+            node.classList.add("profile-form__avatar-error--visible");
+        } else {
+            node.textContent = "";
+            node.classList.remove("profile-form__avatar-error--visible");
+        }
+    }
 
     private updateFullNameFromValues(values: EditableValues): void {
         const fullName = this.buildFullName(values);

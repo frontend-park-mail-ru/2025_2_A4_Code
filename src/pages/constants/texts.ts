@@ -43,7 +43,7 @@ export const PROFILE_FORM_TEXTS = {
     saveButtonLabel: "Сохранить",
     saveButtonLoading: "Сохраняем...",
     cancelButtonLabel: "Отменить",
-    avatarTooLargeWarning: "Размер файла превышает 5 МБ",
+    avatarTooLargeWarning: "Размер файла превышает 1 МБ",
 } as const;
 
 export const PROFILE_SIDEBAR_TEXTS = {

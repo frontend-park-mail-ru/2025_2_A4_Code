@@ -1,6 +1,6 @@
 import { fetchInboxMessages, fetchMessageById, replyToMessage, sendMessage } from "@entities/mail";
 import type { Mail, MailDetail } from "@app-types/mail";
-import type { ReplyMessagePayload, SendMessagePayload } from "@entities/mail";
+import type { InboxSummary, ReplyMessagePayload, SendMessagePayload } from "@entities/mail";
 import { isOfflineError } from "@shared/api/ApiService";
 
 type InboxSubscriber = (state: InboxState) => void;
@@ -56,6 +56,7 @@ export class InboxStore {
 
         try {
             const summary = await fetchInboxMessages();
+            cacheInboxSummary(summary);
             this.setState((state) => {
                 const selectedMailId = state.selectedMailId;
                 const matchedMail = selectedMailId
@@ -87,6 +88,21 @@ export class InboxStore {
                 };
             });
         } catch (error) {
+            const offlineFallback = isOfflineError(error);
+            if (offlineFallback) {
+                const cachedSummary = readCachedInboxSummary();
+                if (cachedSummary) {
+                    this.setState((state) => ({
+                        ...state,
+                        mails: cachedSummary.items,
+                        total: cachedSummary.total,
+                        unread: cachedSummary.unread,
+                        loadingList: false,
+                        error: null,
+                    }));
+                    return;
+                }
+            }
             this.setState((state) => ({
                 ...state,
                 loadingList: false,
@@ -220,4 +236,59 @@ function toErrorMessage(error: unknown): string {
         return error;
     }
     return "Unexpected error";
+}
+
+const INBOX_CACHE_KEY = "inbox:summary";
+const INBOX_CACHE_TTL_MS = 1000 * 60 * 60; // 1 hour
+
+type CachedInboxSummary = {
+    total: number;
+    unread: number;
+    items: Mail[];
+    timestamp: number;
+};
+
+function cacheInboxSummary(summary: InboxSummary): void {
+    if (typeof window === "undefined") {
+        return;
+    }
+
+    const payload: CachedInboxSummary = {
+        total: summary.total,
+        unread: summary.unread,
+        items: summary.items,
+        timestamp: Date.now(),
+    };
+
+    try {
+        window.localStorage.setItem(INBOX_CACHE_KEY, JSON.stringify(payload));
+    } catch {
+        // ignore storage errors
+    }
+}
+
+function readCachedInboxSummary(): CachedInboxSummary | null {
+    if (typeof window === "undefined") {
+        return null;
+    }
+
+    try {
+        const raw = window.localStorage.getItem(INBOX_CACHE_KEY);
+        if (!raw) {
+            return null;
+        }
+
+        const parsed = JSON.parse(raw) as CachedInboxSummary;
+        if (!parsed || !Array.isArray(parsed.items)) {
+            return null;
+        }
+
+        if (!parsed.timestamp || Date.now() - parsed.timestamp > INBOX_CACHE_TTL_MS) {
+            return null;
+        }
+
+        return parsed;
+    } catch {
+        return null;
+    }
 }
