@@ -27,6 +27,22 @@ export function isOfflineError(error: unknown): error is OfflineError {
     return error instanceof OfflineError;
 }
 
+export class HttpError extends Error {
+    public readonly status: number;
+    public readonly url: string;
+
+    constructor(status: number, url: string, message?: string) {
+        super(message || `Request failed with status ${status}`);
+        this.name = "HttpError";
+        this.status = status;
+        this.url = url;
+    }
+}
+
+export function isHttpError(error: unknown): error is HttpError {
+    return error instanceof HttpError;
+}
+
 export class ApiService {
     private refreshPromise: Promise<boolean> | null = null;
 
@@ -114,7 +130,7 @@ export class ApiService {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(errorText || `Request failed with status ${response.status}`);
+                throw new HttpError(response.status, requestUrl, errorText || undefined);
             }
 
             if (!parseJson || response.status === 204) {

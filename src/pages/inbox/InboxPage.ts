@@ -16,6 +16,7 @@ import { LayoutLoadingManager } from "@shared/utils/LayoutLoadingManager";
 import type { MailDetail } from "@app-types/mail";
 import { OfflinePlaceholderComponent } from "@shared/components/OfflinePlaceholder/OfflinePlaceholder";
 import { INBOX_PAGE_TEXTS } from "@pages/constants/texts";
+import { HttpError } from "@shared/api/ApiService";
 
 type InboxPageParams = {
     messageId?: string;
@@ -88,6 +89,9 @@ export class InboxPage extends Page {
                 await this.store.openMail(this.initialMessageId);
             }
         } catch (error) {
+            if (this.handleUnauthorized(error)) {
+                return;
+            }
             console.error("Failed to initialise inbox", error);
         }
     }
@@ -101,6 +105,9 @@ export class InboxPage extends Page {
                 try {
                     await this.store.openMail(messageId);
                 } catch (error) {
+                    if (this.handleUnauthorized(error)) {
+                        return;
+                    }
                     console.error("Failed to open message", error);
                 }
             }
@@ -267,11 +274,18 @@ export class InboxPage extends Page {
             return;
         }
 
-        await this.store.sendMail({
-            to: recipient,
-            subject: data.subject ?? "",
-            body: data.body ?? "",
-        });
+        try {
+            await this.store.sendMail({
+                to: recipient,
+                subject: data.subject ?? "",
+                body: data.body ?? "",
+            });
+        } catch (error) {
+            if (this.handleUnauthorized(error)) {
+                throw error;
+            }
+            throw error;
+        }
 
         this.store.clearSelection();
         this.router.navigate("/inbox").then();
@@ -292,13 +306,20 @@ export class InboxPage extends Page {
 
         const threadRoot = this.parseNumericId(mail.threadId) ?? rootMessageId;
 
-        await this.store.replyToMail({
-            to: recipient,
-            subject: data.subject ?? "",
-            body: data.body ?? "",
-            rootMessageId,
-            threadRoot,
-        });
+        try {
+            await this.store.replyToMail({
+                to: recipient,
+                subject: data.subject ?? "",
+                body: data.body ?? "",
+                rootMessageId,
+                threadRoot,
+            });
+        } catch (error) {
+            if (this.handleUnauthorized(error)) {
+                throw error;
+            }
+            throw error;
+        }
 
         await this.store.refreshSelectedMail();
     }
@@ -310,11 +331,18 @@ export class InboxPage extends Page {
             return;
         }
 
-        await this.store.sendMail({
-            to: recipient,
-            subject: data.subject ?? "",
-            body: data.body ?? "",
-        });
+        try {
+            await this.store.sendMail({
+                to: recipient,
+                subject: data.subject ?? "",
+                body: data.body ?? "",
+            });
+        } catch (error) {
+            if (this.handleUnauthorized(error)) {
+                throw error;
+            }
+            throw error;
+        }
 
         await this.store.refreshSelectedMail();
     }
@@ -337,6 +365,15 @@ export class InboxPage extends Page {
 
         const parsed = Number(value);
         return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    private handleUnauthorized(error: unknown): boolean {
+        if (error instanceof HttpError && error.status === 401) {
+            authManager.setAuthenticated(false);
+            this.router.navigate("/auth", { replace: true }).then();
+            return true;
+        }
+        return false;
     }
 }
 
