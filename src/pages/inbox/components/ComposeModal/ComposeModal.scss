@@ -59,7 +59,7 @@
 .compose-modal__recipient {
   display: flex;
   gap: 20px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .compose-modal__avatar {
@@ -96,6 +96,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  padding-left: 8px;
   font-size: 16px;
   color: #000000;
 }
@@ -106,8 +107,7 @@
 }
 
 .compose-modal__input {
-  flex: 1 1 360px;
-  min-width: 260px;
+  width: 600px;
   border: none;
   border-bottom: 1px solid #dbe1f1;
   padding: 12px 4px;

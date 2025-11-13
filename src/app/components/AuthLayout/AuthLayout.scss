@@ -43,10 +43,12 @@
     width: 40px;
     height: 40px;
     margin-right: 12px;
+    user-select: none;
   }
 
   &__logo-text {
     letter-spacing: 0.02em;
+    user-select: none;
   }
 
   &__content {

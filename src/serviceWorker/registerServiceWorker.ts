@@ -3,11 +3,11 @@ export function registerServiceWorker(): void {
         return;
     }
 
-    window.addEventListener("load", () => {
-        navigator.serviceWorker
-            .register("/sw.js")
-            .catch((error) => {
-                console.error("[sw] registration failed", error);
-            });
-    });
+    //window.addEventListener("load", () => {
+    //    navigator.serviceWorker
+    //        .register("/sw.js")
+    //        .catch((error) => {
+    //            console.error("[sw] registration failed", error);
+    //        });
+    //});
 }

@@ -6,6 +6,7 @@
   cursor: pointer;
   transition: background .12s ease;
   gap: 12px;
+  user-select: none;
 
   &:hover {
     background: rgba(81, 99, 235, 0.08);

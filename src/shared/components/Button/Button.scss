@@ -13,6 +13,7 @@
   transition: box-shadow .15s ease, transform .15s ease;
   min-width: 140px;
   text-decoration: none;
+  user-select: none;
   
   &--primary {
     background: #5163eb;
