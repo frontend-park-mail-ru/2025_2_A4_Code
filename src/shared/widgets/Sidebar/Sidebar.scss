@@ -12,6 +12,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: box-shadow .15s ease, transform .15s ease;
+    user-select: none;
     
     &:hover {
     }

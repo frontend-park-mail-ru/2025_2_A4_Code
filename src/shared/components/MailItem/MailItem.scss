@@ -9,6 +9,7 @@
   border-bottom: 1px solid #D6E3F3;
   border-radius: 12px;
   justify-content: space-between;
+  user-select: none;
 
   &__left {
     display: flex;
