@@ -50,7 +50,7 @@ export const PROFILE_SIDEBAR_TEXTS = {
     tabs: [
         {
             id: "personal",
-            label: "Личные данные",
+            label: "Личное",
             icon: "/img/profile-sidebar-personal-logo.svg",
         },
         {
@@ -59,11 +59,11 @@ export const PROFILE_SIDEBAR_TEXTS = {
             icon: "/img/profile-sidebar-interface-logo.svg",
         },
     ] as const,
-    backButtonLabel: "К письмам",
+    backButtonLabel: "к письмам",
 } as const;
 
 export const INBOX_PAGE_TEXTS = {
-    emptyList: "Пока писем нет.",
+    emptyList: "Писем пока нет",
     recipientRequired: "Укажите email получателя",
     offlineMailTitle: "Письмо недоступно офлайн",
     offlineMailMessage:
