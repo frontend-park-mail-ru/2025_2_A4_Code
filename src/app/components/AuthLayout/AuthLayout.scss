@@ -14,7 +14,7 @@
   &__panel {
     background-color: #ffffff;
     width: min(450px, 100%);
-    height: 830px;
+    height: 80hv;
     border-radius: 20px;
     display: flex;
     flex-direction: column;
@@ -23,7 +23,7 @@
     padding: 40px;
     padding-right: 50px;
     box-sizing: border-box;
-    padding-bottom: 150px;
+    padding-bottom: 60px;
   }
   
   &__logo {
@@ -35,6 +35,7 @@
     font-size: 40px;
     color: #5163eb;
     text-decoration: none;
+    gap: 16px;
   }
 
   &__logo-icon {

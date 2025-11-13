@@ -8,7 +8,7 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
-    margin-top: 32px;
+    margin: 0;
   }
 
   &__error {
@@ -17,7 +17,7 @@
     font-size: 14px;
     line-height: 20px;
     margin-top: -12px;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
     visibility: hidden;
     opacity: 0;
     transition: opacity 0.15s ease;
@@ -35,22 +35,26 @@
     font-weight: 600;
     text-decoration: none;
     transition: color .15s ease;
-    margin-top: 8px;
-    margin-bottom: 40px;
     
     &:hover {
       color: #3242b0;
     }
+
+    &--disabled {
+      color: #bdc3c7;
+      cursor: not-allowed;
+      opacity: 0.6;
+      text-decoration: none;
+    }
   }
 
   &__actions {
+    margin-bottom: 12px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: -16px;
 
-    &:hover {
-      
+    &:hidden {
+      color: #5d6381;
     }
     
     .ui-button {
