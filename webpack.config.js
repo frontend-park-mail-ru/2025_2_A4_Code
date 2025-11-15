@@ -10,11 +10,17 @@ const __dirname = path.dirname(__filename);
 export default {
     entry: {
         main: './src/index.ts',
+        supportWidget: './src/support-widget/index.ts',
         sw: './src/serviceWorker/sw.ts',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: (pathData) => (pathData.chunk && pathData.chunk.name === 'sw' ? 'sw.js' : 'bundle.js'),
+        filename: (pathData) => {
+            if (pathData.chunk && pathData.chunk.name === 'sw') {
+                return 'sw.js';
+            }
+            return '[name].bundle.js';
+        },
         clean: true,
         publicPath: '/',
     },
@@ -81,14 +87,20 @@ export default {
     plugins: [
         new HtmlWebpackPlugin({
             template: './public/index.html',
+            filename: 'index.html',
             chunks: ['main'],
+        }),
+        new HtmlWebpackPlugin({
+            template: './public/support-widget.html',
+            filename: 'support-widget.html',
+            chunks: ['supportWidget'],
         }),
         new CopyWebpackPlugin({
             patterns: [
                 {
                     from: path.resolve(__dirname, 'public'),
                     globOptions: {
-                        ignore: ['**/index.html'],
+                        ignore: ['**/index.html', '**/support-widget.html'],
                     },
                 },
             ],

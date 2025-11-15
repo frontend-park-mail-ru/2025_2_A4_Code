@@ -1,0 +1,32 @@
+.support-widget-app {
+    min-height: 100vh;
+    padding: 24px;
+    background: linear-gradient(135deg, #f6f9ff 0%, #ffffff 60%);
+    font-family: "Nunito Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #1f2344;
+}
+
+.support-widget-app__header {
+    margin-bottom: 24px;
+}
+
+.support-widget-app__title {
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.support-widget-app__subtitle {
+    margin: 0;
+    font-size: 16px;
+    color: #5c6085;
+}
+
+.support-widget-app__body {
+    font-size: 16px;
+    line-height: 1.5;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(14, 22, 58, 0.08);
+}
