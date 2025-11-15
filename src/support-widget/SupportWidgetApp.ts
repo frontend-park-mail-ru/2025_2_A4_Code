@@ -11,7 +11,7 @@ export class SupportWidgetApp extends Component {
     private readonly subjectField: SelectFieldComponent;
     private readonly messageField: InputFieldComponent;
     private readonly submitButton: ButtonComponent;
-    private readonly appilButton: ButtonComponent;
+    private readonly appealButton: ButtonComponent;
 
     private formElement: HTMLFormElement | null = null;
     private statusElement: HTMLElement | null = null;
@@ -46,9 +46,9 @@ export class SupportWidgetApp extends Component {
             fullWidth: true,
         });
 
-        this.appilButton = new ButtonComponent({
-            label: "Новое обращение",
-            type: "appil",
+        this.appealButton = new ButtonComponent({
+            label: "Мои обращения",
+            type: "button",
             fullWidth: true,
         });
     }
@@ -61,11 +61,15 @@ export class SupportWidgetApp extends Component {
         this.mountField("subject", this.subjectField);
         this.mountField("message", this.messageField);
         this.mountField("submit", this.submitButton);
-        this.mountField("appil", this.submitButton);
+        this.mountField("appeal", this.appealButton);
 
         this.formElement = this.element?.querySelector("[data-form]") as HTMLFormElement | null;
         this.statusElement = this.element?.querySelector("[data-status]") as HTMLElement | null;
         this.formElement?.addEventListener("submit", this.handleSubmit);
+        const appealButtonElement = this.appealButton.getElement() as HTMLButtonElement;
+        if (appealButtonElement) {
+            appealButtonElement.addEventListener("click", this.handleNewAppeal);
+        }
     }
 
     public async unmount(): Promise<void> {
@@ -73,6 +77,7 @@ export class SupportWidgetApp extends Component {
         await this.subjectField.unmount();
         await this.messageField.unmount();
         await this.submitButton.unmount();
+        await this.appealButton.unmount();
         await super.unmount();
     }
 
@@ -104,6 +109,11 @@ export class SupportWidgetApp extends Component {
 
         this.showStatus("Сообщение отправлено. Мы свяжемся с вами, как только подготовим ответ.", "success");
         this.resetFields();
+    };
+
+    private handleNewAppeal = (): void => {
+        this.resetFields();
+        this.showStatus("", "neutral"); // Очищаем статус
     };
 
     private resetFields(): void {
