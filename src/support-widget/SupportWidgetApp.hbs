@@ -1,19 +1,18 @@
 ﻿<div class="support-widget-app">
     <header class="support-widget-app__header">
-        <p class="support-widget-app__eyebrow">FlintMail support</p>
-        <h1 class="support-widget-app__title">Расскажите, чем мы можем помочь</h1>
-        <p class="support-widget-app__subtitle">
-            Опишите тему и детали — мы свяжемся с ответом и поможем закрыть вопрос.
-        </p>
+        <p class="support-widget-app__subtitle">Все поля обязательны. Пожалуйста заполните их внимательнее</p>
     </header>
 
     <form class="support-widget-form" data-form>
         <div class="support-widget-form__field" data-slot="subject"></div>
-        <div class="support-widget-form__field" data-slot="message"></div>
+        <div class="support-widget-form__field support-widget-form__textarea" data-slot="message"></div>
 
         <div class="support-widget-form__actions">
-            <div data-slot="submit"></div>
+            <div class="support-widget-form__action" data-slot="history"></div>
+            <div class="support-widget-form__action" data-slot="submit"></div>
         </div>
+
+        <div class="support-widget-history" data-history hidden></div>
 
         <p class="support-widget-form__status" data-status></p>
     </form>

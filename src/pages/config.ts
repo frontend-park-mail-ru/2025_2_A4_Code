@@ -3,6 +3,7 @@ import { AuthPage } from "./auth";
 import { RegisterPage } from "./register";
 import { InboxPage } from "./inbox/InboxPage";
 import { ProfilePage } from "./profile";
+import { SupportAdminPage } from "./support/SupportAdminPage";
 import { AuthLayout } from "@app/components/AuthLayout/AuthLayout";
 import { MainLayout } from "@app/components/MainLayout/MainLayout";
 
@@ -37,6 +38,12 @@ const routeBlueprints: ReadonlyArray<RouteBlueprint> = [
         path: "/profile",
         layoutKey: "main",
         createPage: () => new ProfilePage(),
+        requiresAuth: true,
+    },
+    {
+        path: "/support/admin",
+        layoutKey: "main",
+        createPage: () => new SupportAdminPage(),
         requiresAuth: true,
     },
 ];

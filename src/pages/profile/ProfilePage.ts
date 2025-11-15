@@ -259,6 +259,7 @@ export class ProfilePage extends Page {
         return {
             ...profile,
             fullName: displayName || profile.username,
+            role: profile.role,
         };
     }
 

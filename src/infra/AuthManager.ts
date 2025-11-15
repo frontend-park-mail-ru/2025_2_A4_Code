@@ -2,22 +2,30 @@ import { fetchProfile } from "@entities/profile";
 import { isOfflineError } from "@shared/api/ApiService";
 import { deriveProfilePreview, getProfileCache, primeProfilePreview } from "@features/profile";
 
-type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
+export type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
 
 export class AuthManager {
     private status: AuthStatus = "unknown";
     private checkPromise: Promise<boolean> | null = null;
+    private readonly listeners = new Set<(status: AuthStatus) => void>();
 
     public getStatus(): AuthStatus {
         return this.status;
     }
 
     public setAuthenticated(isAuthenticated: boolean): void {
-        this.status = isAuthenticated ? "authenticated" : "unauthenticated";
+        this.updateStatus(isAuthenticated ? "authenticated" : "unauthenticated");
     }
 
     public markUnknown(): void {
-        this.status = "unknown";
+        this.updateStatus("unknown");
+    }
+
+    public onStatusChange(listener: (status: AuthStatus) => void): () => void {
+        this.listeners.add(listener);
+        return () => {
+            this.listeners.delete(listener);
+        };
     }
 
     public async ensureAuthenticated(): Promise<boolean> {
@@ -40,24 +48,24 @@ export class AuthManager {
 
     private async resolveAuthentication(): Promise<boolean> {
         if (this.tryPromoteUsingCache()) {
-            this.status = "authenticated";
+            this.updateStatus("authenticated");
             return true;
         }
 
         try {
             await fetchProfile();
-            this.status = "authenticated";
+            this.updateStatus("authenticated");
             return true;
         } catch (error) {
             const navigatorOffline = typeof navigator !== "undefined" && !navigator.onLine;
             if (isOfflineError(error) || navigatorOffline) {
                 if (this.tryPromoteUsingCache()) {
-                    this.status = "authenticated";
+                    this.updateStatus("authenticated");
                     return true;
                 }
             }
 
-            this.status = "unauthenticated";
+            this.updateStatus("unauthenticated");
             return false;
         }
     }
@@ -71,6 +79,24 @@ export class AuthManager {
         const preview = deriveProfilePreview(cached);
         primeProfilePreview(preview);
         return true;
+    }
+
+    private updateStatus(nextStatus: AuthStatus): void {
+        if (this.status === nextStatus) {
+            return;
+        }
+        this.status = nextStatus;
+        this.notifyStatusChanged();
+    }
+
+    private notifyStatusChanged(): void {
+        this.listeners.forEach((listener) => {
+            try {
+                listener(this.status);
+            } catch (error) {
+                console.error("Auth status listener failed", error);
+            }
+        });
     }
 }
 

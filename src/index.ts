@@ -11,15 +11,16 @@ if (!rootElement) {
 const app = new App();
 const supportWidgetHost = new SupportWidgetHost({
     iframeSrc: "/support-widget.html",
-    buttonLabel: "Сапорт",
-    modalTitle: "Расскажите о вашей проблеме",
+    buttonLabel: "Помощь",
+    modalTitle: "Обращение в поддержку",
     iframeTitle: "support-frame",
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    app.init().then(() => {});
+    app.init().then(() => undefined);
     supportWidgetHost.render();
     supportWidgetHost.mount(document.body).then();
 });
 
 registerServiceWorker();
+

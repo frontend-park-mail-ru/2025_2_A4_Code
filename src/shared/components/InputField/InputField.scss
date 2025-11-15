@@ -24,8 +24,10 @@
     }
 
     &--textarea {
-      resize: vertical;
+      resize: none;
       min-height: 120px;
+      max-height: 220px;
+      overflow-y: auto;
       line-height: 1.4;
     }
   }

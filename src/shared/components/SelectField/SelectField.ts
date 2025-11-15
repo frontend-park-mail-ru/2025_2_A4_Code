@@ -167,6 +167,12 @@ export class SelectFieldComponent extends Component<Props> {
         await super.unmount();
     }
 
+    public getSelectedLabel(): string {
+        const value = this.getValue();
+        const option = this.props.options.find((item) => item.value === value);
+        return option?.label ?? value;
+    }
+
     private setOpen(open: boolean): void {
         if (this.isOpen === open) return;
         this.isOpen = open;

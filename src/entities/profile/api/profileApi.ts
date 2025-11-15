@@ -12,6 +12,7 @@ type ProfileResponseBody = {
     gender: string;
     date_of_birth: string;
     avatar_path: string | null;
+    role?: string;
 };
 
 type ProfileResponse = ApiResponse<ProfileResponseBody>;
@@ -27,6 +28,7 @@ export type ProfileData = {
     birthday: string;
     avatarUrl: string | null;
     createdAt: string;
+    role: string;
 };
 
 export type UpdateProfilePayload = {
@@ -96,6 +98,7 @@ function mapProfileResponse(body: ProfileResponseBody): ProfileData {
         birthday: formatDateFromBackend(body.date_of_birth),
         avatarUrl: resolveAssetUrl(body.avatar_path),
         createdAt: body.created_at,
+        role: body.role?.trim().toLowerCase() || "user",
     };
 }
 
