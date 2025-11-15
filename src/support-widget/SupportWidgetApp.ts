@@ -19,7 +19,7 @@ export class SupportWidgetApp extends Component {
         super();
 
         this.subjectField = new SelectFieldComponent({
-            label: "Тема обращения",
+            label: "Выберите тему вашего обращения",
             name: "subject",
             placeholder: "Выберите тему",
             required: true,
@@ -31,10 +31,10 @@ export class SupportWidgetApp extends Component {
         });
 
         this.messageField = new InputFieldComponent({
-            label: "Текст обращения",
+            label: "Опишите ситуацию как можно подробнее",
             name: "message",
             control: "textarea",
-            placeholder: "Опишите ситуацию максимально подробно",
+            placeholder: "Текст обращения",
             rows: 5,
             required: true,
         });
