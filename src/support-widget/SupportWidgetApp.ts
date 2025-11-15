@@ -24,9 +24,9 @@ export class SupportWidgetApp extends Component {
             placeholder: "Выберите тему",
             required: true,
             options: [
-                { value: "bug", label: "Ошибка или баг" },
-                { value: "idea", label: "Предложение" },
-                { value: "complaint", label: "Продуктовая жалоба" },
+                { value: "complaint", label: "Проблема с функциналом" },
+                { value: "bug", label: "Ошибка в работе сервиса" },
+                { value: "idea", label: "Предложение по улучшению" },
             ],
         });
 

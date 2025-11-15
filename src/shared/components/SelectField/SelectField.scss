@@ -6,9 +6,10 @@
     padding-bottom: 16px;
     color: #1f2344;
     position: relative;
+  width: 518px;
 
     &__label {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
     }
 
@@ -50,8 +51,8 @@
 
     &__dropdown {
         list-style: none;
-        margin: 8px 0 0;
-        padding: 6px;
+        margin-top: 76px;
+        padding: 12px;
         background: #fff;
         border-radius: 18px;
         border: 1px solid rgba(91, 103, 241, 0.2);
@@ -71,8 +72,8 @@
         width: 100%;
         border: none;
         background: transparent;
-        border-radius: 14px;
-        padding: 10px 14px;
+        border-radius: 12px;
+        padding: 16px;
         font-size: 15px;
         display: flex;
         align-items: center;
@@ -80,14 +81,6 @@
         cursor: pointer;
         color: #1f2344;
         transition: background-color 0.15s ease, color 0.15s ease;
-    }
-
-    &__option-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: rgba(91, 103, 241, 0.4);
-        transition: background-color 0.15s ease;
     }
 
     &__option:hover {
