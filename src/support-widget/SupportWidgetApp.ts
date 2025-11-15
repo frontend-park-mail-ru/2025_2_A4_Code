@@ -11,6 +11,7 @@ export class SupportWidgetApp extends Component {
     private readonly subjectField: SelectFieldComponent;
     private readonly messageField: InputFieldComponent;
     private readonly submitButton: ButtonComponent;
+    private readonly appilButton: ButtonComponent;
 
     private formElement: HTMLFormElement | null = null;
     private statusElement: HTMLElement | null = null;
@@ -24,17 +25,17 @@ export class SupportWidgetApp extends Component {
             placeholder: "Выберите тему",
             required: true,
             options: [
-                { value: "bug", label: "Ошибка или баг" },
-                { value: "idea", label: "Предложение" },
-                { value: "complaint", label: "Продуктовая жалоба" },
+                { value: "complaint", label: "Проблема с функциналом" },
+                { value: "bug", label: "Ошибка в работе сервиса" },
+                { value: "idea", label: "Предложение по улучшению" },
             ],
         });
 
         this.messageField = new InputFieldComponent({
-            label: "Текст обращения",
+            label: "Опишите ситуацию максимально подробно",
             name: "message",
             control: "textarea",
-            placeholder: "Опишите ситуацию максимально подробно",
+            placeholder: "Текст обращения",
             rows: 5,
             required: true,
         });
@@ -42,6 +43,12 @@ export class SupportWidgetApp extends Component {
         this.submitButton = new ButtonComponent({
             label: "Отправить",
             type: "submit",
+            fullWidth: true,
+        });
+
+        this.appilButton = new ButtonComponent({
+            label: "Новое обращение",
+            type: "appil",
             fullWidth: true,
         });
     }
@@ -54,6 +61,7 @@ export class SupportWidgetApp extends Component {
         this.mountField("subject", this.subjectField);
         this.mountField("message", this.messageField);
         this.mountField("submit", this.submitButton);
+        this.mountField("appil", this.submitButton);
 
         this.formElement = this.element?.querySelector("[data-form]") as HTMLFormElement | null;
         this.statusElement = this.element?.querySelector("[data-status]") as HTMLElement | null;
@@ -94,7 +102,7 @@ export class SupportWidgetApp extends Component {
 
         console.info("[support-widget] submitting request", payload);
 
-        this.showStatus("Сообщение отправлено. Мы свяжемся, как только подготовим ответ.", "success");
+        this.showStatus("Сообщение отправлено. Мы свяжемся с вами, как только подготовим ответ.", "success");
         this.resetFields();
     };
 

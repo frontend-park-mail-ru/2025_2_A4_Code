@@ -1,5 +1,6 @@
 .support-widget-host {
     position: fixed;
+    user-select: none;
     inset: 0;
     pointer-events: none;
     z-index: 3000;
@@ -69,7 +70,7 @@
     position: relative;
     z-index: 1;
     width: clamp(320px, var(--support-widget-modal-width, 640px), calc(100% - 24px));
-    height: clamp(320px, var(--support-widget-modal-height, 680px), calc(100% - 48px));
+    height: 600px;
     max-width: calc(100% - 24px);
     max-height: calc(100% - 48px);
     background: #fff;
@@ -77,9 +78,9 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 30px 60px rgba(17, 23, 58, 0.35);
     transition: width 0.2s ease, height 0.2s ease;
     box-sizing: border-box;
+    background: #EFF2F7;
 }
 
 .support-widget-host__header {
