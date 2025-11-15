@@ -12,6 +12,7 @@ type Props = {
 
 export class SupportWidgetHost extends Component<Props> {
     private modalElement: HTMLElement | null = null;
+    private modalWindow: HTMLElement | null = null;
     private iframeElement: HTMLIFrameElement | null = null;
     private openButton: HTMLButtonElement | null = null;
     private closeElements: HTMLElement[] = [];
@@ -35,10 +36,10 @@ export class SupportWidgetHost extends Component<Props> {
     constructor(props: Props) {
         super({
             ...props,
-            buttonLabel: props.buttonLabel ?? "Support",
-            buttonAriaLabel: props.buttonAriaLabel ?? "Open support dialog",
-            modalTitle: props.modalTitle ?? "Support",
-            iframeTitle: props.iframeTitle ?? "Support widget",
+            buttonLabel: props.buttonLabel ?? "Поддержка",
+            buttonAriaLabel: props.buttonAriaLabel ?? "Открыть окно поддержки",
+            modalTitle: props.modalTitle ?? "Поддержка",
+            iframeTitle: props.iframeTitle ?? "Окно поддержки",
         });
     }
 
@@ -54,6 +55,7 @@ export class SupportWidgetHost extends Component<Props> {
 
     protected afterRender(): void {
         this.modalElement = this.element?.querySelector("[data-modal]") as HTMLElement | null;
+        this.modalWindow = this.element?.querySelector(".support-widget-host__window") as HTMLElement | null;
         this.iframeElement = this.element?.querySelector("[data-iframe]") as HTMLIFrameElement | null;
         this.openButton = this.element?.querySelector("[data-open]") as HTMLButtonElement | null;
         this.closeElements = Array.from(this.element?.querySelectorAll("[data-close]") ?? []);
@@ -66,6 +68,7 @@ export class SupportWidgetHost extends Component<Props> {
         this.openButton?.removeEventListener("click", this.handleOpen);
         this.closeElements.forEach((el) => el.removeEventListener("click", this.handleClose));
         document.removeEventListener("keydown", this.handleKeydown);
+        window.removeEventListener("resize", this.handleResize);
         if (this.isOpen) {
             document.body.classList.remove("support-widget-body-locked");
         }
@@ -84,9 +87,12 @@ export class SupportWidgetHost extends Component<Props> {
 
         if (open) {
             this.ensureIframeLoaded();
+            this.updateModalDimensions();
             document.addEventListener("keydown", this.handleKeydown);
+            window.addEventListener("resize", this.handleResize);
         } else {
             document.removeEventListener("keydown", this.handleKeydown);
+            window.removeEventListener("resize", this.handleResize);
         }
     }
 
@@ -98,5 +104,24 @@ export class SupportWidgetHost extends Component<Props> {
         const deferredSrc = this.iframeElement.dataset.src || this.props.iframeSrc;
         this.iframeElement.src = deferredSrc;
         this.iframeLoaded = true;
+    }
+
+    private handleResize = (): void => {
+        this.updateModalDimensions();
+    };
+
+    private updateModalDimensions(): void {
+        if (!this.modalWindow) {
+            return;
+        }
+
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        const targetWidth = Math.max(320, Math.min(viewportWidth - 24, 640));
+        const targetHeight = Math.max(320, Math.min(viewportHeight - 48, 720));
+
+        this.modalWindow.style.setProperty("--support-widget-modal-width", `${targetWidth}px`);
+        this.modalWindow.style.setProperty("--support-widget-modal-height", `${targetHeight}px`);
     }
 }

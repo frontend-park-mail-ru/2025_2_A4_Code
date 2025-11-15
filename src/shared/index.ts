@@ -12,6 +12,7 @@ export type { ApiResponse } from "./api/types";
 export { ButtonComponent } from "./components/Button/Button";
 export { AvatarButtonComponent } from "./components/AvatarButton/AvatarButton";
 export { InputFieldComponent } from "./components/InputField/InputField";
+export { SelectFieldComponent } from "./components/SelectField/SelectField";
 export { MailItemComponent } from "./components/MailItem/MailItem";
 export { RadioGroupComponent } from "./components/RadioGroup/RadioGroup";
 export { SearchInputComponent } from "./components/SearchInput/SearchInput";

@@ -1,11 +1,20 @@
-<div class="support-widget-app">
+﻿<div class="support-widget-app">
     <header class="support-widget-app__header">
-        <h1 class="support-widget-app__title">Расскажите о вашей проблеме</h1>
-        <p class="support-widget-app__subtitle">Все поля обязательны для заполнения. Пожалуйста заполните их внимательно.</p>
-    </header>
-    <section class="support-widget-app__body">
-        <p>
-            Виджет
+        <p class="support-widget-app__eyebrow">FlintMail support</p>
+        <h1 class="support-widget-app__title">Расскажите, чем мы можем помочь</h1>
+        <p class="support-widget-app__subtitle">
+            Опишите тему и детали — мы свяжемся с ответом и поможем закрыть вопрос.
         </p>
-    </section>
+    </header>
+
+    <form class="support-widget-form" data-form>
+        <div class="support-widget-form__field" data-slot="subject"></div>
+        <div class="support-widget-form__field" data-slot="message"></div>
+
+        <div class="support-widget-form__actions">
+            <div data-slot="submit"></div>
+        </div>
+
+        <p class="support-widget-form__status" data-status></p>
+    </form>
 </div>

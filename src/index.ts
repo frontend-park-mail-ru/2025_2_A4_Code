@@ -12,8 +12,8 @@ const app = new App();
 const supportWidgetHost = new SupportWidgetHost({
     iframeSrc: "/support-widget.html",
     buttonLabel: "Сапорт",
-    modalTitle: "Поддержка",
-    iframeTitle: "Сапорт виджет",
+    modalTitle: "Расскажите о вашей проблеме",
+    iframeTitle: "support-frame",
 });
 
 document.addEventListener("DOMContentLoaded", () => {

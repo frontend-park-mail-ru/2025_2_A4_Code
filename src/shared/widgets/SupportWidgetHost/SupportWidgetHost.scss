@@ -68,13 +68,18 @@
 .support-widget-host__window {
     position: relative;
     z-index: 1;
-    width: 700px;
-    height: 700px;
+    width: clamp(320px, var(--support-widget-modal-width, 640px), calc(100% - 24px));
+    height: clamp(320px, var(--support-widget-modal-height, 680px), calc(100% - 48px));
+    max-width: calc(100% - 24px);
+    max-height: calc(100% - 48px);
     background: #fff;
     border-radius: 24px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    box-shadow: 0 30px 60px rgba(17, 23, 58, 0.35);
+    transition: width 0.2s ease, height 0.2s ease;
+    box-sizing: border-box;
 }
 
 .support-widget-host__header {
@@ -126,11 +131,5 @@
     .support-widget-host__button {
         bottom: 20px;
         right: 20px;
-    }
-
-    .support-widget-host__window {
-        width: calc(100% - 24px);
-        height: calc(100% - 80px);
-        border-radius: 16px;
     }
 }
