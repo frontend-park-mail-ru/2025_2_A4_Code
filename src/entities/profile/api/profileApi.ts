@@ -48,28 +48,27 @@ const EMAIL_DOMAIN = "@flintmail.ru";
 const UPLOAD_AVATAR_ENDPOINT = "/user/upload/avatar";
 const ABSOLUTE_URL_REGEX = /^https?:\/\//i;
 
+function getApiBaseUrl(): string {
+    if (typeof window !== "undefined" && typeof window.__API_BASE_URL__ === "string") {
+        return window.__API_BASE_URL__;
+    }
+
+    const apiInstance = apiService as unknown as { baseUrl?: string };
+    if (typeof apiInstance.baseUrl === "string") {
+        return apiInstance.baseUrl;
+    }
+
+    return "";
+}
+
 function resolveAssetUrl(path: string | null | undefined): string | null {
     if (!path) {
         return null;
     }
 
-    if (ABSOLUTE_URL_REGEX.test(path)) {
-        return ensureHttpsAssetUrl(path);
-    }
-
-    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-
-    let baseUrl = "";
-    if (typeof window !== "undefined" && typeof window.__API_BASE_URL__ === "string") {
-        baseUrl = window.__API_BASE_URL__;
-    } else {
-        const apiInstance = apiService as unknown as { baseUrl?: string };
-        if (typeof apiInstance.baseUrl === "string") {
-            baseUrl = apiInstance.baseUrl;
-        }
-    }
-
-    return ensureHttpsAssetUrl(`${baseUrl}${normalizedPath}`);
+    // Всегда проксируем через наш API, чтобы избежать прямых запросов к MinIO
+    const base = getApiBaseUrl();
+    return `${base}/user/avatar`;
 }
 
 function mapProfileResponse(body: ProfileResponseBody): ProfileData {

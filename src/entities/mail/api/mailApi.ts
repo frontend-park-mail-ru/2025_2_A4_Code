@@ -1,4 +1,4 @@
-﻿import { apiService } from "@shared/api/ApiService";
+import { apiService } from "@shared/api/ApiService";
 import type { ApiResponse } from "@shared/api/types";
 import type { Mail, MailAttachment, MailDetail } from "@app-types/mail";
 import { formatDateTimeFromBackend } from "@utils";
@@ -67,6 +67,7 @@ type ReplyMessageRequest = {
     receivers: Array<{ email: string }>;
     files: MessageFileDto[];
 };
+
 export type InboxSummary = {
     total: number;
     unread: number;
@@ -88,25 +89,78 @@ export type ReplyMessagePayload = {
     threadRoot: number;
 };
 
+export type FolderSummary = {
+    id: string;
+    name: string;
+    type: string;
+    icon?: string;
+    unread?: number;
+    backendId?: string;
+};
+
 const INBOX_ENDPOINT = "/messages/inbox";
+const FOLDERS_ENDPOINT = "/messages/get-folders";
+const FOLDER_ENDPOINT = (name: string) => `/folders/${encodeURIComponent(name)}`;
 const MESSAGE_ENDPOINT = (id: string) => `/messages/${id}`;
 const SEND_ENDPOINT = "/messages/send";
 const REPLY_ENDPOINT = "/messages/reply";
+const CREATE_FOLDER_ENDPOINT = "/messages/create-folder";
 const SENDER_FALLBACK = "Неизвестный отправитель";
 
 export async function fetchInboxMessages(): Promise<InboxSummary> {
     const response = await apiService.request<ApiResponse<InboxApiResponse>>(INBOX_ENDPOINT);
+    const messages = response.body?.messages ?? [];
     return {
-        total: response.body.message_total,
-        unread: response.body.message_unread,
-        items: response.body.messages.map(mapInboxMessage),
+        total: Number(response.body.message_total) || 0,
+        unread: Number(response.body.message_unread) || 0,
+        items: messages.map(mapInboxMessage),
+        pagination: response.body.pagination,
+    };
+}
+
+export async function fetchFolders(): Promise<FolderSummary[]> {
+    const response = await apiService.request<
+        ApiResponse<{ folders: Array<{ folder_id: string; folder_name: string; folder_type: string }> }>
+    >(FOLDERS_ENDPOINT);
+    return (response.body.folders ?? []).map((folder) => {
+        const backendId = (folder.folder_id ?? "").trim();
+        const type = (folder.folder_type ?? "").trim().toLowerCase() || "custom";
+        const name = folder.folder_name?.trim() || folder.folder_type || "";
+        const isCustom = type === "custom";
+        const id = isCustom ? backendId || name || type : type;
+
+        return {
+            id: id || type || "custom",
+            name,
+            type,
+            unread: undefined,
+            backendId: backendId || undefined,
+        };
+    });
+}
+
+export async function fetchFolderMessages(folderName: string): Promise<InboxSummary> {
+    if (!folderName || folderName === "inbox") {
+        return fetchInboxMessages();
+    }
+
+    const response = await apiService.request<ApiResponse<InboxApiResponse>>(FOLDER_ENDPOINT(folderName));
+    const messages = response.body?.messages ?? [];
+    return {
+        total: Number(response.body.message_total) || 0,
+        unread: Number(response.body.message_unread) || 0,
+        items: messages.map(mapInboxMessage),
         pagination: response.body.pagination,
     };
 }
 
 export async function fetchMessageById(id: string): Promise<MailDetail> {
-    const response = await apiService.request<ApiResponse<MessageDetailsDto>>(MESSAGE_ENDPOINT(id));
-    return mapMessageDetails(id, response.body);
+    const response = await apiService.request<ApiResponse<MessageDetailsDto | { message?: MessageDetailsDto }>>(
+        MESSAGE_ENDPOINT(id)
+    );
+    const raw = response.body as MessageDetailsDto | { message?: MessageDetailsDto };
+    const dto = (raw as { message?: MessageDetailsDto }).message ?? (raw as MessageDetailsDto);
+    return mapMessageDetails(id, dto || {});
 }
 
 export async function sendMessage(payload: SendMessagePayload): Promise<void> {
@@ -149,6 +203,29 @@ export async function replyToMessage(payload: ReplyMessagePayload): Promise<void
     });
 }
 
+export async function createFolder(name: string): Promise<FolderSummary> {
+    const trimmed = name.trim();
+    if (!trimmed) {
+        throw new Error("Folder name is required");
+    }
+
+    const response = await apiService.request<
+        ApiResponse<{ folder_id: string; folder_name: string; folder_type: string }>
+    >(CREATE_FOLDER_ENDPOINT, {
+        method: "POST",
+        body: { folder_name: trimmed },
+    });
+
+    const folderId = (response.body.folder_id ?? "").trim();
+    const type = (response.body.folder_type ?? "custom").trim().toLowerCase();
+    return {
+        id: folderId || trimmed,
+        name: response.body.folder_name?.trim() || trimmed,
+        type,
+        backendId: folderId || undefined,
+    };
+}
+
 function mapInboxMessage(apiMessage: InboxMessageDto): Mail {
     return {
         id: apiMessage.id,
@@ -162,22 +239,22 @@ function mapInboxMessage(apiMessage: InboxMessageDto): Mail {
 }
 
 function mapMessageDetails(id: string, dto: MessageDetailsDto): MailDetail {
-    const senderEmail = dto.sender?.email ?? dto.email ?? "";
-    const senderUsername = dto.sender?.username ?? dto.username ?? "";
-    const senderDisplay = senderUsername.trim().length > 0
-        ? senderUsername.trim()
-        : senderEmail.trim() || SENDER_FALLBACK;
+    const text = dto?.text ?? "";
+    const senderEmail = dto?.sender?.email ?? dto?.email ?? "";
+    const senderUsername = dto?.sender?.username ?? dto?.username ?? "";
+    const senderDisplay =
+        senderUsername.trim().length > 0 ? senderUsername.trim() : senderEmail.trim() || SENDER_FALLBACK;
 
     return {
         id,
         from: senderDisplay,
         fromEmail: senderEmail.trim() || undefined,
-        subject: dto.topic,
-        preview: dto.text.slice(0, 120),
+        subject: dto.topic ?? "",
+        preview: text.slice(0, 120),
         time: formatDateTimeFromBackend(dto.datetime),
         avatarUrl: ensureHttpsAssetUrl(dto.sender?.avatar ?? dto.avatar ?? null),
         isRead: true,
-        body: dto.text.replace(/\n/g, "<br>"),
+        body: text.replace(/\n/g, "<br>"),
         threadId: dto.thread_id,
         attachments: mapAttachments(dto.files ?? dto.Files),
     };
@@ -195,4 +272,3 @@ function mapAttachments(files: MessageFileDto[] | undefined): MailAttachment[] |
         storagePath: file.storage_path ?? null,
     }));
 }
-

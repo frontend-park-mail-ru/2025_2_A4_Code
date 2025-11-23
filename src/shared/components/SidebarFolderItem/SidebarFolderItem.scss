@@ -7,6 +7,7 @@
   transition: background .12s ease;
   gap: 12px;
   user-select: none;
+  min-width: 0;
 
   &:hover {
     background: rgba(81, 99, 235, 0.08);
@@ -25,6 +26,11 @@
   }
   
   &__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    max-width: 14ch;
     flex: 1 1 auto;
   }
 

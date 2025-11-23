@@ -86,7 +86,7 @@ export class AuthPage extends Component {
         authManager.setAuthenticated(result.success);
 
         if (result.success) {
-            this.router.navigate("/inbox");
+            this.router.navigate("/mail");
             return;
         }
 

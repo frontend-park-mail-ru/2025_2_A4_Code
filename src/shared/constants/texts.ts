@@ -25,10 +25,10 @@ export const SIDEBAR_TEXTS: {
         { id: "inbox", name: "Входящие", count: 0, icon: "/img/folder-inbox.svg" },
         { id: "conversations", name: "Диалоги", icon: "/img/folder-dialog.svg" },
         { id: "sent", name: "Отправленные", icon: "/img/folder-sent.svg" },
-        { id: "drafts", name: "Черновики", icon: "/img/folder-drafts.svg" },
+        { id: "draft", name: "Черновики", icon: "/img/folder-drafts.svg" },
         { id: "spam", name: "Спам", icon: "/img/folder-spam.svg" },
         { id: "trash", name: "Корзина", icon: "/img/folder-trash.svg" },
-        { id: "custom", name: "Новая папка", icon: "/img/folder-add.svg" },
+        { id: "custom", name: "Новая папка", icon: "/img/folder-custom.svg" },
     ],
 };
 

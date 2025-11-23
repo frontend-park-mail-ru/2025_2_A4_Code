@@ -16,8 +16,9 @@ const routeDefinitions: RouteConfig[] = [
         guestOnly: true,
     },
     {
-        path: "/inbox/:messageId?",
-        createView: (params: Record<string, string>) => new InboxPage({ messageId: params.messageId }),
+        path: "/mail/:folder?/:messageId?",
+        createView: (params: Record<string, string>) =>
+            new InboxPage({ messageId: params.messageId, folderId: params.folder }),
         requiresAuth: true,
     },
     {

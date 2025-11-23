@@ -110,6 +110,6 @@ export class RegisterPage extends Component {
         }
 
         authManager.setAuthenticated(true);
-        await this.router.navigate("/inbox");
+        await this.router.navigate("/mail");
     }
 }

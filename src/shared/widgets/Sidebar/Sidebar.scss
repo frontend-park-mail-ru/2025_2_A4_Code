@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  height: 100%;
+  max-height: 100%;
 
   &__compose {
     padding: 10px 10px;
@@ -21,10 +23,25 @@
   &__folders {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 2px 0 0;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    flex: 1 1 auto;
+  }
+
+  &__create-folder {
+    margin-top: 12px;
+    padding: 0;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
   }
 }

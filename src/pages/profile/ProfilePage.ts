@@ -2,6 +2,7 @@ import { Component } from "@shared/base/Component";
 import { HeaderComponent } from "@shared/widgets/Header/Header";
 import { ProfileSidebarComponent } from "./components/ProfileSidebar/ProfileSidebar";
 import { ProfileFormComponent } from "./components/ProfileForm/ProfileForm";
+import { InterfaceSettingsComponent } from "./components/InterfaceSettings/InterfaceSettings";
 import { MainLayout } from "@app/components/MainLayout/MainLayout";
 import { fetchProfile, type ProfileData, updateProfile, uploadProfileAvatar } from "@entities/profile";
 import {
@@ -44,10 +45,12 @@ export class ProfilePage extends Component {
     private readonly layout = new MainLayout();
     private readonly sidebar: ProfileSidebarComponent;
     private readonly form: ProfileFormComponent;
+    private readonly interfaceView: InterfaceSettingsComponent;
     private readonly header: HeaderComponent;
     private profile: ProfileData | null = null;
     private globalLoadingDepth = 0;
     private profileLoadPromise: Promise<void> | null = null;
+    private activeTab: "personal" | "interface" = "personal";
 
     constructor() {
         super();
@@ -56,7 +59,9 @@ export class ProfilePage extends Component {
             name: DEFAULT_PLACEHOLDER.fullName,
             email: DEFAULT_PLACEHOLDER.email,
             avatarUrl: DEFAULT_PLACEHOLDER.avatarUrl,
-            onNavigateInbox: () => this.router.navigate("/inbox"),
+            onNavigateInbox: () => this.router.navigate("/mail"),
+            onTabChange: (tabId) => this.handleTabChange(tabId as "personal" | "interface"),
+            activeTab: this.activeTab,
         });
 
         this.form = new ProfileFormComponent({
@@ -65,6 +70,8 @@ export class ProfilePage extends Component {
             onSubmit: (values) => this.handleProfileSubmit(values),
             onCancel: () => this.handleProfileCancel(),
         });
+
+        this.interfaceView = new InterfaceSettingsComponent();
 
         this.header = new HeaderComponent({
             showSearch: false,
@@ -101,6 +108,7 @@ export class ProfilePage extends Component {
         this.applyCachedProfile();
 
         await this.loadProfile();
+        await this.renderActiveMain();
     }
 
     public async unmount(): Promise<void> {
@@ -117,6 +125,11 @@ export class ProfilePage extends Component {
             sidebar: this.sidebar,
             main: this.form,
         };
+    }
+
+    private async renderActiveMain(): Promise<void> {
+        const mainContent = this.activeTab === "interface" ? this.interfaceView : this.form;
+        await this.layout.updateSlot("main", mainContent);
     }
 
     private async loadProfile(): Promise<void> {
@@ -291,6 +304,15 @@ export class ProfilePage extends Component {
 
     private updateLayoutLoadingState(): void {
         this.layout.setLoading(this.globalLoadingDepth > 0);
+    }
+
+    private handleTabChange(tabId: "personal" | "interface"): void {
+        if (this.activeTab === tabId) {
+            return;
+        }
+        this.activeTab = tabId;
+        this.sidebar.setProps({ activeTab: tabId });
+        void this.renderActiveMain();
     }
 
     private applyCachedProfile(): void {

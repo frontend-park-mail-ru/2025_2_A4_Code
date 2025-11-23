@@ -75,7 +75,7 @@ export class Router {
         }
 
         const status = authManager.getStatus();
-        const target = status === "authenticated" ? "/inbox" : "/auth";
+        const target = status === "authenticated" ? "/mail" : "/auth";
         console.warn(`Router: route not found, redirecting to ${target}`);
         await this.navigate(target, { replace: true, skipHistory: options.skipHistory });
     }
@@ -148,11 +148,15 @@ export class Router {
             return "/";
         }
 
-        const url = path.includes("http://") || path.includes("https://") ? new URL(path).pathname : path;
-        if (url.length > 1 && url.endsWith("/")) {
-            return url.slice(0, -1);
+        const pathname =
+            path.includes("http://") || path.includes("https://")
+                ? new URL(path).pathname
+                : path.split(/[?#]/)[0];
+
+        if (pathname.length > 1 && pathname.endsWith("/")) {
+            return pathname.slice(0, -1);
         }
-        return url;
+        return pathname;
     }
 
     private async ensureRouteAccess(
@@ -184,8 +188,8 @@ export class Router {
         }
 
         if (guestOnly && isAuthenticated) {
-            if (currentPath !== "/inbox") {
-                await this.navigate("/inbox", { replace: true });
+            if (currentPath !== "/mail") {
+                await this.navigate("/mail", { replace: true });
             }
             return false;
         }

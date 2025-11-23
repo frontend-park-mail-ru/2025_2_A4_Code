@@ -21,22 +21,26 @@ type Props = {
     activeFolderId?: string;
     onCompose?: () => void;
     onFolderSelect?: (folderId: string) => void;
+    onCreateFolder?: () => void;
 };
 
 export class SidebarComponent extends Component<Props> {
     private composeHandler?: (event: Event) => void;
+    private createFolderHandler?: (event: Event) => void;
     private foldersRoot?: HTMLElement | null;
     private folderItems: Map<string, SidebarFolderItem> = new Map();
     private composeButton?: HTMLElement | null;
+    private createFolderButton?: HTMLElement | null;
     private isOnline: boolean = getOnlineStatus();
     private unsubscribeOnline?: () => void;
 
     constructor(props: Props = {}) {
         super({
-            folders: props.folders ?? SIDEBAR_TEXTS.defaultFolders,
+            folders: props.folders ?? [],
             activeFolderId: props.activeFolderId ?? SIDEBAR_TEXTS.defaultFolders[0].id,
             onCompose: props.onCompose,
             onFolderSelect: props.onFolderSelect,
+            onCreateFolder: props.onCreateFolder,
         });
     }
 
@@ -49,8 +53,10 @@ export class SidebarComponent extends Component<Props> {
     protected afterRender(): void {
         const element = this.element!;
         const composeBtn = element.querySelector('[data-compose]') as HTMLElement | null;
+        const createFolderBtn = element.querySelector('[data-create-folder]') as HTMLElement | null;
         this.foldersRoot = element.querySelector('[data-slot="folders"]') as HTMLElement | null;
         this.composeButton = composeBtn;
+        this.createFolderButton = createFolderBtn;
 
         if (composeBtn) {
             this.composeHandler = (event: Event) => {
@@ -65,10 +71,23 @@ export class SidebarComponent extends Component<Props> {
             this.requestConnectivityProbe();
         }
 
+        if (createFolderBtn) {
+            this.createFolderHandler = (event: Event) => {
+                event.preventDefault();
+                if (!this.isOnline) {
+                    return;
+                }
+                this.props.onCreateFolder?.();
+            };
+            createFolderBtn.addEventListener("click", this.createFolderHandler);
+            this.updateCreateFolderAvailability();
+        }
+
         if (!this.unsubscribeOnline) {
             this.unsubscribeOnline = subscribeToOnlineStatus((online) => {
                 this.isOnline = online;
                 this.updateComposeAvailability();
+                this.updateCreateFolderAvailability();
             });
         }
 
@@ -83,7 +102,7 @@ export class SidebarComponent extends Component<Props> {
     private renderFolders(): void {
         if (!this.foldersRoot) return;
 
-        const folders = this.props.folders ?? SIDEBAR_TEXTS.defaultFolders;
+        const folders = this.props.folders ?? [];
 
         for (const [, item] of this.folderItems) {
             item.unmount().then();
@@ -109,10 +128,16 @@ export class SidebarComponent extends Component<Props> {
     public async unmount(): Promise<void> {
         const element = this.element;
         const composeBtn = element?.querySelector('[data-compose]') as HTMLElement | null;
+        const createFolderBtn = element?.querySelector('[data-create-folder]') as HTMLElement | null;
 
         if (composeBtn && this.composeHandler) {
             composeBtn.removeEventListener("click", this.composeHandler);
             this.composeHandler = undefined;
+        }
+
+        if (createFolderBtn && this.createFolderHandler) {
+            createFolderBtn.removeEventListener("click", this.createFolderHandler);
+            this.createFolderHandler = undefined;
         }
 
         this.unsubscribeOnline?.();
@@ -132,6 +157,17 @@ export class SidebarComponent extends Component<Props> {
         }
 
         const button = this.composeButton as HTMLButtonElement;
+        button.disabled = !this.isOnline;
+        button.setAttribute("aria-disabled", this.isOnline ? "false" : "true");
+        button.tabIndex = this.isOnline ? 0 : -1;
+    }
+
+    private updateCreateFolderAvailability(): void {
+        if (!this.createFolderButton) {
+            return;
+        }
+
+        const button = this.createFolderButton as HTMLButtonElement;
         button.disabled = !this.isOnline;
         button.setAttribute("aria-disabled", this.isOnline ? "false" : "true");
         button.tabIndex = this.isOnline ? 0 : -1;

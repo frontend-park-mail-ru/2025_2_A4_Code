@@ -16,6 +16,7 @@ export const PUBLIC_ASSETS: string[] = [
     "/img/background.jpg",
     "/img/close-modal.svg",
     "/img/folder-add.svg",
+    "/img/folder-custom.svg",
     "/img/folder-dialog.svg",
     "/img/folder-drafts.svg",
     "/img/folder-inbox.svg",

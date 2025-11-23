@@ -4,6 +4,7 @@ import { SidebarComponent } from "@shared/widgets/Sidebar/Sidebar";
 import { MailListComponent } from "@shared/widgets/MailList/MailList";
 import { MailViewComponent } from "./components/MailView/MailView";
 import { ComposeModal } from "./components/ComposeModal/ComposeModal";
+import { CreateFolderModal } from "./components/CreateFolderModal/CreateFolderModal";
 import { MainLayout } from "@app/components/MainLayout/MainLayout";
 import { performLogout } from "@features/auth";
 import { Router, authManager } from "@infra";
@@ -18,6 +19,7 @@ import { HttpError } from "@shared/api/ApiService";
 
 type InboxPageParams = {
     messageId?: string;
+    folderId?: string;
 };
 
 type ComposePayload = { to: string; subject: string; body: string };
@@ -34,17 +36,20 @@ export class InboxPage extends Component {
 
     private mailView: MailViewComponent | null = null;
     private composeModal: ComposeModal | null = null;
+    private createFolderModal: CreateFolderModal | null = null;
     private showingList = true;
     private lastRenderedMail: MailDetail | null = null;
     private unsubscribeFromStore?: () => void;
     private lastErrorMessage: string | null = null;
     private initialMessageId?: string;
+    private initialFolderId: string = "inbox";
     private offlinePlaceholder: OfflinePlaceholderComponent | null = null;
     private showingOfflinePlaceholder = false;
 
     constructor(params: InboxPageParams = {}) {
         super();
         this.initialMessageId = params.messageId;
+        this.initialFolderId = params.folderId || "inbox";
 
         this.header = new HeaderComponent({
             onSearch: (query) => console.log("search", query),
@@ -53,7 +58,8 @@ export class InboxPage extends Component {
 
         this.sidebar = new SidebarComponent({
             onCompose: () => this.openCompose(),
-            onFolderSelect: (id) => console.log("folder", id),
+            onCreateFolder: () => this.openCreateFolderModal(),
+            onFolderSelect: (id) => this.handleFolderSelect(id),
         });
 
         this.mailList = new MailListComponent({
@@ -88,7 +94,8 @@ export class InboxPage extends Component {
         this.unsubscribeFromStore = this.store.subscribe((state) => this.applyState(state));
 
         try {
-            await this.store.loadList();
+            await this.store.loadFolders();
+            await this.store.loadFolder(this.initialFolderId);
             if (this.initialMessageId) {
                 await this.store.openMail(this.initialMessageId);
             }
@@ -102,6 +109,10 @@ export class InboxPage extends Component {
 
     public async update(params: Record<string, string>): Promise<void> {
         const messageId = params.messageId;
+        const folderFromUrl = params.folder || "inbox";
+        if (folderFromUrl !== this.store.getState().activeFolderId) {
+            await this.store.loadFolder(folderFromUrl);
+        }
         const { selectedMailId, selectedMail } = this.store.getState();
 
         if (messageId) {
@@ -128,6 +139,7 @@ export class InboxPage extends Component {
         this.unsubscribeFromStore = undefined;
         this.loadingManager.reset();
         this.composeModal = null;
+        this.createFolderModal = null;
         this.lastRenderedMail = null;
         this.showingList = true;
         this.lastErrorMessage = null;
@@ -165,6 +177,10 @@ export class InboxPage extends Component {
         }
 
         this.mailList.setProps({ items: state.mails });
+        this.sidebar.setProps({
+            folders: state.folders,
+            activeFolderId: state.activeFolderId,
+        });
 
         if (state.selectedMail && state.selectedMailId) {
             if (this.showingList || this.lastRenderedMail !== state.selectedMail) {
@@ -179,6 +195,28 @@ export class InboxPage extends Component {
             this.lastRenderedMail = null;
             this.updateSlot("main", this.mailList).then();
         }
+    }
+
+    private openCreateFolderModal(): void {
+        const modal = new CreateFolderModal({
+            onClose: () => this.closeModal(),
+            onSave: (name) => this.handleCreateFolder(name),
+        });
+        this.createFolderModal = modal;
+        this.composeModal = null;
+        this.updateSlot("modal", modal).then();
+    }
+
+    private handleFolderSelect(folderId: string): void {
+        this.store.clearSelection();
+        this.store.loadFolder(folderId).catch((error) => {
+            if (this.handleUnauthorized(error)) {
+                return;
+            }
+            console.error("Failed to load folder", error);
+        });
+        const path = folderId === "inbox" ? "/mail" : `/mail/${encodeURIComponent(folderId)}`;
+        this.router.navigate(path).then();
     }
 
     private renderMailView(mail: MailDetail): void {
@@ -224,16 +262,21 @@ export class InboxPage extends Component {
     }
 
     private handleOpenMail(id: string): void {
-        const { selectedMailId } = this.store.getState();
+        const { selectedMailId, activeFolderId } = this.store.getState();
         if (selectedMailId === id && !this.showingList) {
             return;
         }
-        this.router.navigate(`/inbox/${id}`).then();
+        const folder = activeFolderId || "inbox";
+        const path = `/mail/${encodeURIComponent(folder)}/${encodeURIComponent(id)}`;
+        this.router.navigate(path).then();
     }
 
     private handleBackToList(): void {
+        const { activeFolderId } = this.store.getState();
+        const folder = activeFolderId || "inbox";
         this.store.clearSelection();
-        this.router.navigate("/inbox").then();
+        const path = folder === "inbox" ? "/mail" : `/mail/${encodeURIComponent(folder)}`;
+        this.router.navigate(path).then();
     }
 
     private handleReply(mail: MailDetail): void {
@@ -247,12 +290,13 @@ export class InboxPage extends Component {
     }
 
     private openCompose(draft: ComposeDraft = {}, submit?: (data: ComposePayload) => Promise<void>): void {
+        this.createFolderModal = null;
         const modal = new ComposeModal({
             initialTo: draft.initialTo,
             initialSubject: draft.initialSubject,
             initialBody: draft.initialBody,
             focusField: draft.focusField,
-            onClose: () => this.closeCompose(),
+            onClose: () => this.closeModal(),
             onSend: (payload) => {
                 const handler = submit ?? ((data: ComposePayload) => this.handleSendMail(data));
                 this.handleComposeSubmit(handler, payload);
@@ -263,8 +307,9 @@ export class InboxPage extends Component {
         this.updateSlot("modal", modal).then();
     }
 
-    private closeCompose(): void {
+    private closeModal(): void {
         this.composeModal = null;
+        this.createFolderModal = null;
         const empty = document.createElement("div");
         this.updateSlot("modal", empty).then();
     }
@@ -274,7 +319,8 @@ export class InboxPage extends Component {
         data: ComposePayload
     ): void {
         submit(data)
-            .then(() => this.closeCompose())
+            .then(() => this.closeModal())
+            .then(() => this.closeModal())
             .catch((error) => {
                 console.error("Failed to send message", error);
             });
@@ -301,7 +347,7 @@ export class InboxPage extends Component {
         }
 
         this.store.clearSelection();
-        this.router.navigate("/inbox").then();
+        this.router.navigate("/mail").then();
     }
 
     private async handleReplySubmit(mail: MailDetail, data: ComposePayload): Promise<void> {
@@ -335,6 +381,19 @@ export class InboxPage extends Component {
         }
 
         await this.store.refreshSelectedMail();
+    }
+
+    private async handleCreateFolder(name: string): Promise<void> {
+        try {
+            const folder = await this.store.createFolder(name);
+            const path = folder.id === "inbox" ? "/mail" : `/mail/${encodeURIComponent(folder.id)}`;
+            this.router.navigate(path).then();
+        } catch (error) {
+            if (this.handleUnauthorized(error)) {
+                throw error;
+            }
+            throw error;
+        }
     }
 
     private async handleForwardSubmit(data: ComposePayload): Promise<void> {

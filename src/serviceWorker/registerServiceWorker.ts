@@ -3,16 +3,16 @@ export function registerServiceWorker(): void {
         return;
     }
 
-    window.addEventListener("load", () => {
-        navigator.serviceWorker
-            .register("/sw.js")
-            .then((registration) => {
-                if (registration.waiting) {
-                    registration.waiting.postMessage({ type: "SKIP_WAITING" });
-                }
-            })
-            .catch((error) => {
-                console.error("[sw] registration failed", error);
-            });
-    });
+    // window.addEventListener("load", () => {
+    //     navigator.serviceWorker
+    //         .register("/sw.js")
+    //         .then((registration) => {
+    //             if (registration.waiting) {
+    //                 registration.waiting.postMessage({ type: "SKIP_WAITING" });
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             console.error("[sw] registration failed", error);
+    //         });
+    // });
 }

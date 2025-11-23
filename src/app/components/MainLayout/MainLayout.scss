@@ -24,6 +24,8 @@
     width: var(--main-layout-sidebar-width, 240px);
     padding: 0 16px;
     box-sizing: border-box;
+    overflow: hidden;
+    max-height: calc(50vh);
   }
 
   &__main {

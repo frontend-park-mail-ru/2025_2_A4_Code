@@ -14,7 +14,9 @@ export type SidebarFolderItemProps = {
 const ICON_MAP: Record<string, string> = {
     inbox: "/img/folder-inbox.svg",
     sent: "/img/folder-sent.svg",
+    draft: "/img/folder-drafts.svg",
     drafts: "/img/folder-drafts.svg",
+    custom: "/img/folder-custom.svg",
 };
 
 export class SidebarFolderItem extends Component<SidebarFolderItemProps> {
