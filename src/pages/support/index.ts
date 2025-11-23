@@ -1,1 +1,0 @@
-export { SupportAdminPage } from './SupportAdminPage';

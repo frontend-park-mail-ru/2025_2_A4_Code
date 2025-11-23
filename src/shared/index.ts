@@ -1,6 +1,5 @@
 export { Component } from "./base/Component";
-export { Layout, type SlotContent } from "./base/Layout";
-export { Page } from "./base/Page";
+export type { SlotContent } from "./base/slots";
 
 export { LayoutLoadingManager } from "./utils/LayoutLoadingManager";
 export { extractApiErrorMessage } from "./utils/apiError";

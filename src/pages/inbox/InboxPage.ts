@@ -1,14 +1,12 @@
-﻿import { HeaderComponent } from "@shared/widgets/Header/Header";
-import { Page } from "@shared/base/Page";
+import { HeaderComponent } from "@shared/widgets/Header/Header";
+import { Component } from "@shared/base/Component";
 import { SidebarComponent } from "@shared/widgets/Sidebar/Sidebar";
 import { MailListComponent } from "@shared/widgets/MailList/MailList";
-import { Component } from "@shared/base/Component";
 import { MailViewComponent } from "./components/MailView/MailView";
 import { ComposeModal } from "./components/ComposeModal/ComposeModal";
 import { MainLayout } from "@app/components/MainLayout/MainLayout";
 import { performLogout } from "@features/auth";
-import { authManager } from "@infra";
-import "./views/InboxPage.scss";
+import { Router, authManager } from "@infra";
 import template from "./views/InboxPage.hbs";
 import { InboxStore, InboxState, buildForwardDraft, buildReplyDraft } from "@features/inbox";
 import type { ComposeDraft } from "@features/inbox";
@@ -24,7 +22,9 @@ type InboxPageParams = {
 
 type ComposePayload = { to: string; subject: string; body: string };
 
-export class InboxPage extends Page {
+export class InboxPage extends Component {
+    private readonly router = Router.getInstance();
+    private readonly layout = new MainLayout();
     private readonly store = new InboxStore();
     private readonly loadingManager = new LayoutLoadingManager(() => this.layout);
 
@@ -67,19 +67,23 @@ export class InboxPage extends Page {
         return template.toString();
     }
 
-    protected getSlotContent(): { [slotName: string]: HTMLElement | Component } {
-        return {
-            header: this.header,
-            sidebar: this.sidebar,
-            main: this.mailList,
-        };
+    public render(): HTMLElement {
+        const element = this.layout.render(this.getSlotContent());
+        this.element = this.layout.getElement();
+        return element;
+    }
+
+    public async mount(rootElement?: HTMLElement): Promise<void> {
+        if (!this.element) {
+            this.render();
+        }
+        await this.layout.mount(rootElement);
+        this.element = this.layout.getElement();
     }
 
     public async init(): Promise<void> {
-        if (this.layout instanceof MainLayout) {
-            this.layout.setContentBackground(true);
-            this.layout.setSidebarWidth(null);
-        }
+        this.layout.setContentBackground(true);
+        this.layout.setSidebarWidth(null);
 
         this.unsubscribeFromStore = this.store.subscribe((state) => this.applyState(state));
 
@@ -127,7 +131,16 @@ export class InboxPage extends Page {
         this.lastRenderedMail = null;
         this.showingList = true;
         this.lastErrorMessage = null;
-        await super.unmount();
+        await this.layout.unmount();
+        this.element = null;
+    }
+
+    private getSlotContent(): { [slotName: string]: HTMLElement | Component } {
+        return {
+            header: this.header,
+            sidebar: this.sidebar,
+            main: this.mailList,
+        };
     }
 
     private applyState(state: InboxState): void {
@@ -375,7 +388,8 @@ export class InboxPage extends Page {
         }
         return false;
     }
+
+    private async updateSlot(slotName: string, content: HTMLElement | Component): Promise<void> {
+        await this.layout.updateSlot(slotName, content);
+    }
 }
-
-
-

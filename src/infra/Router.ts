@@ -1,19 +1,15 @@
-﻿import { Layout } from "@shared/base/Layout";
-import { Page } from "@shared/base/Page";
+import { Component } from "@shared/base/Component";
 import { authManager } from "./AuthManager";
 
 export type RouteConfig = {
     path: string;
-    createPage: (params: Record<string, string>) => Page;
-    layoutKey: string;
-    createLayout: () => Layout;
+    createView: (params: Record<string, string>) => Component;
     requiresAuth?: boolean;
     guestOnly?: boolean;
 };
 
 export type NavigatePayload = {
     path: string;
-    layout: Layout;
     params: Record<string, string>;
     config: RouteConfig;
 };
@@ -27,7 +23,6 @@ export class Router {
     private static instance: Router | null = null;
 
     private routes: RouteConfig[] = [];
-    private layouts: Map<string, Layout> = new Map();
     private onNavigateCallback?: (payload: NavigatePayload) => void;
 
     private constructor() {
@@ -67,8 +62,6 @@ export class Router {
                 return;
             }
 
-            const layout = this.getOrCreateLayout(config);
-
             if (!options.skipHistory) {
                 if (options.replace) {
                     window.history.replaceState({}, "", normalizedPath);
@@ -77,7 +70,7 @@ export class Router {
                 }
             }
 
-            this.onNavigateCallback({ path: normalizedPath, layout, params, config });
+            this.onNavigateCallback({ path: normalizedPath, params, config });
             return;
         }
 
@@ -89,17 +82,6 @@ export class Router {
 
     public getQueryParams(): URLSearchParams {
         return new URLSearchParams(window.location.search);
-    }
-
-    private getOrCreateLayout(route: RouteConfig): Layout {
-        const cached = this.layouts.get(route.layoutKey);
-        if (cached) {
-            return cached;
-        }
-
-        const layout = route.createLayout();
-        this.layouts.set(route.layoutKey, layout);
-        return layout;
     }
 
     private findRoute(path: string): { config: RouteConfig; params: Record<string, string> } | null {
@@ -211,4 +193,3 @@ export class Router {
         return true;
     }
 }
-

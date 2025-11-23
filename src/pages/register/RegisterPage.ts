@@ -1,14 +1,17 @@
-﻿import { Page } from "@shared/base/Page";
+import { Component } from "@shared/base/Component";
 import { RegisterFormComponent } from "./components";
 import { ButtonComponent } from "@shared/components/Button/Button";
 import { registerUser } from "@features/auth";
-import { authManager } from "@infra";
+import { Router, authManager } from "@infra";
 import type { RegisterPayload } from "@entities/auth";
 import { formatDateToBackend, normalizeUsername, validateRegisterForm } from "@utils";
 import { REGISTER_PAGE_TEXTS } from "@pages/constants/texts";
+import { AuthLayout } from "@app/components/AuthLayout/AuthLayout";
 import "./views/RegisterPage.scss";
 
-export class RegisterPage extends Page {
+export class RegisterPage extends Component {
+    private readonly router = Router.getInstance();
+    private readonly layout = new AuthLayout();
     private readonly form: RegisterFormComponent;
     private readonly authButton: ButtonComponent;
 
@@ -30,7 +33,28 @@ export class RegisterPage extends Page {
         return `<div class="register-page"></div>`;
     }
 
-    protected getSlotContent() {
+    public render(): HTMLElement {
+        const element = this.layout.render(this.buildSlots());
+        this.element = this.layout.getElement();
+        return element;
+    }
+
+    public async mount(rootElement?: HTMLElement): Promise<void> {
+        if (!this.element) {
+            this.render();
+        }
+        await this.layout.mount(rootElement);
+        this.element = this.layout.getElement();
+    }
+
+    public async unmount(): Promise<void> {
+        await this.form.unmount();
+        await this.authButton.unmount();
+        await this.layout.unmount();
+        this.element = null;
+    }
+
+    private buildSlots() {
         const content = document.createElement("div");
         content.className = "register-page";
 

@@ -10,7 +10,6 @@ const __dirname = path.dirname(__filename);
 export default {
     entry: {
         main: './src/index.ts',
-        supportWidget: './src/support-widget/index.ts',
         sw: './src/serviceWorker/sw.ts',
     },
     output: {
@@ -90,17 +89,12 @@ export default {
             filename: 'index.html',
             chunks: ['main'],
         }),
-        new HtmlWebpackPlugin({
-            template: './public/support-widget.html',
-            filename: 'support-widget.html',
-            chunks: ['supportWidget'],
-        }),
         new CopyWebpackPlugin({
             patterns: [
                 {
                     from: path.resolve(__dirname, 'public'),
                     globOptions: {
-                        ignore: ['**/index.html', '**/support-widget.html'],
+                        ignore: ['**/index.html'],
                     },
                 },
             ],

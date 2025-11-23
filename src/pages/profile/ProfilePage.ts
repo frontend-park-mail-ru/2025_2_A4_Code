@@ -1,4 +1,4 @@
-import { Page } from "@shared/base/Page";
+import { Component } from "@shared/base/Component";
 import { HeaderComponent } from "@shared/widgets/Header/Header";
 import { ProfileSidebarComponent } from "./components/ProfileSidebar/ProfileSidebar";
 import { ProfileFormComponent } from "./components/ProfileForm/ProfileForm";
@@ -11,7 +11,7 @@ import {
     getProfileCache,
 } from "@features/profile";
 import { performLogout } from "@features/auth";
-import { authManager } from "@infra";
+import { Router, authManager } from "@infra";
 import { validateProfileForm } from "@utils/validation";
 import "./views/ProfilePage.scss";
 
@@ -39,7 +39,9 @@ const DEFAULT_PLACEHOLDER: PlaceholderProfile = {
     avatarUrl: null,
 };
 
-export class ProfilePage extends Page {
+export class ProfilePage extends Component {
+    private readonly router = Router.getInstance();
+    private readonly layout = new MainLayout();
     private readonly sidebar: ProfileSidebarComponent;
     private readonly form: ProfileFormComponent;
     private readonly header: HeaderComponent;
@@ -78,19 +80,23 @@ export class ProfilePage extends Page {
         return `<div class="profile-page"></div>`;
     }
 
-    protected getSlotContent() {
-        return {
-            header: this.header,
-            sidebar: this.sidebar,
-            main: this.form,
-        };
+    public render(): HTMLElement {
+        const element = this.layout.render(this.getSlotContent());
+        this.element = this.layout.getElement();
+        return element;
+    }
+
+    public async mount(rootElement?: HTMLElement): Promise<void> {
+        if (!this.element) {
+            this.render();
+        }
+        await this.layout.mount(rootElement);
+        this.element = this.layout.getElement();
     }
 
     public async init(): Promise<void> {
-        if (this.layout instanceof MainLayout) {
-            this.layout.setContentBackground(false);
-            this.layout.setSidebarWidth("240px");
-        }
+        this.layout.setContentBackground(false);
+        this.layout.setSidebarWidth("240px");
         this.form.refreshOnlineState();
         this.applyCachedProfile();
 
@@ -98,12 +104,19 @@ export class ProfilePage extends Page {
     }
 
     public async unmount(): Promise<void> {
-        if (this.layout instanceof MainLayout) {
-            this.layout.setContentBackground(true);
-            this.layout.setSidebarWidth(null);
-        }
+        this.layout.setContentBackground(true);
+        this.layout.setSidebarWidth(null);
         this.profileLoadPromise = null;
-        await super.unmount();
+        await this.layout.unmount();
+        this.element = null;
+    }
+
+    private getSlotContent() {
+        return {
+            header: this.header,
+            sidebar: this.sidebar,
+            main: this.form,
+        };
     }
 
     private async loadProfile(): Promise<void> {
@@ -277,9 +290,7 @@ export class ProfilePage extends Page {
     }
 
     private updateLayoutLoadingState(): void {
-        if (this.layout instanceof MainLayout) {
-            this.layout.setLoading(this.globalLoadingDepth > 0);
-        }
+        this.layout.setLoading(this.globalLoadingDepth > 0);
     }
 
     private applyCachedProfile(): void {
@@ -303,5 +314,3 @@ export class ProfilePage extends Page {
         });
     }
 }
-
-
