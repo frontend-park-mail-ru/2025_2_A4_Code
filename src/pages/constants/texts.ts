@@ -1,5 +1,5 @@
-﻿export const AUTH_PAGE_TEXTS = {
-    headerText: "Войти в почту",
+export const AUTH_PAGE_TEXTS = {
+    headerText: "Вход в аккаунт",
     registrationButtonText: "Зарегистрироваться",
     loginInputPlaceholder: "Логин или email",
     passwordInputPlaceholder: "Пароль",
@@ -11,7 +11,7 @@
 export const REGISTER_PAGE_TEXTS = {
     headerText: "Регистрация",
     switchToAuthButton: "У меня уже есть аккаунт",
-    genericError: "Не удалось завершить регистрацию. Попробуйте ещё раз.",
+    genericError: "Не удалось завершить регистрацию. Проверьте поля и повторите.",
 } as const;
 
 export const REGISTER_FORM_TEXTS = {
@@ -50,7 +50,7 @@ export const PROFILE_SIDEBAR_TEXTS = {
     tabs: [
         {
             id: "personal",
-            label: "Личное",
+            label: "Профиль",
             icon: "/img/profile-sidebar-personal-logo.svg",
         },
         {
@@ -59,16 +59,17 @@ export const PROFILE_SIDEBAR_TEXTS = {
             icon: "/img/profile-sidebar-interface-logo.svg",
         },
     ] as const,
-    backButtonLabel: "к письмам",
+    backButtonLabel: "К почте",
 } as const;
 
 export const INBOX_PAGE_TEXTS = {
-    emptyList: "Писем пока нет",
+    emptyList: "Писем нет",
     recipientRequired: "Укажите email получателя",
-    offlineMailTitle: "Письмо недоступно офлайн",
+    bodyRequired: "Добавьте текст письма",
+    offlineMailTitle: "Письмо недоступно",
     offlineMailMessage:
-        "Мы покажем содержимое, как только появится соединение с интернетом. Пока можно вернуться во входящие.",
-    offlineBackAction: "Вернуться к письмам",
+        "Не удалось загрузить письмо, возможно нет подключения к интернету. Попробуйте обновить страницу.",
+    offlineBackAction: "Вернуться к списку",
 } as const;
 
 export const MAIL_VIEW_TEXTS = {
@@ -81,4 +82,3 @@ export const MAIL_VIEW_TEXTS = {
     recipientLabel: "Кому:",
     recipientFallback: "вам",
 } as const;
-

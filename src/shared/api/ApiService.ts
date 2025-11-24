@@ -45,8 +45,13 @@ export function isHttpError(error: unknown): error is HttpError {
 
 export class ApiService {
     private refreshPromise: Promise<boolean> | null = null;
+    private unauthorizedHandler: ((context: { url: string; method: string; status: number }) => void) | null = null;
 
     constructor(private readonly baseUrl: string = "") {}
+
+    public setUnauthorizedHandler(handler: ((context: { url: string; method: string; status: number }) => void) | null): void {
+        this.unauthorizedHandler = handler;
+    }
 
     public async request<T = unknown>(url: string, options: RequestOptions = {}): Promise<T> {
         const {
@@ -129,6 +134,9 @@ export class ApiService {
             console.info("[api] response", { method, url: requestUrl, status: response.status, durationMs: duration });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    this.unauthorizedHandler?.({ url: requestUrl, method, status: response.status });
+                }
                 const errorText = await response.text();
                 throw new HttpError(response.status, requestUrl, errorText || undefined);
             }

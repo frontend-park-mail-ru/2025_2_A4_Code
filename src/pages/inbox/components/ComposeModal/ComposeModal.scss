@@ -177,6 +177,7 @@
 .compose-modal__footer {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
 }
 
 .compose-modal__send-slot {
@@ -184,4 +185,8 @@
   width: 137px;
   height: 40px;
   border-radius: 10px;
+}
+
+.compose-modal__delete-slot {
+  display: inline-flex;
 }

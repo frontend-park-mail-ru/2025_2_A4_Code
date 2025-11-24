@@ -37,3 +37,5 @@ export {
     MAIL_LIST_TEXTS,
     COMPOSE_MODAL_TEXTS,
 } from "./constants/texts";
+
+export { showFolderNotification } from "./components/FolderToast/FolderToast";

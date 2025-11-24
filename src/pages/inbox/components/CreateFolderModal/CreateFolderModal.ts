@@ -1,6 +1,7 @@
-import { Component } from "@shared/base/Component";
+﻿import { Component } from "@shared/base/Component";
 import template from "./CreateFolderModal.hbs";
 import "./CreateFolderModal.scss";
+import { MAX_FOLDER_NAME_LENGTH } from "@entities/mail";
 
 type Props = {
     onClose?: () => void;
@@ -46,6 +47,11 @@ export class CreateFolderModal extends Component<Props> {
         const name = this.nameInput?.value.trim() ?? "";
         if (!name) {
             this.setError("Введите название");
+            this.nameInput?.focus();
+            return;
+        }
+        if (name.length > MAX_FOLDER_NAME_LENGTH) {
+            this.setError(`Не более ${MAX_FOLDER_NAME_LENGTH} символов`);
             this.nameInput?.focus();
             return;
         }

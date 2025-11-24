@@ -9,17 +9,20 @@ type Props = {
     onClose?: () => void;
     onSend?: (data: { to: string; subject: string; body: string }) => void;
     onAttachFile?: () => void;
-    onSaveDraft?: () => void;
+    onSaveDraft?: (data: { to: string; subject: string; body: string }) => void;
+    onDeleteDraft?: () => void;
     initialTo?: string;
     initialSubject?: string;
     initialBody?: string;
     focusField?: "to" | "subject" | "body";
+    draftId?: string;
 };
 
 export class ComposeModal extends Component<Props> {
     private readonly attachButton: ButtonComponent;
     private readonly draftButton: ButtonComponent;
     private readonly sendButton: ButtonComponent;
+    private readonly deleteDraftButton: ButtonComponent | null;
 
     private toInput: HTMLInputElement | null = null;
     private toErrorEl: HTMLElement | null = null;
@@ -48,6 +51,14 @@ export class ComposeModal extends Component<Props> {
             variant: "primary",
             onClick: () => this.handleSend(),
         });
+
+        this.deleteDraftButton = this.props.onDeleteDraft
+            ? new ButtonComponent({
+                  label: "Удалить черновик",
+                  variant: "secondary",
+                  onClick: () => this.props.onDeleteDraft?.(),
+              })
+            : null;
     }
 
     protected renderTemplate(): string {
@@ -69,6 +80,9 @@ export class ComposeModal extends Component<Props> {
         this.mountButton(root, "attach", this.attachButton);
         this.mountButton(root, "draft", this.draftButton);
         this.mountButton(root, "send", this.sendButton);
+        if (this.deleteDraftButton) {
+            this.mountButton(root, "delete", this.deleteDraftButton);
+        }
 
         this.toInput = root.querySelector('[data-field="to"]') as HTMLInputElement | null;
         this.toErrorEl = root.querySelector('[data-error="to"]') as HTMLElement | null;
@@ -150,7 +164,10 @@ export class ComposeModal extends Component<Props> {
     }
 
     private handleSaveDraft(): void {
-        this.props.onSaveDraft?.();
+        const to = this.toInput?.value ?? "";
+        const subject = this.subjectInput?.value ?? "";
+        const body = this.bodyTextarea?.value ?? "";
+        this.props.onSaveDraft?.({ to, subject, body });
     }
 
     private setRecipientError(message: string | null): void {
@@ -170,6 +187,9 @@ export class ComposeModal extends Component<Props> {
         await this.attachButton.unmount();
         await this.draftButton.unmount();
         await this.sendButton.unmount();
+        if (this.deleteDraftButton) {
+            await this.deleteDraftButton.unmount();
+        }
         this.toInput = null;
         this.toErrorEl = null;
         this.subjectInput = null;

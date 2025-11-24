@@ -8,6 +8,13 @@ import {
     type FolderSummary,
     type InboxSummary,
     createFolder,
+    moveMessageToFolder,
+    saveDraft,
+    sendDraft,
+    deleteDraft,
+    markAsSpam,
+    type SaveDraftPayload,
+    type SendDraftPayload,
 } from "@entities/mail";
 import type { Mail, MailDetail } from "@app-types/mail";
 import type { ReplyMessagePayload, SendMessagePayload } from "@entities/mail";
@@ -116,10 +123,14 @@ export class InboxStore {
         try {
             const summary = await this.fetchFolderSummary(targetFolder);
             cacheInboxSummary(targetFolder, summary);
+            const normalizedItems =
+                targetFolder === "draft"
+                    ? summary.items.map((mail) => ({ ...mail, isRead: true }))
+                    : summary.items;
             this.setState((state) => {
                 const selectedMailId = state.selectedMailId;
                 const matchedMail = selectedMailId
-                    ? summary.items.find((mail) => mail.id === selectedMailId)
+                    ? normalizedItems.find((mail) => mail.id === selectedMailId)
                     : undefined;
 
                 const nextSelectedMail =
@@ -130,16 +141,16 @@ export class InboxStore {
                               time: matchedMail.time,
                               from: matchedMail.from,
                               avatarUrl: matchedMail.avatarUrl,
-                          }
+                        }
                         : matchedMail
                         ? state.selectedMail
                         : null;
 
                 return {
                     ...state,
-                    mails: summary.items,
+                    mails: normalizedItems,
                     total: summary.total,
-                    unread: summary.unread,
+                    unread: targetFolder === "draft" ? 0 : summary.unread,
                     loadingList: false,
                     selectedMailId: matchedMail ? state.selectedMailId : undefined,
                     selectedMail: matchedMail ? nextSelectedMail : null,
@@ -168,6 +179,21 @@ export class InboxStore {
                 error: toErrorMessage(error),
             }));
             throw error;
+        }
+    }
+
+    public async deleteDraft(draftId: string): Promise<void> {
+        this.setState((state) => ({ ...state, mutating: true }));
+        try {
+            await deleteDraft(draftId);
+            await this.loadFolder("draft");
+            this.setState((state) => ({
+                ...state,
+                selectedMailId: undefined,
+                selectedMail: null,
+            }));
+        } finally {
+            this.setState((state) => ({ ...state, mutating: false }));
         }
     }
 
@@ -253,6 +279,38 @@ export class InboxStore {
         });
     }
 
+    public async moveMessage(messageId: string, targetFolderId: string): Promise<void> {
+        await this.runMutation(async () => {
+            const apiFolderId = this.resolveFolderIdForApi(targetFolderId);
+            await moveMessageToFolder(messageId, apiFolderId);
+            await this.loadFolder(targetFolderId);
+        });
+    }
+
+    public async markMessageAsSpam(messageId: string): Promise<void> {
+        await this.runMutation(async () => {
+            await markAsSpam(messageId);
+            await this.loadFolder("spam");
+        });
+    }
+
+    public async saveDraft(payload: SaveDraftPayload): Promise<string> {
+        return this.runMutation(async () => {
+            const result = await saveDraft(payload);
+            await this.loadFolders();
+            await this.loadFolder("draft");
+            return result.draftId;
+        });
+    }
+
+    public async sendDraft(payload: SendDraftPayload): Promise<void> {
+        await this.runMutation(async () => {
+            await sendDraft(payload);
+            await this.loadFolders();
+            await this.loadFolder("sent");
+        });
+    }
+
     public async refreshSelectedMail(): Promise<void> {
         const selectedId = this.state.selectedMailId;
         if (!selectedId) {
@@ -300,6 +358,16 @@ export class InboxStore {
         for (const listener of this.subscribers) {
             listener(this.state);
         }
+    }
+
+    private resolveFolderIdForApi(targetFolderId: string): string {
+        const folder = this.state.folders.find(
+            (f) => f.id === targetFolderId || f.backendId === targetFolderId
+        );
+        if (!folder) {
+            return targetFolderId;
+        }
+        return folder.backendId ?? folder.id;
     }
 }
 

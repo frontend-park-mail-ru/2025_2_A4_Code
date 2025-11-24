@@ -7,6 +7,7 @@
   background: #ffffff;
   border-radius: 24px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  min-height: 420px;
 
   &__title {
     margin: 0;
@@ -21,34 +22,232 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    min-width: 220px;
   }
 
   &__item {
     padding: 0;
     border-radius: 12px;
-    background: #f7f8ff;
-    transition: background 0.2s ease, transform 0.12s ease;
+    background: transparent;
+    transition: color 0.2s ease;
+    width: fit-content;
+    min-width: 0;
 
     &:hover {
-      background: #eef1ff;
-      transform: translateX(2px);
+      color: #5163eb;
+    }
+
+    &--active .ui-button__label::after {
+      content: "";
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      margin-left: 8px;
+      background: url("./interface-selected.svg") no-repeat center / contain;
+      vertical-align: middle;
     }
   }
 
-  &__link {
-    width: 100%;
-    text-align: left;
+  .ui-button {
     padding: 12px 14px;
-    border: none;
-    background: transparent;
     font-weight: 600;
     color: #2b2f43;
-    cursor: pointer;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+
+    &:hover {
+      background: transparent;
+      color: #5163eb;
+      transform: none;
+    }
   }
 
-  &__link::after {
-    content: "›";
-    float: right;
-    color: #9aa2c1;
+  .interface-settings__icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  &__folders {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    &--nested {
+      margin-left: 16px;
+      gap: 4px;
+    }
+  }
+
+  &__folder {
+    padding: 6px 0;
+    border-radius: 0;
+    background: transparent;
+    font-weight: 600;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  &__body {
+    display: flex;
+    gap: 20px;
+    flex: 1 1 auto;
+  }
+
+  &__content {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__folder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 360px;
+    overflow: auto;
+    padding-right: 6px;
+  }
+
+  &__state {
+    padding: 12px;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #6b7280;
+    font-weight: 600;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 4px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+
+    &--new {
+      border-style: none;
+      padding-top: 12px;
+      cursor: pointer;
+    }
+
+    &--pending-delete {
+      opacity: 0.6;
+      text-decoration: line-through;
+    }
+  }
+
+  &__row-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+
+    .ui-input {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+
+  &__row-icon {
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: filter 0.2s ease;
+
+    &--add {
+      filter: grayscale(1);
+    }
+  }
+
+  &__row-new-label {
+    font-weight: 700;
+    color: #1f2937;
+    transition: color 0.2s ease;
+  }
+
+  &__row--new:hover &__row-new-label {
+    color: #5163eb;
+  }
+
+  &__row--new:hover .interface-settings__row-icon--add {
+    filter: brightness(0) saturate(100%) invert(37%) sepia(82%) saturate(1335%) hue-rotate(221deg) brightness(95%) contrast(96%);
+  }
+
+  &__row-name {
+    font-weight: 700;
+    color: #1f2937;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__row-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 6px;
+  }
+
+  &__counter {
+    font-size: 12px;
+    font-weight: 700;
+    color: #5163eb;
+    min-width: 28px;
+    text-align: right;
+
+    &--over {
+      color: #d14343;
+    }
+  }
+
+  &__icon-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    img {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &__footer {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    padding-top: 8px;
+  }
+
+  &__footer-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__error {
+    min-height: 16px;
+    color: #d14343;
+    font-size: 12px;
   }
 }

@@ -4,7 +4,10 @@ import "./Header.scss";
 import { SearchInputComponent } from "@shared/components/SearchInput/SearchInput";
 import { AvatarButtonComponent } from "@shared/components/AvatarButton/AvatarButton";
 import { AvatarMenu } from "@shared/widgets/AvatarMenu/AvatarMenu";
-import { Router } from "@infra";
+import { Router, authManager } from "@infra";
+import { redirectToAuth } from "@shared/utils/authRedirect";
+import { performLogout } from "@features/auth";
+import { apiService, HttpError } from "@shared/api/ApiService";
 import {
     getCachedProfilePreview,
     loadProfilePreview,
@@ -75,7 +78,7 @@ export class HeaderComponent extends Component<Props> {
                     this.props.onProfile?.();
                 }),
             onSettings: () => this.handleMenuSelect(this.props.onSettings),
-            onLogout: () => this.handleMenuSelect(this.props.onLogout),
+            onLogout: () => this.handleMenuSelect(() => this.handleLogout()),
         });
 
         const profileInfo = this.extractProfileInfo();
@@ -153,7 +156,7 @@ export class HeaderComponent extends Component<Props> {
                     this.props.onProfile?.();
                 }),
             onSettings: () => this.handleMenuSelect(this.props.onSettings),
-            onLogout: () => this.handleMenuSelect(this.props.onLogout),
+            onLogout: () => this.handleMenuSelect(() => this.handleLogout()),
         });
 
         const profileInfo = this.extractProfileInfo();
@@ -186,13 +189,75 @@ export class HeaderComponent extends Component<Props> {
             this.menuElement.classList.remove("open");
             this.menuElement.setAttribute("aria-hidden", "true");
             this.menuElement.style.display = "none";
+            const active = document.activeElement as HTMLElement | null;
+            if (active && this.menuElement.contains(active) && typeof active.blur === "function") {
+                active.blur();
+            }
             document.removeEventListener("pointerdown", this.outsideClickHandler);
         }
     }
 
-    private handleMenuSelect(callback?: () => void): void {
+    private handleMenuSelect(callback?: () => void | Promise<void>, forceAuthRedirect = false): void {
         this.closeMenu();
-        callback?.();
+        const run = async () => {
+            try {
+                await callback?.();
+            } catch (err) {
+                console.error("Header action failed", err);
+            } finally {
+                if (forceAuthRedirect) {
+                    await this.forceAuthRedirect("manual-logout");
+                } else {
+                    this.ensureLoggedOutRedirect();
+                }
+            }
+        };
+        void run();
+    }
+
+    private ensureLoggedOutRedirect(): void {
+        if (authManager.getStatus() === "unauthenticated") {
+            void this.forceAuthRedirect("status-change");
+        }
+    }
+
+    private async handleLogout(): Promise<void> {
+        console.info("[auth] header logout requested");
+        try {
+            await performLogout();
+        } catch (error) {
+            console.error("[auth] header logout failed", error);
+        } finally {
+            authManager.setAuthenticated(false);
+            await this.verifyLoggedOutAndRedirect();
+        }
+    }
+
+    private async verifyLoggedOutAndRedirect(): Promise<void> {
+        const target = new URL("/auth", window.location.origin).toString();
+        try {
+            console.info("[auth] header post-logout profile probe");
+            await apiService.request("/user/profile", { parseJson: false, skipAuthRefresh: true });
+            console.warn("[auth] post-logout profile request succeeded (session may still be active)");
+        } catch (error) {
+            if (error instanceof HttpError) {
+                console.info("[auth] post-logout profile request failed as expected", { status: error.status });
+            } else {
+                console.info("[auth] post-logout profile request failed as expected", { error });
+            }
+        } finally {
+            redirectToAuth(this.router, "header-logout", { forceReload: true });
+            window.setTimeout(() => window.location.replace(target), 0);
+            window.setTimeout(() => {
+                if (window.location.href !== target) {
+                    window.location.href = target;
+                }
+            }, 50);
+        }
+    }
+
+    private async forceAuthRedirect(reason: Parameters<typeof redirectToAuth>[1] = "unknown"): Promise<void> {
+        redirectToAuth(this.router, reason);
     }
 
     public async unmount(): Promise<void> {

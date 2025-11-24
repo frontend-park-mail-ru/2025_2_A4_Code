@@ -1,17 +1,12 @@
-<section class="interface-settings">
-  <h1 class="interface-settings__title">Интерфейс</h1>
-  <ul class="interface-settings__list">
-    <li class="interface-settings__item">
-      <button class="interface-settings__link" type="button">Тема интерфейса</button>
-    </li>
-    <li class="interface-settings__item">
-      <button class="interface-settings__link" type="button">Автоподпись</button>
-    </li>
-    <li class="interface-settings__item">
-      <button class="interface-settings__link" type="button">Папки</button>
-    </li>
-    <li class="interface-settings__item">
-      <button class="interface-settings__link" type="button">Безопасность</button>
-    </li>
-  </ul>
+﻿<section class="interface-settings">
+  <h1 class="interface-settings__title">Настройки интерфейса</h1>
+  <div class="interface-settings__body">
+    <ul class="interface-settings__list">
+      <li class="interface-settings__item" data-slot="theme"></li>
+      <li class="interface-settings__item" data-slot="signature"></li>
+      <li class="interface-settings__item" data-slot="folders"></li>
+      <li class="interface-settings__item" data-slot="security"></li>
+    </ul>
+    <div class="interface-settings__content" data-slot="content"></div>
+  </div>
 </section>

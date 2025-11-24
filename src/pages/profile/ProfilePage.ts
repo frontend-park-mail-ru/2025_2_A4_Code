@@ -13,8 +13,10 @@ import {
 } from "@features/profile";
 import { performLogout } from "@features/auth";
 import { Router, authManager } from "@infra";
+import { redirectToAuth } from "@shared/utils/authRedirect";
 import { validateProfileForm } from "@utils/validation";
 import "./views/ProfilePage.scss";
+import { apiService } from "@shared/api/ApiService";
 
 type PlaceholderProfile = {
     fullName: string;
@@ -51,6 +53,7 @@ export class ProfilePage extends Component {
     private globalLoadingDepth = 0;
     private profileLoadPromise: Promise<void> | null = null;
     private activeTab: "personal" | "interface" = "personal";
+    private postLogoutCheckStarted = false;
 
     constructor() {
         super();
@@ -232,13 +235,32 @@ export class ProfilePage extends Component {
     }
 
     private async handleLogout(): Promise<void> {
+        console.info("[auth] profile logout requested");
         try {
             await performLogout();
         } catch (error) {
             console.error("Failed to logout", error);
         } finally {
             authManager.setAuthenticated(false);
-            this.router.navigate("/auth", { replace: true }).then();
+            console.info("[auth] profile logout completed, starting post-logout check");
+            await this.triggerPostLogoutAuthCheck();
+        }
+    }
+
+    private async triggerPostLogoutAuthCheck(): Promise<void> {
+        if (this.postLogoutCheckStarted) {
+            console.info("[auth] profile post-logout check already started");
+            return;
+        }
+        this.postLogoutCheckStarted = true;
+        console.info("[auth] profile post-logout profile probe");
+        try {
+            await apiService.request("/user/profile", { skipAuthRefresh: true, parseJson: false });
+            console.warn("[auth] post-logout profile request succeeded unexpectedly (still authenticated?)");
+        } catch (error) {
+            console.info("[auth] post-logout profile request failed (expected)", error);
+        } finally {
+            redirectToAuth(this.router, "post-logout-check", { forceReload: true });
         }
     }
 

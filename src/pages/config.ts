@@ -26,6 +26,15 @@ const routeDefinitions: RouteConfig[] = [
         createView: () => new ProfilePage(),
         requiresAuth: true,
     },
+    {
+        path: "/interface",
+        createView: () => {
+            const page = new ProfilePage();
+            page["activeTab"] = "interface" as any;
+            return page;
+        },
+        requiresAuth: true,
+    },
 ];
 
 export function setupRoutes(router: Router): void {

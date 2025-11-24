@@ -15,9 +15,14 @@ type Props = {
     avatarUrl?: string | null;
     fromEmail?: string;
     recipient?: string;
+    currentFolderId?: string;
+    currentFolderType?: string;
     onBack?: () => void;
     onReply?: () => void;
     onForward?: () => void;
+    onMoveToFolder?: () => void;
+    onMarkAsSpam?: () => void;
+    onDelete?: () => void;
 };
 
 export class MailViewComponent extends Component<Props> {
@@ -47,6 +52,7 @@ export class MailViewComponent extends Component<Props> {
                 this.createToolbarButton("delete", {
                     label: MAIL_VIEW_TEXTS.delete,
                     icon: '<img src="/img/message-delete.svg" alt="" aria-hidden="true" />',
+                    onClick: () => this.props.onDelete?.(),
                 }),
             ],
             [
@@ -54,6 +60,7 @@ export class MailViewComponent extends Component<Props> {
                 this.createToolbarButton("folder", {
                     label: MAIL_VIEW_TEXTS.moveToFolder,
                     icon: '<img src="/img/message-in-folder.svg" alt="" aria-hidden="true" />',
+                    onClick: () => this.props.onMoveToFolder?.(),
                 }),
             ],
             [
@@ -61,6 +68,7 @@ export class MailViewComponent extends Component<Props> {
                 this.createToolbarButton("spam", {
                     label: MAIL_VIEW_TEXTS.markAsSpam,
                     icon: '<img src="/img/message-to-spam.svg" alt="" aria-hidden="true" />',
+                    onClick: () => this.props.onMarkAsSpam?.(),
                 }),
             ],
             [
@@ -154,9 +162,22 @@ export class MailViewComponent extends Component<Props> {
             return;
         }
 
+        const folderType = (this.props.currentFolderType || this.props.currentFolderId || "").toLowerCase();
+        const hidden = new Set<string>();
+        if (folderType === "trash") {
+            hidden.add("delete");
+            hidden.add("spam");
+        } else if (folderType === "spam") {
+            hidden.add("spam");
+        }
+
         for (const [key, button] of this.toolbarButtons.entries()) {
             const slot = this.element.querySelector(`[data-slot="${key}"]`) as HTMLElement | null;
             if (!slot) {
+                continue;
+            }
+            if (hidden.has(key)) {
+                slot.innerHTML = "";
                 continue;
             }
 

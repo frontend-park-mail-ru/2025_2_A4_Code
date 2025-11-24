@@ -41,3 +41,13 @@ export const COMPOSE_MODAL_TEXTS = {
     saveDraft: "РЎРѕС…СЂР°РЅРёС‚СЊ С‡РµСЂРЅРѕРІРёРє",
     send: "РћС‚РїСЂР°РІРёС‚СЊ",
 } as const;
+
+export const INBOX_PAGE_TEXTS = {
+    recipientRequired: 'Укажите получателя',
+    bodyRequired: 'Добавьте текст письма',
+    offlineMailTitle: 'Письмо недоступно',
+    offlineMailMessage: 'Мы не смогли загрузить письмо, проверьте подключение и попробуйте снова.',
+    offlineBackAction: 'К списку писем',
+    emptyList: 'Писем нет',
+} as const;
+
