@@ -18,8 +18,8 @@ import { OfflinePlaceholderComponent } from "@shared/components/OfflinePlacehold
 import { INBOX_PAGE_TEXTS } from "@pages/constants/texts";
 import { HttpError } from "@shared/api/ApiService";
 import { showFolderNotification } from "@shared";
-import { redirectToAuth } from "@shared/utils/authRedirect";
 import { apiService } from "@shared/api/ApiService";
+import { navigateToAuthPage } from "@shared/utils/authNavigation";
 
 type InboxPageParams = {
     messageId?: string;
@@ -469,6 +469,9 @@ export class InboxPage extends Component {
             if (this.handleUnauthorized(error)) {
                 throw error;
             }
+            if (error instanceof HttpError && error.status === 409) {
+                throw new Error("Папка с таким названием уже существует");
+            }
             throw error;
         }
     }
@@ -577,15 +580,15 @@ export class InboxPage extends Component {
 
     private async handleLogout(): Promise<void> {
         console.info("[auth] inbox logout requested");
+        const navigationPromise = navigateToAuthPage(this.router, "manual-logout");
         try {
-            this.router.navigate('/auth').then();
             await performLogout();
         } catch (error) {
             console.error("Failed to logout", error);
         } finally {
-            authManager.setAuthenticated(false);
             console.info("[auth] inbox logout completed, starting post-logout check");
-            await this.triggerPostLogoutAuthCheck();
+            await navigationPromise;
+            void this.triggerPostLogoutAuthCheck();
         }
     }
 
@@ -652,8 +655,7 @@ export class InboxPage extends Component {
 
     private handleUnauthorized(error: unknown): boolean {
         if (error instanceof HttpError && error.status === 401) {
-            authManager.setAuthenticated(false);
-            redirectToAuth(this.router, "unauthorized-handler");
+            void navigateToAuthPage(this.router, "unauthorized-handler");
             return true;
         }
         return false;
@@ -671,8 +673,6 @@ export class InboxPage extends Component {
             console.warn("[auth] post-logout profile request succeeded unexpectedly (still authenticated?)");
         } catch (error) {
             console.info("[auth] post-logout profile request failed (expected)", error);
-        } finally {
-            redirectToAuth(this.router, "post-logout-check", { forceReload: true });
         }
     }
 

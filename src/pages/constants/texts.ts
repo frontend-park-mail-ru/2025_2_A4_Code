@@ -59,7 +59,7 @@ export const PROFILE_SIDEBAR_TEXTS = {
             icon: "/img/profile-sidebar-interface-logo.svg",
         },
     ] as const,
-    backButtonLabel: "К почте",
+    backButtonLabel: "К письмам",
 } as const;
 
 export const INBOX_PAGE_TEXTS = {

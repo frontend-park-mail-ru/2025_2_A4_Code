@@ -1,8 +1,8 @@
 import { Router, NavigatePayload, RouteConfig, authManager } from "@infra";
 import { setupRoutes } from "@pages/config";
 import { Component } from "@shared/base/Component";
-import { redirectToAuth } from "@shared/utils/authRedirect";
 import { apiService } from "@shared/api/ApiService";
+import { navigateToAuthPage } from "@shared/utils/authNavigation";
 
 type RoutableComponent = Component & {
     update?(params: Record<string, string>): Promise<void> | void;
@@ -33,14 +33,13 @@ export class App {
         this.stopAuthListener = authManager.onStatusChange((status) => {
             if (status === "unauthenticated" && window.location.pathname !== "/auth") {
                 console.info("[auth] status change -> unauthenticated, redirecting");
-                redirectToAuth(this.router, "status-change");
+                void navigateToAuthPage(this.router, "status-change");
             }
         });
 
         apiService.setUnauthorizedHandler(({ url, method, status }) => {
             console.warn("[auth] unauthorized from api", { url, method, status });
-            authManager.setAuthenticated(false);
-            redirectToAuth(this.router, "api-401");
+            void navigateToAuthPage(this.router, "api-401");
         });
 
         this.router.start();

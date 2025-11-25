@@ -13,10 +13,10 @@ import {
 } from "@features/profile";
 import { performLogout } from "@features/auth";
 import { Router, authManager } from "@infra";
-import { redirectToAuth } from "@shared/utils/authRedirect";
 import { validateProfileForm } from "@utils/validation";
 import "./views/ProfilePage.scss";
 import { apiService } from "@shared/api/ApiService";
+import { navigateToAuthPage } from "@shared/utils/authNavigation";
 
 type PlaceholderProfile = {
     fullName: string;
@@ -236,13 +236,14 @@ export class ProfilePage extends Component {
 
     private async handleLogout(): Promise<void> {
         console.info("[auth] profile logout requested");
+        const navigationPromise = navigateToAuthPage(this.router, "manual-logout");
         try {
             await performLogout();
         } catch (error) {
             console.error("Failed to logout", error);
         } finally {
-            authManager.setAuthenticated(false);
             console.info("[auth] profile logout completed, starting post-logout check");
+            await navigationPromise;
             await this.triggerPostLogoutAuthCheck();
         }
     }
@@ -259,8 +260,6 @@ export class ProfilePage extends Component {
             console.warn("[auth] post-logout profile request succeeded unexpectedly (still authenticated?)");
         } catch (error) {
             console.info("[auth] post-logout profile request failed (expected)", error);
-        } finally {
-            redirectToAuth(this.router, "post-logout-check", { forceReload: true });
         }
     }
 

@@ -7,6 +7,7 @@ export type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
 export class AuthManager {
     private status: AuthStatus = "unknown";
     private checkPromise: Promise<boolean> | null = null;
+    private checkGeneration = 0;
     private readonly listeners = new Set<(status: AuthStatus) => void>();
 
     public getStatus(): AuthStatus {
@@ -14,10 +15,12 @@ export class AuthManager {
     }
 
     public setAuthenticated(isAuthenticated: boolean): void {
+        this.invalidateCheck();
         this.updateStatus(isAuthenticated ? "authenticated" : "unauthenticated");
     }
 
     public markUnknown(): void {
+        this.invalidateCheck();
         this.updateStatus("unknown");
     }
 
@@ -38,34 +41,37 @@ export class AuthManager {
         }
 
         if (!this.checkPromise) {
-            this.checkPromise = this.resolveAuthentication().finally(() => {
-                this.checkPromise = null;
+            const generation = this.nextGeneration();
+            this.checkPromise = this.resolveAuthentication(generation).finally(() => {
+                if (this.isGenerationCurrent(generation)) {
+                    this.checkPromise = null;
+                }
             });
         }
 
         return this.checkPromise;
     }
 
-    private async resolveAuthentication(): Promise<boolean> {
+    private async resolveAuthentication(generation: number): Promise<boolean> {
         if (this.tryPromoteUsingCache()) {
-            this.updateStatus("authenticated");
+            this.applyStatusForGeneration("authenticated", generation);
             return true;
         }
 
         try {
             await fetchProfile();
-            this.updateStatus("authenticated");
+            this.applyStatusForGeneration("authenticated", generation);
             return true;
         } catch (error) {
             const navigatorOffline = typeof navigator !== "undefined" && !navigator.onLine;
             if (isOfflineError(error) || navigatorOffline) {
                 if (this.tryPromoteUsingCache()) {
-                    this.updateStatus("authenticated");
+                    this.applyStatusForGeneration("authenticated", generation);
                     return true;
                 }
             }
 
-            this.updateStatus("unauthenticated");
+            this.applyStatusForGeneration("unauthenticated", generation);
             return false;
         }
     }
@@ -97,6 +103,26 @@ export class AuthManager {
                 console.error("Auth status listener failed", error);
             }
         });
+    }
+
+    private invalidateCheck(): void {
+        this.checkGeneration += 1;
+        this.checkPromise = null;
+    }
+
+    private nextGeneration(): number {
+        this.checkGeneration += 1;
+        return this.checkGeneration;
+    }
+
+    private isGenerationCurrent(generation: number): boolean {
+        return this.checkGeneration === generation;
+    }
+
+    private applyStatusForGeneration(status: AuthStatus, generation: number): void {
+        if (this.isGenerationCurrent(generation)) {
+            this.updateStatus(status);
+        }
     }
 }
 

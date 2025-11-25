@@ -5,7 +5,6 @@ import { SearchInputComponent } from "@shared/components/SearchInput/SearchInput
 import { AvatarButtonComponent } from "@shared/components/AvatarButton/AvatarButton";
 import { AvatarMenu } from "@shared/widgets/AvatarMenu/AvatarMenu";
 import { Router, authManager } from "@infra";
-import { redirectToAuth } from "@shared/utils/authRedirect";
 import { performLogout } from "@features/auth";
 import { apiService, HttpError } from "@shared/api/ApiService";
 import {
@@ -16,6 +15,7 @@ import {
 } from "@features/profile";
 import { getInitials } from "@utils/person";
 import { HEADER_TEXTS } from "@shared/constants/texts";
+import { navigateToAuthPage, type AuthNavigationReason } from "@shared/utils/authNavigation";
 
 type Props = {
     onSearch?: (query: string) => void;
@@ -78,7 +78,11 @@ export class HeaderComponent extends Component<Props> {
                     this.props.onProfile?.();
                 }),
             onSettings: () => this.handleMenuSelect(this.props.onSettings),
-            onLogout: () => this.handleMenuSelect(() => this.handleLogout()),
+            onLogout: () =>
+                this.handleMenuSelect(async () => {
+                    await this.props.onLogout?.();
+                    await this.handleLogout();
+                }),
         });
 
         const profileInfo = this.extractProfileInfo();
@@ -156,7 +160,11 @@ export class HeaderComponent extends Component<Props> {
                     this.props.onProfile?.();
                 }),
             onSettings: () => this.handleMenuSelect(this.props.onSettings),
-            onLogout: () => this.handleMenuSelect(() => this.handleLogout()),
+            onLogout: () =>
+                this.handleMenuSelect(async () => {
+                    await this.props.onLogout?.();
+                    await this.handleLogout();
+                }),
         });
 
         const profileInfo = this.extractProfileInfo();
@@ -223,18 +231,18 @@ export class HeaderComponent extends Component<Props> {
 
     private async handleLogout(): Promise<void> {
         console.info("[auth] header logout requested");
+        const navigationPromise = navigateToAuthPage(this.router, "header-logout");
         try {
             await performLogout();
         } catch (error) {
             console.error("[auth] header logout failed", error);
         } finally {
-            authManager.setAuthenticated(false);
-            await this.verifyLoggedOutAndRedirect();
+            await this.verifyLoggedOutAndRedirect(navigationPromise);
         }
     }
 
-    private async verifyLoggedOutAndRedirect(): Promise<void> {
-        const target = new URL("/auth", window.location.origin).toString();
+    private async verifyLoggedOutAndRedirect(navigationPromise?: Promise<void>): Promise<void> {
+        const redirectPromise = navigationPromise ?? navigateToAuthPage(this.router, "header-logout");
         try {
             console.info("[auth] header post-logout profile probe");
             await apiService.request("/user/profile", { parseJson: false, skipAuthRefresh: true });
@@ -246,18 +254,12 @@ export class HeaderComponent extends Component<Props> {
                 console.info("[auth] post-logout profile request failed as expected", { error });
             }
         } finally {
-            redirectToAuth(this.router, "header-logout", { forceReload: true });
-            window.setTimeout(() => window.location.replace(target), 0);
-            window.setTimeout(() => {
-                if (window.location.href !== target) {
-                    window.location.href = target;
-                }
-            }, 50);
+            await redirectPromise;
         }
     }
 
-    private async forceAuthRedirect(reason: Parameters<typeof redirectToAuth>[1] = "unknown"): Promise<void> {
-        redirectToAuth(this.router, reason);
+    private async forceAuthRedirect(reason: AuthNavigationReason = "unknown"): Promise<void> {
+        await navigateToAuthPage(this.router, reason);
     }
 
     public async unmount(): Promise<void> {
