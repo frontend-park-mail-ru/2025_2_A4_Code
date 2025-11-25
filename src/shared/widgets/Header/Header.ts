@@ -72,12 +72,12 @@ export class HeaderComponent extends Component<Props> {
         });
 
         this.avatarMenu = new AvatarMenu({
-            onProfile: () =>
+            onProfile: () => this.handleMenuSelect(this.props.onProfile),
+            onSettings: () =>
                 this.handleMenuSelect(() => {
                     this.router.navigate("/profile");
-                    this.props.onProfile?.();
+                    this.props.onSettings?.();
                 }),
-            onSettings: () => this.handleMenuSelect(this.props.onSettings),
             onLogout: () =>
                 this.handleMenuSelect(async () => {
                     await this.props.onLogout?.();
@@ -154,12 +154,12 @@ export class HeaderComponent extends Component<Props> {
         });
 
         this.avatarMenu.setProps({
-            onProfile: () =>
+            onProfile: () => this.handleMenuSelect(this.props.onProfile),
+            onSettings: () =>
                 this.handleMenuSelect(() => {
                     this.router.navigate("/profile");
-                    this.props.onProfile?.();
+                    this.props.onSettings?.();
                 }),
-            onSettings: () => this.handleMenuSelect(this.props.onSettings),
             onLogout: () =>
                 this.handleMenuSelect(async () => {
                     await this.props.onLogout?.();
