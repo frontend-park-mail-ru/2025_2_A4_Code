@@ -436,6 +436,9 @@ export class InterfaceSettingsComponent extends Component {
             }
 
             for (const [id, name] of Array.from(this.renameDrafts.entries())) {
+                if (this.deleteSet.has(id)) {
+                    continue;
+                }
                 const folder = this.folders.find((f) => f.id === id);
                 const trimmed = name.trim();
                 if (!folder || this.isProtectedFolder(folder) || !trimmed || trimmed === folder.name) {
