@@ -10,7 +10,9 @@
   <div class="profile-sidebar__name">{{name}}</div>
   <div class="profile-sidebar__email">{{email}}</div>
 
+  {{#if showTabs}}
   <ul class="profile-sidebar__tabs" data-slot="tabs"></ul>
+  {{/if}}
 
   <div class="profile-sidebar__back" data-slot="back"></div>
 </div>

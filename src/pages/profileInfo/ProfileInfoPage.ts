@@ -8,6 +8,7 @@ import { Router } from "@infra";
 import { navigateToAuthPage } from "@shared/utils/authNavigation";
 import { performLogout } from "@features/auth";
 import { ProfileInfoFormComponent } from "./components/ProfileInfoForm/ProfileInfoForm";
+import template from "./views/ProfileInfoPage.hbs";
 import "./views/ProfileInfoPage.scss";
 
 export class ProfileInfoPage extends Component {
@@ -28,6 +29,7 @@ export class ProfileInfoPage extends Component {
             avatarUrl: null,
             onNavigateInbox: () => this.router.navigate("/mail"),
             activeTab: "personal",
+            showTabs: false,
         });
 
         this.header = new HeaderComponent({
@@ -45,7 +47,7 @@ export class ProfileInfoPage extends Component {
     }
 
     protected renderTemplate(): string {
-        return `<div class="profile-info-page"></div>`;
+        return template({});
     }
 
     public render(): HTMLElement {

@@ -82,6 +82,9 @@
 .profile-info-form__actions {
     display: flex;
     justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid #eef0f6;
+    margin-top: 12px;
 }
 
 .profile-info-form__save {
