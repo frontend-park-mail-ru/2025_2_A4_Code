@@ -79,7 +79,7 @@ export class HeaderComponent extends Component<Props> {
                 }),
             onSettings: () =>
                 this.handleMenuSelect(() => {
-                    this.router.navigate("/interface");
+                    this.router.navigate("/profile");
                     this.props.onSettings?.();
                 }),
             onLogout: () =>
@@ -165,7 +165,7 @@ export class HeaderComponent extends Component<Props> {
                 }),
             onSettings: () =>
                 this.handleMenuSelect(() => {
-                    this.router.navigate("/interface");
+                    this.router.navigate("/profile");
                     this.props.onSettings?.();
                 }),
             onLogout: () =>
