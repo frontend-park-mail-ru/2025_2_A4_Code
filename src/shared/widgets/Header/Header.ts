@@ -38,6 +38,7 @@ export class HeaderComponent extends Component<Props> {
     private readonly avatarMenu: AvatarMenu;
     private menuElement?: HTMLElement | null;
     private avatarButtonElement?: HTMLElement | null;
+    private logoElement?: HTMLElement | null;
     private showSearch: boolean;
     private readonly router = Router.getInstance();
     private hasRequestedProfile = false;
@@ -104,6 +105,15 @@ export class HeaderComponent extends Component<Props> {
 
     protected afterRender(): void {
         const element = this.element!;
+
+        const logo = element.querySelector("[data-logo]") as HTMLElement | null;
+        if (logo) {
+            this.logoElement = logo;
+            this.logoElement.onclick = (event) => {
+                event.preventDefault();
+                this.router.navigate("/mail").then();
+            };
+        }
 
         const searchSlot = element.querySelector('[data-slot="search"]') as HTMLElement | null;
         if (searchSlot) {
@@ -272,6 +282,10 @@ export class HeaderComponent extends Component<Props> {
 
     public async unmount(): Promise<void> {
         document.removeEventListener("pointerdown", this.outsideClickHandler);
+        if (this.logoElement) {
+            this.logoElement.onclick = null;
+            this.logoElement = null;
+        }
         await this.searchInput?.unmount();
         await this.avatarButton.unmount();
         await this.avatarMenu.unmount();
