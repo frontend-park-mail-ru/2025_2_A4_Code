@@ -3,6 +3,7 @@ import { AuthPage } from "./auth";
 import { RegisterPage } from "./register";
 import { InboxPage } from "./inbox/InboxPage";
 import { ProfilePage } from "./profile";
+import { ProfileInfoPage } from "./profileInfo";
 
 const routeDefinitions: RouteConfig[] = [
     {
@@ -24,6 +25,11 @@ const routeDefinitions: RouteConfig[] = [
     {
         path: "/profile",
         createView: () => new ProfilePage(),
+        requiresAuth: true,
+    },
+    {
+        path: "/profile-info",
+        createView: () => new ProfileInfoPage(),
         requiresAuth: true,
     },
     {
