@@ -43,11 +43,11 @@ export const COMPOSE_MODAL_TEXTS = {
 } as const;
 
 export const INBOX_PAGE_TEXTS = {
-    recipientRequired: 'Укажите получателя',
-    bodyRequired: 'Добавьте текст письма',
-    offlineMailTitle: 'Письмо недоступно',
-    offlineMailMessage: 'Мы не смогли загрузить письмо, проверьте подключение и попробуйте снова.',
-    offlineBackAction: 'К списку писем',
-    emptyList: 'Писем нет',
+    recipientRequired: 'РџРѕР»СѓС‡Р°С‚СЊ РѕР±СЏР·Р°С‚РµР»РµРЅ',
+    bodyRequired: 'РўРµР»Рѕ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ',
+    offlineMailTitle: 'РўРµРјР° РїРёСЃСЊРјР°',
+    offlineMailMessage: 'РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ РїРёСЃСЊРјРѕ',
+    offlineBackAction: 'РќР°Р·Р°Рґ',
+    emptyList: 'РџСѓСЃС‚Рѕ',
 } as const;
 

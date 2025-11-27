@@ -49,6 +49,7 @@ export default [
       '@typescript-eslint/no-explicit-any': 'off',
       'import/no-unresolved': 'error',
       'no-empty': ['error', { allowEmptyCatch: true }],
+      'import/no-unused-modules': ['warn', { unusedExports: true, missingExports: false }],
     },
   },
 ];

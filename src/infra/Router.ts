@@ -17,7 +17,6 @@ export type NavigatePayload = {
 type NavigateOptions = {
     skipHistory?: boolean;
     replace?: boolean;
-    /** Bypass access guards and force navigation */
     force?: boolean;
 };
 

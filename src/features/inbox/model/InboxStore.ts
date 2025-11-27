@@ -95,7 +95,6 @@ export class InboxStore {
                 activeFolderId: state.activeFolderId || merged[0]?.id || DEFAULT_FOLDER_ID,
             }));
         } catch (error) {
-            // fallback to defaults, but keep error message for UI if needed
             this.setState((state) => ({
                 ...state,
                 error: toErrorMessage(error),

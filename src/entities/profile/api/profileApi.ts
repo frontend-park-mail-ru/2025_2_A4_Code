@@ -66,7 +66,6 @@ function resolveAssetUrl(path: string | null | undefined): string | null {
         return null;
     }
 
-    // Всегда проксируем через наш API, чтобы избежать прямых запросов к MinIO
     const base = getApiBaseUrl();
     return `${base}/user/avatar`;
 }
