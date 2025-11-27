@@ -1,4 +1,4 @@
-name: Deploy manual
+name: Deploy manual (ssh)
 
 on:
   workflow_dispatch:
@@ -14,22 +14,27 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout workflow files
+        uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch }}
           fetch-depth: 0
+          persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          node-version: 18.19.1
-          cache: npm
-
-      - name: Run deploy script
-        run: |
-          chmod +x deploy.sh
-          TARGET_DIR=/var/www/flintmail \
-          BACKUP_DIR=/var/backups \
-          DEPLOY_BRANCH='${{ inputs.branch }}' \
-          ./deploy.sh
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || '22' }}
+          script: |
+            set -e
+            BRANCH="${{ inputs.branch }}"
+            cd ~/fronend/2025_2_A4_Code
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+            git pull origin "$BRANCH"
+            chmod +x deploy.sh
+            ./deploy.sh
