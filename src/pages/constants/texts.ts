@@ -1,17 +1,17 @@
 export const AUTH_PAGE_TEXTS = {
-    headerText: "Вход в аккаунт",
+    headerText: "Войти в почту",
     registrationButtonText: "Зарегистрироваться",
     loginInputPlaceholder: "Логин или email",
     passwordInputPlaceholder: "Пароль",
     forgotPasswordText: "Забыли пароль?",
     submitLoginButtonText: "Войти",
-    genericError: "Не удалось выполнить вход. Проверьте данные и попробуйте снова.",
+    genericError: "Не удалось войти. Проверьте данные и попробуйте снова.",
 } as const;
 
 export const REGISTER_PAGE_TEXTS = {
     headerText: "Регистрация",
     switchToAuthButton: "У меня уже есть аккаунт",
-    genericError: "Не удалось завершить регистрацию. Проверьте поля и повторите.",
+    genericError: "Не удалось завершить регистрацию. Проверьте данные и попробуйте снова.",
 } as const;
 
 export const REGISTER_FORM_TEXTS = {
@@ -59,7 +59,7 @@ export const PROFILE_SIDEBAR_TEXTS = {
             icon: "/img/profile-sidebar-interface-logo.svg",
         },
     ] as const,
-    backButtonLabel: "К письмам",
+    backButtonLabel: "к письмам",
 } as const;
 
 export const INBOX_PAGE_TEXTS = {

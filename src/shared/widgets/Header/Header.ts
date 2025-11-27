@@ -22,6 +22,7 @@ type Props = {
     onProfile?: () => void;
     onSettings?: () => void;
     onLogout?: () => void;
+    onMenuToggle?: () => void;
     searchPlaceholder?: string;
     avatarLabel?: string;
     avatarImageUrl?: string | null;
@@ -39,6 +40,7 @@ export class HeaderComponent extends Component<Props> {
     private menuElement?: HTMLElement | null;
     private avatarButtonElement?: HTMLElement | null;
     private logoElement?: HTMLElement | null;
+    private menuButton?: HTMLElement | null;
     private showSearch: boolean;
     private readonly router = Router.getInstance();
     private hasRequestedProfile = false;
@@ -167,6 +169,11 @@ export class HeaderComponent extends Component<Props> {
             onClick: (event) => this.toggleMenu(event),
         });
 
+        this.menuButton = this.element?.querySelector("[data-menu]") as HTMLElement | null;
+        if (this.menuButton) {
+            this.menuButton.onclick = () => this.props.onMenuToggle?.();
+        }
+
         this.avatarMenu.setProps({
             onProfile: () =>
                 this.handleMenuSelect(() => {
@@ -285,6 +292,10 @@ export class HeaderComponent extends Component<Props> {
         if (this.logoElement) {
             this.logoElement.onclick = null;
             this.logoElement = null;
+        }
+        if (this.menuButton) {
+            this.menuButton.onclick = null;
+            this.menuButton = null;
         }
         await this.searchInput?.unmount();
         await this.avatarButton.unmount();

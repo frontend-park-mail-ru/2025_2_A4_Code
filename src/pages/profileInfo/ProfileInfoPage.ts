@@ -39,6 +39,7 @@ export class ProfileInfoPage extends Component {
             userName: "",
             userEmail: "",
             onLogout: () => this.handleLogout(),
+            onMenuToggle: () => this.layout.toggleSidebar(),
         });
 
         this.infoForm = new ProfileInfoFormComponent({

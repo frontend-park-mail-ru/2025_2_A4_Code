@@ -6,10 +6,12 @@ import type { SlotContent } from "@shared/base/slots";
 export class MainLayout extends Component {
     private mainElement: HTMLElement | null = null;
     private sidebarElement: HTMLElement | null = null;
+    private sidebarOverlay: HTMLElement | null = null;
     private contentBackgroundEnabled = true;
     private sidebarWidth: string | null = null;
     private loadingElement: HTMLElement | null = null;
     private isLoading = false;
+    private mobileSidebarOpen = false;
     private slots: Map<string, HTMLElement> = new Map();
     private slotComponents: Map<string, Component> = new Map();
 
@@ -28,6 +30,7 @@ export class MainLayout extends Component {
         this.applySidebarWidth();
         this.applyLoadingState();
         this.updateModalState();
+        this.applySidebarState();
         this.triggerTransition();
 
         return element;
@@ -93,6 +96,19 @@ export class MainLayout extends Component {
         this.applyLoadingState();
     }
 
+    public toggleSidebar(): void {
+        this.setSidebarOpen(!this.mobileSidebarOpen);
+    }
+
+    public setSidebarOpen(open: boolean): void {
+        this.mobileSidebarOpen = open;
+        this.applySidebarState();
+    }
+
+    public closeSidebar(): void {
+        this.setSidebarOpen(false);
+    }
+
     public triggerTransition(): void {
         if (!this.mainElement) return;
         this.mainElement.classList.remove("main-layout__main--transition");
@@ -107,8 +123,12 @@ export class MainLayout extends Component {
         }
         this.slotComponents.clear();
         this.slots.clear();
+        if (this.sidebarOverlay) {
+            this.sidebarOverlay.onclick = null;
+        }
         this.mainElement = null;
         this.sidebarElement = null;
+        this.sidebarOverlay = null;
         this.loadingElement = null;
         await super.unmount();
     }
@@ -151,7 +171,12 @@ export class MainLayout extends Component {
         if (!element) return;
         this.mainElement = element.querySelector(".main-layout__main") as HTMLElement | null;
         this.sidebarElement = element.querySelector(".main-layout__sidebar") as HTMLElement | null;
+        this.sidebarOverlay = element.querySelector("[data-sidebar-overlay]") as HTMLElement | null;
         this.loadingElement = element.querySelector(".main-layout__loading") as HTMLElement | null;
+
+        if (this.sidebarOverlay) {
+            this.sidebarOverlay.onclick = () => this.closeSidebar();
+        }
     }
 
     private applyMainBackground(): void {
@@ -192,5 +217,10 @@ export class MainLayout extends Component {
 
         modalRoot.classList.toggle("main-layout__modal-root--active", hasModal);
     }
-}
 
+    private applySidebarState(): void {
+        const root = this.getElement();
+        if (!root) return;
+        root.classList.toggle("main-layout--sidebar-open", this.mobileSidebarOpen);
+    }
+}

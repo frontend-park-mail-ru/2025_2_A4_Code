@@ -3,6 +3,28 @@
   align-items: center;
   width: 100%;
 
+  &__menu {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #d5dbeb;
+    border-radius: 10px;
+    background: #fff;
+    padding: 6px;
+    margin-right: 12px;
+
+    span {
+      display: block;
+      height: 2px;
+      background: #1f2544;
+      border-radius: 2px;
+      width: 100%;
+    }
+  }
+
   &__logo {
     display: inline-flex;
     align-items: center;
@@ -56,4 +78,20 @@
     }
   }
 
+}
+
+@media (max-width: 900px) {
+  .header {
+    &__menu {
+      display: inline-flex;
+    }
+
+    &__logo-text {
+      font-size: 28px;
+    }
+
+    &__center {
+      margin-left: 12px;
+    }
+  }
 }

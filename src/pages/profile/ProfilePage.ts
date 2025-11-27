@@ -83,6 +83,7 @@ export class ProfilePage extends Component {
             userName: DEFAULT_PLACEHOLDER.fullName,
             userEmail: DEFAULT_PLACEHOLDER.email,
             onLogout: () => this.handleLogout(),
+            onMenuToggle: () => this.layout.toggleSidebar(),
         });
     }
 

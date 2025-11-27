@@ -10,7 +10,7 @@
 ### Внешние ссылки
  - [Figma](https://www.figma.com/design/qguF083sLCQck3XHGaTjql/A4-Code?node-id=0-1&t=rq18upQD98W3mKPT-0)
  - [Backend](https://github.com/go-park-mail-ru/2025_2_A4_Code)
- - [Deploy](http://217.16.16.26/)
+ - [Deploy](https://flintmail.ru)
  - [Jira](https://a4-code.yougile.com/team/420dac11769c/A4-Mail/Frontend?lang=ru)
 
 ### Правила оформления Pull Requests

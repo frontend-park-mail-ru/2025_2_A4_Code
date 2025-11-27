@@ -61,6 +61,7 @@ export class InboxPage extends Component {
         this.header = new HeaderComponent({
             onSearch: (query) => console.log("search", query),
             onLogout: () => this.handleLogout(),
+            onMenuToggle: () => this.layout.toggleSidebar(),
         });
 
         this.sidebar = new SidebarComponent({
@@ -231,6 +232,7 @@ export class InboxPage extends Component {
         });
         const path = folderId === "inbox" ? "/mail" : `/mail/${encodeURIComponent(folderId)}`;
         this.router.navigate(path).then();
+        this.layout.setSidebarOpen(false);
     }
 
     private renderMailView(mail: MailDetail): void {
