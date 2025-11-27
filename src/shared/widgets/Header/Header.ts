@@ -149,6 +149,12 @@ export class HeaderComponent extends Component<Props> {
             this.menuElement.style.display = "none";
         }
 
+        const menuBtn = element.querySelector("[data-menu]") as HTMLElement | null;
+        if (menuBtn) {
+            this.menuButton = menuBtn;
+            this.menuButton.onclick = () => this.props.onMenuToggle?.();
+        }
+
         this.ensureProfileInfo();
     }
 

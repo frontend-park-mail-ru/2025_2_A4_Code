@@ -99,18 +99,98 @@
   }
 
   @media (max-width: 900px) {
+    gap: 24px;
+    padding: 24px 24px;
+
+    &__title {
+      font-size: 24px;
+    }
+
     &__content {
       flex-direction: column;
       align-items: stretch;
+      gap: 24px;
     }
 
     &__avatar {
       align-self: center;
+      width: 160px;
+      min-width: 160px;
+
+      & > span,
+      & > img {
+        width: 140px;
+        height: 140px;
+        font-size: 44px;
+      }
+    }
+
+    &__fields {
+      max-width: none;
     }
 
     &__actions {
       justify-content: center;
       flex-wrap: wrap;
+    }
+  }
+
+@media (max-width: 480px) {
+    padding: 14px 12px;
+    gap: 18px;
+
+    &__title {
+      font-size: 21px;
+    }
+
+    &__avatar {
+      width: 120px;
+      min-width: 120px;
+
+      & > span,
+      & > img {
+        width: 100px;
+        height: 100px;
+        font-size: 32px;
+      }
+    }
+
+    &__fields {
+      gap: 12px;
+    }
+
+    &__field--half .ui-input {
+      max-width: none;
+    }
+
+    &__actions {
+      width: 100%;
+
+      .ui-button {
+        min-width: 0;
+        width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 360px) {
+    padding: 12px 10px;
+    gap: 16px;
+
+    &__title {
+      font-size: 20px;
+    }
+
+    &__avatar {
+      width: 110px;
+      min-width: 110px;
+
+      & > span,
+      & > img {
+        width: 92px;
+        height: 92px;
+        font-size: 30px;
+      }
     }
   }
 }

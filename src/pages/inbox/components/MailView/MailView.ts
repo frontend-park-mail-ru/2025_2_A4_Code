@@ -51,6 +51,7 @@ export class MailViewComponent extends Component<Props> {
                 "delete",
                 this.createToolbarButton("delete", {
                     label: MAIL_VIEW_TEXTS.delete,
+                    ariaLabel: MAIL_VIEW_TEXTS.delete,
                     icon: '<img src="/img/message-delete.svg" alt="" aria-hidden="true" />',
                     onClick: () => this.props.onDelete?.(),
                 }),
@@ -59,6 +60,7 @@ export class MailViewComponent extends Component<Props> {
                 "folder",
                 this.createToolbarButton("folder", {
                     label: MAIL_VIEW_TEXTS.moveToFolder,
+                    ariaLabel: MAIL_VIEW_TEXTS.moveToFolder,
                     icon: '<img src="/img/message-in-folder.svg" alt="" aria-hidden="true" />',
                     onClick: () => this.props.onMoveToFolder?.(),
                 }),
@@ -67,6 +69,7 @@ export class MailViewComponent extends Component<Props> {
                 "spam",
                 this.createToolbarButton("spam", {
                     label: MAIL_VIEW_TEXTS.markAsSpam,
+                    ariaLabel: MAIL_VIEW_TEXTS.markAsSpam,
                     icon: '<img src="/img/message-to-spam.svg" alt="" aria-hidden="true" />',
                     onClick: () => this.props.onMarkAsSpam?.(),
                 }),
@@ -75,6 +78,7 @@ export class MailViewComponent extends Component<Props> {
                 "reply",
                 this.createToolbarButton("reply", {
                     label: MAIL_VIEW_TEXTS.reply,
+                    ariaLabel: MAIL_VIEW_TEXTS.reply,
                     icon: '<img src="/img/message-reply.svg" alt="" aria-hidden="true" />',
                     onClick: () => this.props.onReply?.(),
                 }),
@@ -83,6 +87,7 @@ export class MailViewComponent extends Component<Props> {
                 "forward",
                 this.createToolbarButton("forward", {
                     label: MAIL_VIEW_TEXTS.forward,
+                    ariaLabel: MAIL_VIEW_TEXTS.forward,
                     icon: '<img src="/img/message-forward.svg" alt="" aria-hidden="true" />',
                     onClick: () => this.props.onForward?.(),
                 }),

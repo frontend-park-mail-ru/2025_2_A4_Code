@@ -2,7 +2,7 @@ import { Component } from "@shared/base/Component";
 import { HeaderComponent } from "@shared/widgets/Header/Header";
 import { ProfileSidebarComponent } from "./components/ProfileSidebar/ProfileSidebar";
 import { ProfileFormComponent } from "./components/ProfileForm/ProfileForm";
-import { InterfaceSettingsComponent } from "./components/InterfaceSettings/InterfaceSettings";
+import { InterfaceSettingsComponent, type ItemId as InterfaceItemId } from "./components/InterfaceSettings/InterfaceSettings";
 import { MainLayout } from "@app/components/MainLayout/MainLayout";
 import { fetchProfile, type ProfileData, updateProfile, uploadProfileAvatar } from "@entities/profile";
 import {
@@ -53,10 +53,18 @@ export class ProfilePage extends Component {
     private globalLoadingDepth = 0;
     private profileLoadPromise: Promise<void> | null = null;
     private activeTab: "personal" | "interface" = "personal";
+    private interfaceSection: InterfaceItemId = "folders";
     private postLogoutCheckStarted = false;
 
-    constructor() {
+    constructor(params: { activeTab?: "personal" | "interface"; interfaceSection?: InterfaceItemId } = {}) {
         super();
+
+        if (params.activeTab) {
+            this.activeTab = params.activeTab;
+        }
+        if (params.interfaceSection) {
+            this.interfaceSection = params.interfaceSection;
+        }
 
         this.sidebar = new ProfileSidebarComponent({
             name: DEFAULT_PLACEHOLDER.fullName,
@@ -74,7 +82,7 @@ export class ProfilePage extends Component {
             onCancel: () => this.handleProfileCancel(),
         });
 
-        this.interfaceView = new InterfaceSettingsComponent();
+        this.interfaceView = new InterfaceSettingsComponent({ initialItem: this.interfaceSection });
 
         this.header = new HeaderComponent({
             showSearch: false,
@@ -132,8 +140,12 @@ export class ProfilePage extends Component {
     }
 
     private async renderActiveMain(): Promise<void> {
-        const mainContent = this.activeTab === "interface" ? this.interfaceView : this.form;
-        await this.layout.updateSlot("main", mainContent);
+        if (this.activeTab === "interface") {
+            this.interfaceView.setActiveItem(this.interfaceSection);
+            await this.layout.updateSlot("main", this.interfaceView);
+        } else {
+            await this.layout.updateSlot("main", this.form);
+        }
     }
 
     private async loadProfile(): Promise<void> {
@@ -333,8 +345,25 @@ export class ProfilePage extends Component {
             return;
         }
         this.activeTab = tabId;
+        if (tabId === "personal") {
+            this.interfaceSection = "folders";
+        }
         this.sidebar.setProps({ activeTab: tabId });
+        this.layout.setSidebarOpen(false);
         void this.renderActiveMain();
+    }
+
+    public async update(params: Record<string, string>): Promise<void> {
+        const tab = params.section ? "interface" : params.tab === "interface" ? "interface" : "personal";
+        const sectionParam = (params.section as InterfaceItemId | undefined) ?? "folders";
+        const nextSection: InterfaceItemId = ["theme", "signature", "folders", "security"].includes(sectionParam)
+            ? sectionParam
+            : "folders";
+
+        this.activeTab = tab;
+        this.interfaceSection = nextSection;
+        this.sidebar.setProps({ activeTab: this.activeTab });
+        await this.renderActiveMain();
     }
 
     private applyCachedProfile(): void {

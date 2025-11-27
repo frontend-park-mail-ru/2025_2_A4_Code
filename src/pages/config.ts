@@ -24,7 +24,7 @@ const routeDefinitions: RouteConfig[] = [
     },
     {
         path: "/profile",
-        createView: () => new ProfilePage(),
+        createView: () => new ProfilePage({ activeTab: "personal" }),
         requiresAuth: true,
     },
     {
@@ -34,11 +34,21 @@ const routeDefinitions: RouteConfig[] = [
     },
     {
         path: "/interface",
-        createView: () => {
-            const page = new ProfilePage();
-            page["activeTab"] = "interface" as any;
-            return page;
-        },
+        createView: () => new ProfilePage({ activeTab: "interface", interfaceSection: "folders" }),
+        requiresAuth: true,
+    },
+    {
+        path: "/settings/profile",
+        createView: () => new ProfilePage({ activeTab: "personal" }),
+        requiresAuth: true,
+    },
+    {
+        path: "/settings/interface/:section?",
+        createView: (params: Record<string, string>) =>
+            new ProfilePage({
+                activeTab: "interface",
+                interfaceSection: (params.section as any) ?? "folders",
+            }),
         requiresAuth: true,
     },
 ];

@@ -17,7 +17,6 @@
     display: flex;
     flex: 1;
     overflow: hidden;
-    padding-right: 16px;
   }
 
   &__sidebar {
@@ -129,7 +128,7 @@
 
     &__sidebar {
       position: fixed;
-      top: 80px;
+      top: 0;
       left: 0;
       bottom: 0;
       width: 280px;
@@ -142,6 +141,8 @@
       padding: 12px 12px 24px;
       overflow-y: auto;
       max-height: none;
+      height: 100vh;
+      height: 100dvh;
     }
 
     &__sidebar-overlay {
@@ -160,7 +161,10 @@
     }
 
     &__header {
-      padding: 0 12px;
+      padding: 10px 12px 8px;
+      height: auto;
+      min-height: 64px;
+      align-items: flex-start;
     }
 
     &--sidebar-open {

@@ -3,19 +3,23 @@
   inset: 0;
   background: rgba(7, 16, 41, 0.35);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 24px;
+  padding: clamp(12px, 4vw, 24px);
   z-index: 1000;
+  overflow-y: auto;
+  backdrop-filter: blur(1px);
 }
 
 .compose-modal {
   position: relative;
   width: min(900px, 100%);
+  max-height: 92dvh;
+  overflow: hidden;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 24px 60px rgba(20, 28, 60, 0.18);
-  padding: 32px 32px 16px;
+  padding: 28px 28px 16px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -54,12 +58,14 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  overflow: hidden;
 }
 
 .compose-modal__recipient {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .compose-modal__avatar {
@@ -90,28 +96,32 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
 
 .compose-modal__inputs-text {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding-left: 8px;
+  gap: 10px;
+  padding-left: 4px;
   font-size: 16px;
   color: #000000;
+  width: 100%;
 }
 
 .compose-modal__label {
   font-weight: 600;
   white-space: nowrap;
+  color: #1f2544;
 }
 
 .compose-modal__input {
-  width: 742px;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
   border: none;
   border-bottom: 1px solid #dbe1f1;
-  padding: 12px 4px;
-  padding-left: 8px;
+  padding: 12px 4px 12px 8px;
   font-size: 16px;
   color: #1f2544;
   outline: none;
@@ -133,14 +143,15 @@
 
 .compose-modal__actions {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
-  margin-left: calc(48px + 20px);
+  margin-left: 0;
+  justify-content: center;
 }
 
 .compose-modal__action-slot {
   display: inline-flex;
-  margin-right: 32px;
+  margin-right: 24px;
 }
 
 @media (max-width: 600px) {
@@ -150,21 +161,20 @@
 }
 
 .compose-modal__textarea {
-  width: calc(100% + 64px);
-  min-height: 350px;
-  max-height: min(600px, 60vh);
+  width: 100%;
+  min-height: 280px;
+  max-height: min(600px, 55vh);
   border: none;
   border-top: 1px solid #dbe1f1;
   border-bottom: 1px solid #dbe1f1;
   border-radius: 0;
-  padding: 32px 32px;
+  padding: 24px 16px;
   font-size: 16px;
   color: #1f2544;
   background: #ffffff;
   outline: none;
   transition: border-color 0.2s ease;
-  margin: 0 -32px;
-  margin-bottom: -8px;
+  margin: 0;
   line-height: 1.5;
   overflow-y: auto;
   resize: vertical;
@@ -176,8 +186,9 @@
 
 .compose-modal__footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .compose-modal__send-slot {
@@ -189,4 +200,98 @@
 
 .compose-modal__delete-slot {
   display: inline-flex;
+}
+
+@media (max-width: 720px) {
+  .compose-modal {
+    width: 100%;
+    max-height: none;
+    height: auto;
+    padding: 20px 18px 14px;
+    border-radius: 14px;
+    gap: 18px;
+  }
+
+  .compose-modal__body {
+    gap: 18px;
+  }
+
+  .compose-modal__inputs-text {
+    align-items: flex-start;
+  }
+
+  .compose-modal__label {
+    padding-top: 12px;
+    font-size: 15px;
+  }
+
+  .compose-modal__input {
+    font-size: 15px;
+    padding: 12px 4px 10px 6px;
+  }
+
+  .compose-modal__textarea {
+    min-height: 240px;
+    padding: 18px 12px;
+    font-size: 15px;
+  }
+
+  .compose-modal__close {
+    top: 12px;
+    right: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .compose-overlay {
+    padding: 12px;
+    align-items: flex-start;
+  }
+
+  .compose-modal {
+    border-radius: 12px;
+    padding: 16px 14px 12px;
+  }
+
+  .compose-modal__inputs-text {
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 0;
+  }
+
+  .compose-modal__label {
+    padding-top: 0;
+  }
+
+  .compose-modal__textarea {
+    min-height: 220px;
+  }
+
+  .compose-modal__actions {
+    gap: 10px;
+  }
+
+  .compose-modal__footer {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 375px) {
+  .compose-overlay {
+    padding: 10px;
+  }
+
+  .compose-modal {
+    padding: 14px 12px 10px;
+    gap: 14px;
+  }
+
+  .compose-modal__textarea {
+    min-height: 200px;
+    padding: 16px 10px;
+  }
+
+  .compose-modal__inputs {
+    gap: 12px;
+  }
 }

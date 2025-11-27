@@ -7,7 +7,7 @@ import { fetchFolders, createFolder, renameFolder, deleteFolder, type FolderSumm
 import { SIDEBAR_TEXTS } from "@shared/constants/texts";
 import { CreateFolderModal } from "../../../inbox/components/CreateFolderModal/CreateFolderModal";
 
-type ItemId = "theme" | "signature" | "folders" | "security";
+export type ItemId = "theme" | "signature" | "folders" | "security";
 
 const MAX_NAME_LENGTH = MAX_FOLDER_NAME_LENGTH;
 
@@ -35,6 +35,19 @@ export class InterfaceSettingsComponent extends Component {
     private saveBtn?: ButtonComponent;
     private cancelBtn?: ButtonComponent;
     private editingValue: string | null = null;
+    private footerEl: HTMLElement | null = null;
+
+    private readonly placeholders: Record<ItemId, string> = {
+        theme: "мы работаем над этим",
+        signature: "мы работаем над этим",
+        folders: "",
+        security: "мы работаем над этим",
+    };
+
+    constructor(private readonly props: { initialItem?: ItemId } = {}) {
+        super();
+        this.activeItem = props.initialItem ?? "folders";
+    }
 
     protected renderTemplate(): string {
         return template({});
@@ -77,6 +90,15 @@ export class InterfaceSettingsComponent extends Component {
         });
     }
 
+    public setActiveItem(id: ItemId): void {
+        if (this.activeItem === id) {
+            return;
+        }
+        this.activeItem = id;
+        this.updateActiveState();
+        this.renderContent();
+    }
+
     private async loadFolders(): Promise<void> {
         this.loading = true;
         try {
@@ -105,17 +127,33 @@ export class InterfaceSettingsComponent extends Component {
         if (!contentRoot) return;
 
         if (this.activeItem !== "folders") {
+            this.teardownFolderView();
+            contentRoot.innerHTML = "";
+            const placeholder = document.createElement("div");
+            placeholder.className = "interface-settings__state interface-settings__state--placeholder";
+            const label = this.placeholders[this.activeItem] || "�����: ���� �� ���������";
+            placeholder.textContent = label;
+            contentRoot.appendChild(placeholder);
             return;
         }
 
+        if (this.rowsRoot && this.rowsRoot.parentElement !== contentRoot) {
+            this.rowsRoot = null;
+        }
+
         const prevScroll = contentRoot.scrollTop;
+        contentRoot.innerHTML = "";
 
         if (!this.rowsRoot) {
             this.rowsRoot = document.createElement("div");
             this.rowsRoot.className = "interface-settings__folder-list";
-            contentRoot.appendChild(this.rowsRoot);
-            contentRoot.appendChild(this.renderFooterActions());
         }
+
+        if (!this.footerEl) {
+            this.footerEl = this.renderFooterActions();
+        }
+
+        contentRoot.append(this.rowsRoot, this.footerEl);
 
         if (this.loading) {
             this.rowsMap.clear();
@@ -162,6 +200,19 @@ export class InterfaceSettingsComponent extends Component {
         if (this.editingId) {
             this.updateAcceptButtonState(this.editingId);
         }
+    }
+
+    private teardownFolderView(): void {
+        this.rowsRoot = null;
+        this.rowsMap.clear();
+        this.editingId = null;
+        this.editingValue = null;
+        this.renameDrafts.clear();
+        this.deleteSet.clear();
+        this.errorEl = null;
+        this.saveBtn = undefined;
+        this.cancelBtn = undefined;
+        this.footerEl = null;
     }
 
     private buildStateElement(text: string): HTMLElement {

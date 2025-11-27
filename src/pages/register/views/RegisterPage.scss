@@ -13,6 +13,8 @@
     font-weight: 600;
     color: #000000;
     text-align: center;
+    margin: 16px 0 8px;
+    line-height: 1.2;
   }
 
   &__form {
@@ -37,13 +39,20 @@
   @media (max-width: 600px) {
     max-width: 100%;
     gap: 12px;
+    padding: 0 4px 10px;
 
     &__title {
       font-size: 30px;
+      margin: 12px 0 6px;
     }
 
     &__form {
       gap: 10px;
+    }
+
+    &__actions {
+      gap: 8px;
+      margin-top: 4px;
     }
   }
 }

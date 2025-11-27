@@ -1,6 +1,6 @@
 .mail-item {
   display: grid;
-  grid-template-columns: 10% 10% 10% 10%;
+  grid-template-columns: auto minmax(150px, 1.2fr) minmax(0, 1.5fr) auto;
   align-items: center;
   column-gap: 16px;
   padding: 12px 16px;
@@ -8,7 +8,6 @@
   transition: background .12s ease;
   border-bottom: 1px solid #D6E3F3;
   border-radius: 12px;
-  justify-content: space-between;
   user-select: none;
 
   &__left {
@@ -18,6 +17,7 @@
     flex-direction: row;
     gap: 10px;
     flex-shrink: 0;
+    min-width: 0;
   }
 
   &--unread {
@@ -95,6 +95,49 @@
     align-self: center;
     font-size: 12px;
     color: #94a3b8;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 900px) {
+  .mail-item {
+    grid-template-columns: auto minmax(120px, 1fr) minmax(0, 1.2fr) auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .mail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 12px;
+
+    &__left {
+      width: 100%;
+      gap: 8px;
+    }
+
+    &__from {
+      font-size: 15px;
+    }
+
+    &__subject {
+      width: 100%;
+      white-space: normal;
+      font-size: 16px;
+    }
+
+    &__preview {
+      width: 100%;
+      white-space: normal;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    &__time {
+      align-self: flex-end;
+    }
   }
 }
 

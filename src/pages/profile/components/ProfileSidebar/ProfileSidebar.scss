@@ -73,4 +73,36 @@
       height: 18px;
     }
   }
+
+  @media (max-width: 900px) {
+    padding: 20px 12px;
+    gap: 14px;
+
+    &__avatar {
+      width: 88px;
+      height: 88px;
+    }
+
+    &__name {
+      font-size: 20px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 16px 10px;
+    gap: 12px;
+
+    &__avatar {
+      width: 80px;
+      height: 80px;
+
+      span {
+        font-size: 30px;
+      }
+    }
+
+    &__name {
+      font-size: 18px;
+    }
+  }
 }

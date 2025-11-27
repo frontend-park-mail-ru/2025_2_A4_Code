@@ -213,6 +213,7 @@ export class InboxPage extends Component {
     }
 
     private openCreateFolderModal(): void {
+        this.layout.setSidebarOpen(false);
         const modal = new CreateFolderModal({
             onClose: () => this.closeModal(),
             onSave: (name) => this.handleCreateFolder(name),
@@ -344,6 +345,7 @@ export class InboxPage extends Component {
         submit?: (data: ComposePayload) => Promise<void>,
         onDeleteDraft?: () => void
     ): void {
+        this.layout.setSidebarOpen(false);
         const draftThreadId = draft.threadId;
         const draftId = draft.draftId;
         this.createFolderModal = null;

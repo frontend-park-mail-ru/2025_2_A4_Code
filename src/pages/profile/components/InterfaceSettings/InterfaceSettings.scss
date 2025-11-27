@@ -22,7 +22,8 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    min-width: 220px;
+    min-width: 0;
+    align-items: stretch;
   }
 
   &__item {
@@ -30,7 +31,7 @@
     border-radius: 12px;
     background: transparent;
     transition: color 0.2s ease;
-    width: fit-content;
+    width: 100%;
     min-width: 0;
 
     &:hover {
@@ -53,8 +54,10 @@
     font-weight: 600;
     color: #2b2f43;
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
     box-shadow: none;
+    width: 100%;
+    justify-content: flex-start;
 
     &:hover {
       background: transparent;
@@ -249,5 +252,112 @@
     min-height: 16px;
     color: #d14343;
     font-size: 12px;
+  }
+
+  @media (max-width: 900px) {
+    padding: 24px 24px;
+    gap: 14px;
+    border-radius: 20px;
+
+    &__title {
+      font-size: 24px;
+    }
+
+    &__body {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    &__list {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    &__item {
+      width: auto;
+      min-width: 120px;
+      flex: 1 1 auto;
+
+      .ui-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    &__footer {
+      position: static;
+      padding-top: 0;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 720px) {
+    padding: 18px 16px;
+    gap: 12px;
+
+    &__title {
+      font-size: 22px;
+    }
+
+    &__actions {
+      flex-wrap: wrap;
+    }
+
+    &__row {
+      align-items: flex-start;
+    }
+
+    &__row-actions {
+      gap: 4px;
+    }
+
+    &__footer-actions {
+      flex-wrap: wrap;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 16px 12px;
+    border-radius: 14px;
+
+    &__list {
+      gap: 6px;
+    }
+
+    &__item {
+      .ui-button {
+        padding: 10px 12px;
+        font-size: 15px;
+      }
+    }
+
+    &__folder-list {
+      max-height: none;
+    }
+
+    &__footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    &__footer-actions {
+      width: 100%;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+  }
+
+  @media (max-width: 375px) {
+    &__title {
+      font-size: 20px;
+    }
+
+    &__row-name {
+      white-space: normal;
+    }
   }
 }
