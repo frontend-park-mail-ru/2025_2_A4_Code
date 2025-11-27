@@ -5,11 +5,30 @@
   padding: 24px;
   box-sizing: border-box;
 
+  .main-layout__main {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 120px);
+  }
+
+  .profile-form,
+  .interface-settings {
+    flex: 1 1 auto;
+  }
+
   @media (max-width: 900px) {
     padding: 16px;
+
+    .main-layout__main {
+      min-height: calc(100vh - 100px);
+    }
   }
 
   @media (max-width: 720px) {
     padding: 12px;
+
+    .main-layout__main {
+      min-height: calc(100vh - 90px);
+    }
   }
 }

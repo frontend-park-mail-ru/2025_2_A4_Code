@@ -54,13 +54,13 @@ export class ComposeModal extends Component<Props> {
 
         this.deleteDraftButton = this.props.onDeleteDraft
             ? new ButtonComponent({
-                  label: "Удалить черновик",
+                  label: "Удалить",
                   variant: "secondary",
                   onClick: () => this.props.onDeleteDraft?.(),
               })
             : null;
     }
-
+    
     protected renderTemplate(): string {
         return template({});
     }
