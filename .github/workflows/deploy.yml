@@ -1,0 +1,35 @@
+name: Deploy manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: main
+
+concurrency:
+  group: deploy-${{ inputs.branch }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.19.1
+          cache: npm
+
+      - name: Run deploy script
+        run: |
+          chmod +x deploy.sh
+          TARGET_DIR=/var/www/flintmail \
+          BACKUP_DIR=/var/backups \
+          DEPLOY_BRANCH='${{ inputs.branch }}' \
+          ./deploy.sh
