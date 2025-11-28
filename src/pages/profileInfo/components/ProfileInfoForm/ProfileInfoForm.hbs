@@ -1,0 +1,44 @@
+<form class="profile-info-form">
+  <div class="profile-info-form__card">
+    <div class="profile-info-form__field">
+      <label class="profile-info-form__label" for="profile-description">Описание:</label>
+      <textarea
+        id="profile-description"
+        class="profile-info-form__textarea"
+        name="description"
+        placeholder="Добавить описание"
+        maxlength="200"
+      >{{description}}</textarea>
+    </div>
+
+    <div class="profile-info-form__field">
+      <h3 class="profile-info-form__label">Избранные контакты</h3>
+      <p class="profile-info-form__placeholder">
+        Избранных контактов пока нет<br />
+        Перейдите в профиль контакта, чтобы добавить
+      </p>
+    </div>
+
+    <div class="profile-info-form__field">
+      <h3 class="profile-info-form__label">Удобное время</h3>
+      <p class="profile-info-form__helper">Обычно отвечаю на письма</p>
+      <div class="profile-info-form__time-row">
+        <span class="profile-info-form__time-label">с</span>
+        <select name="from" class="profile-info-form__select" data-role="from">
+          {{{optionsFrom}}}
+        </select>
+        <span class="profile-info-form__time-label">до</span>
+        <select name="to" class="profile-info-form__select" data-role="to">
+          {{{optionsTo}}}
+        </select>
+      </div>
+      <p class="profile-info-form__footnote">
+        Другие пользователи будут видеть это время в вашем профиле
+      </p>
+    </div>
+
+    <div class="profile-info-form__actions">
+      <button type="submit" class="profile-info-form__save">Сохранить</button>
+    </div>
+  </div>
+</form>

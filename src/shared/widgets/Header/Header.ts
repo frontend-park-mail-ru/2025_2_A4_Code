@@ -4,7 +4,9 @@ import "./Header.scss";
 import { SearchInputComponent } from "@shared/components/SearchInput/SearchInput";
 import { AvatarButtonComponent } from "@shared/components/AvatarButton/AvatarButton";
 import { AvatarMenu } from "@shared/widgets/AvatarMenu/AvatarMenu";
-import { Router } from "@infra";
+import { Router, authManager } from "@infra";
+import { performLogout } from "@features/auth";
+import { apiService, HttpError } from "@shared/api/ApiService";
 import {
     getCachedProfilePreview,
     loadProfilePreview,
@@ -13,12 +15,14 @@ import {
 } from "@features/profile";
 import { getInitials } from "@utils/person";
 import { HEADER_TEXTS } from "@shared/constants/texts";
+import { navigateToAuthPage, type AuthNavigationReason } from "@shared/utils/authNavigation";
 
 type Props = {
     onSearch?: (query: string) => void;
     onProfile?: () => void;
     onSettings?: () => void;
     onLogout?: () => void;
+    onMenuToggle?: () => void;
     searchPlaceholder?: string;
     avatarLabel?: string;
     avatarImageUrl?: string | null;
@@ -35,6 +39,8 @@ export class HeaderComponent extends Component<Props> {
     private readonly avatarMenu: AvatarMenu;
     private menuElement?: HTMLElement | null;
     private avatarButtonElement?: HTMLElement | null;
+    private logoElement?: HTMLElement | null;
+    private menuButton?: HTMLElement | null;
     private showSearch: boolean;
     private readonly router = Router.getInstance();
     private hasRequestedProfile = false;
@@ -71,11 +77,19 @@ export class HeaderComponent extends Component<Props> {
         this.avatarMenu = new AvatarMenu({
             onProfile: () =>
                 this.handleMenuSelect(() => {
-                    this.router.navigate("/profile");
+                    this.router.navigate("/profile-info");
                     this.props.onProfile?.();
                 }),
-            onSettings: () => this.handleMenuSelect(this.props.onSettings),
-            onLogout: () => this.handleMenuSelect(this.props.onLogout),
+            onSettings: () =>
+                this.handleMenuSelect(() => {
+                    this.router.navigate("/profile");
+                    this.props.onSettings?.();
+                }),
+            onLogout: () =>
+                this.handleMenuSelect(async () => {
+                    await this.props.onLogout?.();
+                    await this.handleLogout();
+                }),
         });
 
         const profileInfo = this.extractProfileInfo();
@@ -93,6 +107,15 @@ export class HeaderComponent extends Component<Props> {
 
     protected afterRender(): void {
         const element = this.element!;
+
+        const logo = element.querySelector("[data-logo]") as HTMLElement | null;
+        if (logo) {
+            this.logoElement = logo;
+            this.logoElement.onclick = (event) => {
+                event.preventDefault();
+                this.router.navigate("/mail").then();
+            };
+        }
 
         const searchSlot = element.querySelector('[data-slot="search"]') as HTMLElement | null;
         if (searchSlot) {
@@ -126,6 +149,12 @@ export class HeaderComponent extends Component<Props> {
             this.menuElement.style.display = "none";
         }
 
+        const menuBtn = element.querySelector("[data-menu]") as HTMLElement | null;
+        if (menuBtn) {
+            this.menuButton = menuBtn;
+            this.menuButton.onclick = () => this.props.onMenuToggle?.();
+        }
+
         this.ensureProfileInfo();
     }
 
@@ -146,14 +175,27 @@ export class HeaderComponent extends Component<Props> {
             onClick: (event) => this.toggleMenu(event),
         });
 
+        this.menuButton = this.element?.querySelector("[data-menu]") as HTMLElement | null;
+        if (this.menuButton) {
+            this.menuButton.onclick = () => this.props.onMenuToggle?.();
+        }
+
         this.avatarMenu.setProps({
             onProfile: () =>
                 this.handleMenuSelect(() => {
-                    this.router.navigate("/profile");
+                    this.router.navigate("/profile-info");
                     this.props.onProfile?.();
                 }),
-            onSettings: () => this.handleMenuSelect(this.props.onSettings),
-            onLogout: () => this.handleMenuSelect(this.props.onLogout),
+            onSettings: () =>
+                this.handleMenuSelect(() => {
+                    this.router.navigate("/profile");
+                    this.props.onSettings?.();
+                }),
+            onLogout: () =>
+                this.handleMenuSelect(async () => {
+                    await this.props.onLogout?.();
+                    await this.handleLogout();
+                }),
         });
 
         const profileInfo = this.extractProfileInfo();
@@ -186,17 +228,81 @@ export class HeaderComponent extends Component<Props> {
             this.menuElement.classList.remove("open");
             this.menuElement.setAttribute("aria-hidden", "true");
             this.menuElement.style.display = "none";
+            const active = document.activeElement as HTMLElement | null;
+            if (active && this.menuElement.contains(active) && typeof active.blur === "function") {
+                active.blur();
+            }
             document.removeEventListener("pointerdown", this.outsideClickHandler);
         }
     }
 
-    private handleMenuSelect(callback?: () => void): void {
+    private handleMenuSelect(callback?: () => void | Promise<void>, forceAuthRedirect = false): void {
         this.closeMenu();
-        callback?.();
+        const run = async () => {
+            try {
+                await callback?.();
+            } catch (err) {
+                console.error("Header action failed", err);
+            } finally {
+                if (forceAuthRedirect) {
+                    await this.forceAuthRedirect("manual-logout");
+                } else {
+                    this.ensureLoggedOutRedirect();
+                }
+            }
+        };
+        void run();
+    }
+
+    private ensureLoggedOutRedirect(): void {
+        if (authManager.getStatus() === "unauthenticated") {
+            void this.forceAuthRedirect("status-change");
+        }
+    }
+
+    private async handleLogout(): Promise<void> {
+        console.info("[auth] header logout requested");
+        const navigationPromise = navigateToAuthPage(this.router, "header-logout");
+        try {
+            await performLogout();
+        } catch (error) {
+            console.error("[auth] header logout failed", error);
+        } finally {
+            await this.verifyLoggedOutAndRedirect(navigationPromise);
+        }
+    }
+
+    private async verifyLoggedOutAndRedirect(navigationPromise?: Promise<void>): Promise<void> {
+        const redirectPromise = navigationPromise ?? navigateToAuthPage(this.router, "header-logout");
+        try {
+            console.info("[auth] header post-logout profile probe");
+            await apiService.request("/user/profile", { parseJson: false, skipAuthRefresh: true });
+            console.warn("[auth] post-logout profile request succeeded (session may still be active)");
+        } catch (error) {
+            if (error instanceof HttpError) {
+                console.info("[auth] post-logout profile request failed as expected", { status: error.status });
+            } else {
+                console.info("[auth] post-logout profile request failed as expected", { error });
+            }
+        } finally {
+            await redirectPromise;
+        }
+    }
+
+    private async forceAuthRedirect(reason: AuthNavigationReason = "unknown"): Promise<void> {
+        await navigateToAuthPage(this.router, reason);
     }
 
     public async unmount(): Promise<void> {
         document.removeEventListener("pointerdown", this.outsideClickHandler);
+        if (this.logoElement) {
+            this.logoElement.onclick = null;
+            this.logoElement = null;
+        }
+        if (this.menuButton) {
+            this.menuButton.onclick = null;
+            this.menuButton = null;
+        }
         await this.searchInput?.unmount();
         await this.avatarButton.unmount();
         await this.avatarMenu.unmount();

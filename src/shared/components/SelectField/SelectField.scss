@@ -1,0 +1,179 @@
+.select-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: "Nunito Sans", sans-serif;
+    padding-bottom: 16px;
+    color: #1f2344;
+    position: relative;
+
+    &__label {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    &__trigger {
+        width: 100%;
+        border-radius: 18px;
+        border: 1px solid rgba(91, 103, 241, 0.35);
+        background: linear-gradient(135deg, rgba(91, 103, 241, 0.08), rgba(255, 255, 255, 0.9));
+        padding: 14px 48px 14px 18px;
+        text-align: left;
+        font-size: 16px;
+        color: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    &__trigger:focus-visible {
+        outline: none;
+        border-color: #5b67f1;
+        box-shadow: 0 0 0 3px rgba(91, 103, 241, 0.2);
+    }
+
+    &__value {
+        flex: 1;
+        font-weight: 600;
+    }
+
+    &__chevron {
+        width: 16px;
+        height: 16px;
+        margin-left: 12px;
+        background: url("data:image/svg+xml,%3Csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%235b67f1' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")
+            no-repeat center;
+        transition: transform 0.2s ease;
+    }
+
+    &__dropdown {
+        list-style: none;
+        margin: 8px 0 0;
+        padding: 6px;
+        background: #fff;
+        border-radius: 18px;
+        border: 1px solid rgba(91, 103, 241, 0.2);
+        box-shadow: 0 24px 50px rgba(23, 30, 70, 0.15);
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        max-height: 240px;
+        overflow-y: auto;
+        position: absolute;
+        width: 100%;
+        z-index: 5;
+        box-sizing: border-box;
+    }
+
+    &__option {
+        width: 100%;
+        border: none;
+        background: transparent;
+        border-radius: 14px;
+        padding: 10px 14px;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        color: #1f2344;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    &__option-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(91, 103, 241, 0.4);
+        transition: background-color 0.15s ease;
+    }
+
+    &__option:hover {
+        background: rgba(91, 103, 241, 0.08);
+    }
+
+    &__option--selected {
+        background: rgba(91, 103, 241, 0.12);
+        color: #5b67f1;
+    }
+
+    &__option--selected .select-field__option-dot {
+        background: #5b67f1;
+    }
+
+    &__hint {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    &__error {
+        font-size: 14px;
+        color: #e65151;
+        min-height: 18px;
+    }
+}
+
+.select-field--open .select-field__dropdown {
+    display: flex;
+}
+
+.select-field--open .select-field__chevron {
+    transform: rotate(180deg);
+}
+
+.select-field--disabled .select-field__trigger {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+    .select-field {
+        gap: 6px;
+        padding-bottom: 12px;
+
+        &__label {
+            font-size: 13px;
+        }
+
+        &__trigger {
+            padding: 12px 40px 12px 14px;
+            font-size: 15px;
+            border-radius: 14px;
+        }
+
+        &__chevron {
+            margin-left: 10px;
+        }
+
+        &__option {
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+
+        &__dropdown {
+            border-radius: 14px;
+            max-height: 220px;
+        }
+
+        &__error,
+        &__hint {
+            font-size: 13px;
+        }
+    }
+}
+
+@media (max-width: 360px) {
+    .select-field {
+        &__trigger {
+            padding: 10px 36px 10px 12px;
+            font-size: 14px;
+        }
+
+        &__option {
+            font-size: 13px;
+        }
+    }
+}

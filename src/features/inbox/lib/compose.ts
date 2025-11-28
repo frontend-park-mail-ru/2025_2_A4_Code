@@ -5,6 +5,8 @@ export type ComposeDraft = {
     initialSubject?: string;
     initialBody?: string;
     focusField?: "to" | "subject" | "body";
+    threadId?: string;
+    draftId?: string;
 };
 
 export function buildReplyDraft(mail: MailDetail): ComposeDraft {
@@ -17,6 +19,7 @@ export function buildReplyDraft(mail: MailDetail): ComposeDraft {
         initialSubject,
         initialBody,
         focusField: initialTo ? "body" : "to",
+        threadId: mail.threadId,
     };
 }
 
@@ -25,6 +28,7 @@ export function buildForwardDraft(mail: MailDetail): ComposeDraft {
         initialSubject: ensureSubjectPrefix(mail.subject, "Fwd:"),
         initialBody: buildForwardBody(mail),
         focusField: "to",
+        threadId: mail.threadId,
     };
 }
 

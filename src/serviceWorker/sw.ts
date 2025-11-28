@@ -10,11 +10,12 @@ import {
 } from "./cacheConfig";
 import { SW_MESSAGES, type ServiceWorkerMessage } from "./messages";
 
-const DEBUG_SW_LOGS = true;
+const DEBUG_SW_LOGS = false;
 const LOG_PREFIX = "[sw]";
 const OFFLINE_HEADER = "X-Flintmail-Offline";
 const API_PATH_PREFIXES = ["/messages", "/profile", "/auth"];
-const API_HOSTS = ["217.16.16.26", "localhost", "127.0.0.1"];
+const API_HOSTS = new Set(["217.16.16.26", "localhost", "127.0.0.1"]);
+API_HOSTS.add(self.location.hostname);
 const MESSAGE_FEED_PATHS = ["/messages/inbox"];
 const DOCUMENT_FALLBACKS = ["/index.html", "/"] as const;
 const STATIC_DESTINATIONS = new Set<RequestDestination>([
@@ -29,15 +30,13 @@ const CACHEABLE_PROTOCOLS = new Set(["http:", "https:"]);
 
 const OFFLINE_PAGE_HTML = `
 <!doctype html>
-<html lang="ru">
+<html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Flintmail офлайн</title>
+        <title>FlintMail offline</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>
-            * {
-                box-sizing: border-box;
-            }
+            * { box-sizing: border-box; }
             body {
                 margin: 0;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Arial, sans-serif;
@@ -49,29 +48,15 @@ const OFFLINE_PAGE_HTML = `
                 justify-content: center;
                 padding: 32px;
             }
-            .offline-card {
-                max-width: 360px;
-                text-align: center;
-            }
-            .offline-card img {
-                width: 104px;
-                height: 104px;
-                margin-bottom: 20px;
-            }
-            h1 {
-                font-size: 22px;
-                margin: 0 0 12px;
-            }
-            p {
-                margin: 0;
-                color: #5d6381;
-                line-height: 1.4;
-            }
+            .offline-card { max-width: 360px; text-align: center; }
+            h1 { font-size: 22px; margin: 0 0 12px; }
+            p { margin: 0; color: #5d6381; line-height: 1.4; }
         </style>
     </head>
     <body>
         <div class="offline-card">
-            Нет доступа к сети.
+            <h1>Offline mode</h1>
+            <p>You are offline. Continue working - data will update when the connection returns.</p>
         </div>
     </body>
 </html>
@@ -129,6 +114,9 @@ self.addEventListener("message", (event) => {
     if (data.type === SW_MESSAGES.CLEAR_DATA_CACHE) {
         debugLog("message:clear-data-cache");
         event.waitUntil(clearCachesByPrefix(DATA_CACHE_PREFIX));
+    } else if (data.type === "SKIP_WAITING") {
+        debugLog("message:skip-waiting");
+        event.waitUntil(self.skipWaiting());
     }
 });
 
@@ -172,7 +160,7 @@ function isDocumentRequest(request: Request): boolean {
 }
 
 function isApiRequest(url: URL): boolean {
-    const matchesHost = API_HOSTS.includes(url.hostname);
+    const matchesHost = API_HOSTS.has(url.hostname) || url.hostname === self.location.hostname;
     const matchesPrefix = API_PATH_PREFIXES.some((prefix) => url.pathname.startsWith(prefix));
     return matchesHost && matchesPrefix;
 }

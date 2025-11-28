@@ -14,7 +14,12 @@ export default {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: (pathData) => (pathData.chunk && pathData.chunk.name === 'sw' ? 'sw.js' : 'bundle.js'),
+        filename: (pathData) => {
+            if (pathData.chunk && pathData.chunk.name === 'sw') {
+                return 'sw.js';
+            }
+            return '[name].bundle.js';
+        },
         clean: true,
         publicPath: '/',
     },
@@ -81,6 +86,7 @@ export default {
     plugins: [
         new HtmlWebpackPlugin({
             template: './public/index.html',
+            filename: 'index.html',
             chunks: ['main'],
         }),
         new CopyWebpackPlugin({

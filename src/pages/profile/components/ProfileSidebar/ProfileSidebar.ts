@@ -15,6 +15,7 @@ type Props = {
     email: string;
     avatarUrl?: string | null;
     onNavigateInbox?: () => void;
+    showTabs?: boolean;
     activeTab?: TabId;
     onTabChange?: (tabId: TabId) => void;
 };
@@ -45,6 +46,7 @@ export class ProfileSidebarComponent extends Component<Props> {
             email: this.props.email,
             avatarUrl: this.props.avatarUrl ?? null,
             initials: getInitials(this.props.name, "--"),
+            showTabs: this.props.showTabs ?? true,
         });
     }
 
@@ -56,7 +58,7 @@ export class ProfileSidebarComponent extends Component<Props> {
             this.requestConnectivityProbe();
         });
         const tabsRoot = this.element?.querySelector('[data-slot="tabs"]') as HTMLElement | null;
-        if (tabsRoot) {
+        if (tabsRoot && (this.props.showTabs ?? true)) {
             tabsRoot.innerHTML = "";
             PROFILE_SIDEBAR_TEXTS.tabs.forEach((tab) => {
                 const component = new ProfileSidebarTabItem({
@@ -98,6 +100,12 @@ export class ProfileSidebarComponent extends Component<Props> {
         }
 
         this.updateAvatar();
+
+        const shouldShowTabs = this.props.showTabs ?? true;
+        const tabsRoot = this.element?.querySelector('[data-slot="tabs"]') as HTMLElement | null;
+        if (!shouldShowTabs && tabsRoot) {
+            tabsRoot.innerHTML = "";
+        }
 
         const activeTab = this.props.activeTab ?? "personal";
         this.tabs.forEach((component, id) => {

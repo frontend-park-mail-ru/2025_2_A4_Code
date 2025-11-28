@@ -11,7 +11,7 @@ type SubmitPayload = {
     name: string;
     login: string;
     birthdate: string;
-    gender: string | undefined;
+    //gender: string | undefined;
     password: string;
     passwordRepeat: string;
 };
@@ -24,7 +24,7 @@ export class RegisterFormComponent extends Component<Props> {
     private readonly nameField: InputFieldComponent;
     private readonly loginField: InputFieldComponent;
     private readonly birthdateField: InputFieldComponent;
-    private readonly genderGroup: RadioGroupComponent;
+//    private readonly genderGroup: RadioGroupComponent;
     private readonly passwordField: InputFieldComponent;
     private readonly passwordRepeatField: InputFieldComponent;
     private readonly submitButton: ButtonComponent;
@@ -58,14 +58,14 @@ export class RegisterFormComponent extends Component<Props> {
             onInput: () => this.clearFieldError("birthdate"),
         });
 
-        this.genderGroup = new RadioGroupComponent({
-            name: "gender",
-            label: REGISTER_FORM_TEXTS.genderLabel,
-            options: [
-                { label: REGISTER_FORM_TEXTS.genderOptions.male, value: "male" },
-                { label: REGISTER_FORM_TEXTS.genderOptions.female, value: "female" },
-            ],
-        });
+        //this.genderGroup = new RadioGroupComponent({
+        //    name: "gender",
+        //    label: REGISTER_FORM_TEXTS.genderLabel,
+        //    options: [
+        //        { label: REGISTER_FORM_TEXTS.genderOptions.male, value: "male" },
+        //        { label: REGISTER_FORM_TEXTS.genderOptions.female, value: "female" },
+        //    ],
+        //});
 
         this.passwordField = new InputFieldComponent({
             name: "password",
@@ -110,7 +110,7 @@ export class RegisterFormComponent extends Component<Props> {
         mount("name", this.nameField);
         mount("login", this.loginField);
         mount("birthdate", this.birthdateField);
-        mount("gender", this.genderGroup);
+        //mount("gender", this.genderGroup);
         mount("password", this.passwordField);
         mount("passwordRepeat", this.passwordRepeatField);
         mount("submit", this.submitButton);
@@ -122,7 +122,7 @@ export class RegisterFormComponent extends Component<Props> {
                 name: this.nameField.getValue(),
                 login: this.loginField.getValue(),
                 birthdate: this.birthdateField.getValue(),
-                gender: this.genderGroup.getValue(),
+                //gender: this.genderGroup.getValue(),
                 password: this.passwordField.getValue(),
                 passwordRepeat: this.passwordRepeatField.getValue(),
             };

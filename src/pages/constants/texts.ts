@@ -1,17 +1,17 @@
-﻿export const AUTH_PAGE_TEXTS = {
+export const AUTH_PAGE_TEXTS = {
     headerText: "Войти в почту",
     registrationButtonText: "Зарегистрироваться",
     loginInputPlaceholder: "Логин или email",
     passwordInputPlaceholder: "Пароль",
     forgotPasswordText: "Забыли пароль?",
     submitLoginButtonText: "Войти",
-    genericError: "Не удалось выполнить вход. Проверьте данные и попробуйте снова.",
+    genericError: "Не удалось войти. Проверьте данные и попробуйте снова.",
 } as const;
 
 export const REGISTER_PAGE_TEXTS = {
     headerText: "Регистрация",
     switchToAuthButton: "У меня уже есть аккаунт",
-    genericError: "Не удалось завершить регистрацию. Попробуйте ещё раз.",
+    genericError: "Не удалось завершить регистрацию. Проверьте данные и попробуйте снова.",
 } as const;
 
 export const REGISTER_FORM_TEXTS = {
@@ -50,7 +50,7 @@ export const PROFILE_SIDEBAR_TEXTS = {
     tabs: [
         {
             id: "personal",
-            label: "Личные данные",
+            label: "Профиль",
             icon: "/img/profile-sidebar-personal-logo.svg",
         },
         {
@@ -59,16 +59,17 @@ export const PROFILE_SIDEBAR_TEXTS = {
             icon: "/img/profile-sidebar-interface-logo.svg",
         },
     ] as const,
-    backButtonLabel: "К письмам",
+    backButtonLabel: "к письмам",
 } as const;
 
 export const INBOX_PAGE_TEXTS = {
-    emptyList: "Пока писем нет.",
+    emptyList: "Писем нет",
     recipientRequired: "Укажите email получателя",
-    offlineMailTitle: "Письмо недоступно офлайн",
+    bodyRequired: "Добавьте текст письма",
+    offlineMailTitle: "Письмо недоступно",
     offlineMailMessage:
-        "Мы покажем содержимое, как только появится соединение с интернетом. Пока можно вернуться во входящие.",
-    offlineBackAction: "Вернуться к письмам",
+        "Не удалось загрузить письмо, возможно нет подключения к интернету. Попробуйте обновить страницу.",
+    offlineBackAction: "Вернуться к списку",
 } as const;
 
 export const MAIL_VIEW_TEXTS = {
@@ -81,4 +82,3 @@ export const MAIL_VIEW_TEXTS = {
     recipientLabel: "Кому:",
     recipientFallback: "вам",
 } as const;
-

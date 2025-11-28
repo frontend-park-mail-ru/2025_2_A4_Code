@@ -1,8 +1,8 @@
-import { Layout } from "@shared/base/Layout";
+import { Component } from "@shared/base/Component";
 
-type LoadableLayout = Layout & { setLoading?(loading: boolean): void };
+type LoadableLayout = Component & { setLoading?(loading: boolean): void };
 
-function resolveLoadableLayout(layout: Layout | null): LoadableLayout | null {
+function resolveLoadableLayout(layout: Component | null): LoadableLayout | null {
     if (!layout) {
         return null;
     }
@@ -18,7 +18,7 @@ export class LayoutLoadingManager {
     private counter = 0;
     private manualOverride = false;
 
-    constructor(private readonly layoutGetter: () => Layout | null) {}
+    constructor(private readonly layoutGetter: () => Component | null) {}
 
     public begin(): void {
         this.counter += 1;

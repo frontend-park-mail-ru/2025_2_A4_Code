@@ -1,7 +1,25 @@
-import { fetchInboxMessages, fetchMessageById, replyToMessage, sendMessage } from "@entities/mail";
+import {
+    fetchInboxMessages,
+    fetchMessageById,
+    replyToMessage,
+    sendMessage,
+    fetchFolders,
+    fetchFolderMessages,
+    type FolderSummary,
+    type InboxSummary,
+    createFolder,
+    moveMessageToFolder,
+    saveDraft,
+    sendDraft,
+    deleteDraft,
+    markAsSpam,
+    type SaveDraftPayload,
+    type SendDraftPayload,
+} from "@entities/mail";
 import type { Mail, MailDetail } from "@app-types/mail";
-import type { InboxSummary, ReplyMessagePayload, SendMessagePayload } from "@entities/mail";
+import type { ReplyMessagePayload, SendMessagePayload } from "@entities/mail";
 import { isOfflineError } from "@shared/api/ApiService";
+import { SIDEBAR_TEXTS } from "@shared/constants/texts";
 
 type InboxSubscriber = (state: InboxState) => void;
 
@@ -16,7 +34,20 @@ export type InboxState = {
     mutating: boolean;
     error: string | null;
     offlineSelectionFallback: boolean;
+    folders: FolderSummary[];
+    activeFolderId: string;
 };
+
+export type FolderSummary = {
+    id: string;
+    name: string;
+    type: string;
+    icon?: string;
+    unread?: number;
+    backendId?: string;
+};
+
+const DEFAULT_FOLDER_ID = SIDEBAR_TEXTS.defaultFolders[0].id;
 
 const initialState: InboxState = {
     mails: [],
@@ -29,6 +60,8 @@ const initialState: InboxState = {
     mutating: false,
     error: null,
     offlineSelectionFallback: false,
+    folders: [],
+    activeFolderId: DEFAULT_FOLDER_ID,
 };
 
 export class InboxStore {
@@ -47,7 +80,39 @@ export class InboxStore {
         return this.state;
     }
 
-    public async loadList(): Promise<void> {
+    public async init(): Promise<void> {
+        await this.loadFolders();
+        await this.loadFolder(this.state.activeFolderId);
+    }
+
+    public async loadFolders(): Promise<void> {
+        try {
+            const folders = await fetchFolders();
+            const merged = mapFoldersWithIcons(folders);
+            this.setState((state) => ({
+                ...state,
+                folders: merged,
+                activeFolderId: state.activeFolderId || merged[0]?.id || DEFAULT_FOLDER_ID,
+            }));
+        } catch (error) {
+            this.setState((state) => ({
+                ...state,
+                error: toErrorMessage(error),
+            }));
+        }
+    }
+
+    public async loadFolder(folderId: string): Promise<void> {
+        this.setState((state) => ({
+            ...state,
+            activeFolderId: folderId,
+        }));
+        await this.loadList(folderId);
+    }
+
+    public async loadList(folderId?: string): Promise<void> {
+        const targetFolder = folderId ?? this.state.activeFolderId ?? DEFAULT_FOLDER_ID;
+
         this.setState((state) => ({
             ...state,
             loadingList: true,
@@ -55,12 +120,16 @@ export class InboxStore {
         }));
 
         try {
-            const summary = await fetchInboxMessages();
-            cacheInboxSummary(summary);
+            const summary = await this.fetchFolderSummary(targetFolder);
+            cacheInboxSummary(targetFolder, summary);
+            const normalizedItems =
+                targetFolder === "draft"
+                    ? summary.items.map((mail) => ({ ...mail, isRead: true }))
+                    : summary.items;
             this.setState((state) => {
                 const selectedMailId = state.selectedMailId;
                 const matchedMail = selectedMailId
-                    ? summary.items.find((mail) => mail.id === selectedMailId)
+                    ? normalizedItems.find((mail) => mail.id === selectedMailId)
                     : undefined;
 
                 const nextSelectedMail =
@@ -71,16 +140,16 @@ export class InboxStore {
                               time: matchedMail.time,
                               from: matchedMail.from,
                               avatarUrl: matchedMail.avatarUrl,
-                          }
+                        }
                         : matchedMail
                         ? state.selectedMail
                         : null;
 
                 return {
                     ...state,
-                    mails: summary.items,
+                    mails: normalizedItems,
                     total: summary.total,
-                    unread: summary.unread,
+                    unread: targetFolder === "draft" ? 0 : summary.unread,
                     loadingList: false,
                     selectedMailId: matchedMail ? state.selectedMailId : undefined,
                     selectedMail: matchedMail ? nextSelectedMail : null,
@@ -90,7 +159,7 @@ export class InboxStore {
         } catch (error) {
             const offlineFallback = isOfflineError(error);
             if (offlineFallback) {
-                const cachedSummary = readCachedInboxSummary();
+                const cachedSummary = readCachedInboxSummary(targetFolder);
                 if (cachedSummary) {
                     this.setState((state) => ({
                         ...state,
@@ -109,6 +178,21 @@ export class InboxStore {
                 error: toErrorMessage(error),
             }));
             throw error;
+        }
+    }
+
+    public async deleteDraft(draftId: string): Promise<void> {
+        this.setState((state) => ({ ...state, mutating: true }));
+        try {
+            await deleteDraft(draftId);
+            await this.loadFolder("draft");
+            this.setState((state) => ({
+                ...state,
+                selectedMailId: undefined,
+                selectedMail: null,
+            }));
+        } finally {
+            this.setState((state) => ({ ...state, mutating: false }));
         }
     }
 
@@ -185,6 +269,47 @@ export class InboxStore {
         });
     }
 
+    public async createFolder(name: string): Promise<FolderSummary> {
+        return this.runMutation(async () => {
+            const created = await createFolder(name);
+            await this.loadFolders();
+            await this.loadFolder(created.id);
+            return created;
+        });
+    }
+
+    public async moveMessage(messageId: string, targetFolderId: string): Promise<void> {
+        await this.runMutation(async () => {
+            const apiFolderId = this.resolveFolderIdForApi(targetFolderId);
+            await moveMessageToFolder(messageId, apiFolderId);
+            await this.loadFolder(targetFolderId);
+        });
+    }
+
+    public async markMessageAsSpam(messageId: string): Promise<void> {
+        await this.runMutation(async () => {
+            await markAsSpam(messageId);
+            await this.loadFolder("spam");
+        });
+    }
+
+    public async saveDraft(payload: SaveDraftPayload): Promise<string> {
+        return this.runMutation(async () => {
+            const result = await saveDraft(payload);
+            await this.loadFolders();
+            await this.loadFolder("draft");
+            return result.draftId;
+        });
+    }
+
+    public async sendDraft(payload: SendDraftPayload): Promise<void> {
+        await this.runMutation(async () => {
+            await sendDraft(payload);
+            await this.loadFolders();
+            await this.loadFolder("sent");
+        });
+    }
+
     public async refreshSelectedMail(): Promise<void> {
         const selectedId = this.state.selectedMailId;
         if (!selectedId) {
@@ -193,7 +318,7 @@ export class InboxStore {
         await this.openMail(selectedId);
     }
 
-    private async runMutation(task: () => Promise<void>): Promise<void> {
+    private async runMutation<T>(task: () => Promise<T>): Promise<T> {
         this.setState((state) => ({
             ...state,
             mutating: true,
@@ -201,7 +326,7 @@ export class InboxStore {
         }));
 
         try {
-            await task();
+            return await task();
         } catch (error) {
             this.setState((state) => ({
                 ...state,
@@ -216,6 +341,13 @@ export class InboxStore {
         }
     }
 
+    private async fetchFolderSummary(folderId: string): Promise<InboxSummary> {
+        if (!folderId || folderId === "inbox") {
+            return fetchInboxMessages();
+        }
+        return fetchFolderMessages(folderId);
+    }
+
     private setState(updater: (prev: InboxState) => InboxState): void {
         this.state = updater(this.state);
         this.notify();
@@ -225,6 +357,16 @@ export class InboxStore {
         for (const listener of this.subscribers) {
             listener(this.state);
         }
+    }
+
+    private resolveFolderIdForApi(targetFolderId: string): string {
+        const folder = this.state.folders.find(
+            (f) => f.id === targetFolderId || f.backendId === targetFolderId
+        );
+        if (!folder) {
+            return targetFolderId;
+        }
+        return folder.backendId ?? folder.id;
     }
 }
 
@@ -238,7 +380,7 @@ function toErrorMessage(error: unknown): string {
     return "Unexpected error";
 }
 
-const INBOX_CACHE_KEY = "inbox:summary";
+const INBOX_CACHE_KEY_PREFIX = "inbox:summary:";
 const INBOX_CACHE_TTL_MS = 1000 * 60 * 60; // 1 hour
 
 type CachedInboxSummary = {
@@ -248,7 +390,7 @@ type CachedInboxSummary = {
     timestamp: number;
 };
 
-function cacheInboxSummary(summary: InboxSummary): void {
+function cacheInboxSummary(folderId: string, summary: InboxSummary): void {
     if (typeof window === "undefined") {
         return;
     }
@@ -261,19 +403,19 @@ function cacheInboxSummary(summary: InboxSummary): void {
     };
 
     try {
-        window.localStorage.setItem(INBOX_CACHE_KEY, JSON.stringify(payload));
+        window.localStorage.setItem(INBOX_CACHE_KEY_PREFIX + folderId, JSON.stringify(payload));
     } catch {
         // ignore storage errors
     }
 }
 
-function readCachedInboxSummary(): CachedInboxSummary | null {
+function readCachedInboxSummary(folderId: string): CachedInboxSummary | null {
     if (typeof window === "undefined") {
         return null;
     }
 
     try {
-        const raw = window.localStorage.getItem(INBOX_CACHE_KEY);
+        const raw = window.localStorage.getItem(INBOX_CACHE_KEY_PREFIX + folderId);
         if (!raw) {
             return null;
         }
@@ -291,4 +433,18 @@ function readCachedInboxSummary(): CachedInboxSummary | null {
     } catch {
         return null;
     }
+}
+
+function mapFoldersWithIcons(folders: FolderSummary[]): FolderSummary[] {
+    const iconMap = new Map(
+        SIDEBAR_TEXTS.defaultFolders.map((f) => [f.id, f.icon])
+    );
+
+    return folders.map((folder) => {
+        const key = (folder.type || folder.id || "").toLowerCase();
+        return {
+            ...folder,
+            icon: iconMap.get(key) ?? "/img/folder-custom.svg",
+        };
+    });
 }

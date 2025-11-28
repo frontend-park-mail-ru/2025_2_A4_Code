@@ -1,19 +1,15 @@
-﻿import { Layout } from "@shared/base/Layout";
-import { Page } from "@shared/base/Page";
+import { Component } from "@shared/base/Component";
 import { authManager } from "./AuthManager";
 
 export type RouteConfig = {
     path: string;
-    createPage: (params: Record<string, string>) => Page;
-    layoutKey: string;
-    createLayout: () => Layout;
+    createView: (params: Record<string, string>) => Component;
     requiresAuth?: boolean;
     guestOnly?: boolean;
 };
 
 export type NavigatePayload = {
     path: string;
-    layout: Layout;
     params: Record<string, string>;
     config: RouteConfig;
 };
@@ -21,13 +17,13 @@ export type NavigatePayload = {
 type NavigateOptions = {
     skipHistory?: boolean;
     replace?: boolean;
+    force?: boolean;
 };
 
 export class Router {
     private static instance: Router | null = null;
 
     private routes: RouteConfig[] = [];
-    private layouts: Map<string, Layout> = new Map();
     private onNavigateCallback?: (payload: NavigatePayload) => void;
 
     private constructor() {
@@ -57,17 +53,20 @@ export class Router {
 
     public async navigate(path: string, options: NavigateOptions = {}): Promise<void> {
         const normalizedPath = this.normalizePath(path);
+        console.info("[Router] navigate requested", { path, normalizedPath, options });
         const match = this.findRoute(normalizedPath);
 
         if (match && this.onNavigateCallback) {
             const { config, params } = match;
+            console.info("[Router] route match", { path: normalizedPath, params, config });
 
-            const accessAllowed = await this.ensureRouteAccess(config, normalizedPath, options);
-            if (!accessAllowed) {
-                return;
+            if (!options.force) {
+                const accessAllowed = await this.ensureRouteAccess(config, normalizedPath, options);
+                if (!accessAllowed) {
+                    console.info("[Router] access denied, navigation stopped", { path: normalizedPath });
+                    return;
+                }
             }
-
-            const layout = this.getOrCreateLayout(config);
 
             if (!options.skipHistory) {
                 if (options.replace) {
@@ -77,29 +76,18 @@ export class Router {
                 }
             }
 
-            this.onNavigateCallback({ path: normalizedPath, layout, params, config });
+            this.onNavigateCallback({ path: normalizedPath, params, config });
             return;
         }
 
         const status = authManager.getStatus();
-        const target = status === "authenticated" ? "/inbox" : "/auth";
-        console.warn(`Router: route not found, redirecting to ${target}`);
+        const target = status === "authenticated" ? "/mail" : "/auth";
+        console.warn(`Router: route not found, redirecting to ${target}`, { path, normalizedPath });
         await this.navigate(target, { replace: true, skipHistory: options.skipHistory });
     }
 
     public getQueryParams(): URLSearchParams {
         return new URLSearchParams(window.location.search);
-    }
-
-    private getOrCreateLayout(route: RouteConfig): Layout {
-        const cached = this.layouts.get(route.layoutKey);
-        if (cached) {
-            return cached;
-        }
-
-        const layout = route.createLayout();
-        this.layouts.set(route.layoutKey, layout);
-        return layout;
     }
 
     private findRoute(path: string): { config: RouteConfig; params: Record<string, string> } | null {
@@ -166,11 +154,15 @@ export class Router {
             return "/";
         }
 
-        const url = path.includes("http://") || path.includes("https://") ? new URL(path).pathname : path;
-        if (url.length > 1 && url.endsWith("/")) {
-            return url.slice(0, -1);
+        const pathname =
+            path.includes("http://") || path.includes("https://")
+                ? new URL(path).pathname
+                : path.split(/[?#]/)[0];
+
+        if (pathname.length > 1 && pathname.endsWith("/")) {
+            return pathname.slice(0, -1);
         }
-        return url;
+        return pathname;
     }
 
     private async ensureRouteAccess(
@@ -182,6 +174,7 @@ export class Router {
         const guestOnly = config.guestOnly ?? false;
 
         if (!requiresAuth && !guestOnly) {
+            console.info("[Router] access allowed (no auth/guest flags)", { path: currentPath });
             return true;
         }
 
@@ -195,6 +188,10 @@ export class Router {
         }
 
         if (requiresAuth && !isAuthenticated) {
+            console.info("[Router] blocked: requires auth, redirecting to /auth", {
+                path: currentPath,
+                status,
+            });
             if (currentPath !== "/auth") {
                 await this.navigate("/auth", { replace: true });
             }
@@ -202,13 +199,17 @@ export class Router {
         }
 
         if (guestOnly && isAuthenticated) {
-            if (currentPath !== "/inbox") {
-                await this.navigate("/inbox", { replace: true });
+            console.info("[Router] blocked: guest-only route while authenticated, redirecting to /mail", {
+                path: currentPath,
+                status,
+            });
+            if (currentPath !== "/mail") {
+                await this.navigate("/mail", { replace: true });
             }
             return false;
         }
 
+        console.info("[Router] access allowed", { path: currentPath, status });
         return true;
     }
 }
-

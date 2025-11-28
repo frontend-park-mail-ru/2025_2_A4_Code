@@ -15,9 +15,14 @@ type Props = {
     avatarUrl?: string | null;
     fromEmail?: string;
     recipient?: string;
+    currentFolderId?: string;
+    currentFolderType?: string;
     onBack?: () => void;
     onReply?: () => void;
     onForward?: () => void;
+    onMoveToFolder?: () => void;
+    onMarkAsSpam?: () => void;
+    onDelete?: () => void;
 };
 
 export class MailViewComponent extends Component<Props> {
@@ -46,27 +51,34 @@ export class MailViewComponent extends Component<Props> {
                 "delete",
                 this.createToolbarButton("delete", {
                     label: MAIL_VIEW_TEXTS.delete,
+                    ariaLabel: MAIL_VIEW_TEXTS.delete,
                     icon: '<img src="/img/message-delete.svg" alt="" aria-hidden="true" />',
+                    onClick: () => this.props.onDelete?.(),
                 }),
             ],
             [
                 "folder",
                 this.createToolbarButton("folder", {
                     label: MAIL_VIEW_TEXTS.moveToFolder,
+                    ariaLabel: MAIL_VIEW_TEXTS.moveToFolder,
                     icon: '<img src="/img/message-in-folder.svg" alt="" aria-hidden="true" />',
+                    onClick: () => this.props.onMoveToFolder?.(),
                 }),
             ],
             [
                 "spam",
                 this.createToolbarButton("spam", {
                     label: MAIL_VIEW_TEXTS.markAsSpam,
+                    ariaLabel: MAIL_VIEW_TEXTS.markAsSpam,
                     icon: '<img src="/img/message-to-spam.svg" alt="" aria-hidden="true" />',
+                    onClick: () => this.props.onMarkAsSpam?.(),
                 }),
             ],
             [
                 "reply",
                 this.createToolbarButton("reply", {
                     label: MAIL_VIEW_TEXTS.reply,
+                    ariaLabel: MAIL_VIEW_TEXTS.reply,
                     icon: '<img src="/img/message-reply.svg" alt="" aria-hidden="true" />',
                     onClick: () => this.props.onReply?.(),
                 }),
@@ -75,6 +87,7 @@ export class MailViewComponent extends Component<Props> {
                 "forward",
                 this.createToolbarButton("forward", {
                     label: MAIL_VIEW_TEXTS.forward,
+                    ariaLabel: MAIL_VIEW_TEXTS.forward,
                     icon: '<img src="/img/message-forward.svg" alt="" aria-hidden="true" />',
                     onClick: () => this.props.onForward?.(),
                 }),
@@ -154,9 +167,22 @@ export class MailViewComponent extends Component<Props> {
             return;
         }
 
+        const folderType = (this.props.currentFolderType || this.props.currentFolderId || "").toLowerCase();
+        const hidden = new Set<string>();
+        if (folderType === "trash") {
+            hidden.add("delete");
+            hidden.add("spam");
+        } else if (folderType === "spam") {
+            hidden.add("spam");
+        }
+
         for (const [key, button] of this.toolbarButtons.entries()) {
             const slot = this.element.querySelector(`[data-slot="${key}"]`) as HTMLElement | null;
             if (!slot) {
+                continue;
+            }
+            if (hidden.has(key)) {
+                slot.innerHTML = "";
                 continue;
             }
 

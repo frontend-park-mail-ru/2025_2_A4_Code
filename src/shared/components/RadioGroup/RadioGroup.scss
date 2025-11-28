@@ -13,11 +13,12 @@
   }
   
   &__options {
-    padding-left: 32px;
+    padding-left: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 52px;
+    gap: 36px;
+    flex-wrap: wrap;
   }
 
   &__option {
@@ -28,6 +29,37 @@
 
     input[type="radio"] {
       accent-color: #5163eb;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .radio-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+
+    &__label {
+      font-size: 14px;
+    }
+
+    &__options {
+      padding-left: 0;
+      gap: 14px;
+      justify-content: flex-start;
+    }
+
+    &__option {
+      font-size: 14px;
+      gap: 6px;
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .radio-group {
+    &__options {
+      gap: 10px;
     }
   }
 }

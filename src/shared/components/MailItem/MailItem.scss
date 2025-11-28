@@ -1,6 +1,6 @@
 .mail-item {
   display: grid;
-  grid-template-columns: auto minmax(160px, 1fr) minmax(200px, 1.2fr) auto;
+  grid-template-columns: auto minmax(150px, 1.2fr) minmax(0, 1.5fr) auto;
   align-items: center;
   column-gap: 16px;
   padding: 12px 16px;
@@ -8,15 +8,16 @@
   transition: background .12s ease;
   border-bottom: 1px solid #D6E3F3;
   border-radius: 12px;
-
+  user-select: none;
 
   &__left {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     flex-direction: row;
     gap: 10px;
     flex-shrink: 0;
+    min-width: 0;
   }
 
   &--unread {
@@ -42,6 +43,7 @@
     height: 36px;
     border-radius: 50%;
     object-fit: cover;
+    user-select: none;
 
     &--placeholder {
       display: flex;
@@ -93,7 +95,78 @@
     align-self: center;
     font-size: 12px;
     color: #94a3b8;
+    justify-self: end;
+  }
+}
+@media (max-width: 900px) {
+  .mail-item {
+    grid-template-columns: auto auto minmax(120px, 1fr) minmax(0, 1.2fr) auto;
   }
 }
 
+@media (max-width: 720px) {
+  .mail-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto; 
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "avatar from time"
+      "avatar subject time"
+      "avatar preview time";
+    column-gap: 12px;
+    row-gap: 4px;
+    align-items: center;
+    padding: 12px;
 
+    &__left {
+      grid-area: avatar; 
+      align-self: start;      
+      display: flex;
+      flex-direction: row; 
+      align-items: center;
+      gap: 8px; 
+
+      .mail-item__status {
+         margin-bottom: 0; 
+      }
+    }
+
+    &__content {
+      display: grid;
+      grid-template-areas: 
+        "from" 
+        "subject" 
+        "preview";
+      grid-area: from; 
+      align-items: center;
+      min-width: 0;
+    }
+
+    &__from {
+      grid-area: from;
+      font-size: 14px;
+    }
+
+    &__subject {
+      grid-area: subject;
+      font-size: 15px;
+    }
+
+    &__preview {
+      grid-area: preview;
+      font-size: 13px;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &__time {
+      grid-area: time; 
+      align-self: start; 
+      justify-self: end; 
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  }
+}

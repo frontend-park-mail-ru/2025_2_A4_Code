@@ -31,7 +31,9 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "types": ["handlebars"]
+    "types": ["handlebars"],
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

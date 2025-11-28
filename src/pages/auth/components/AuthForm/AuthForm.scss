@@ -1,64 +1,80 @@
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
+$breakpoint-mobile: 600px;
 
-  &__fields {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    margin-top: 32px;
-  }
-
-  &__error {
-    min-height: 20px;
-    color: var(--color-error, #d14343);
-    font-size: 14px;
-    line-height: 20px;
-    margin-top: -12px;
-    margin-bottom: 32px;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.15s ease;
-
-    &--visible {
-      visibility: visible;
-      opacity: 1;
-    }
-  }
-  
-  &__forgot {
-    align-self: flex-start;
-    font-size: 14px;
-    color: #5163eb;
-    font-weight: 600;
-    text-decoration: none;
-    transition: color .15s ease;
-    margin-top: 8px;
-    margin-bottom: 40px;
-    
-    &:hover {
-      color: #3242b0;
-    }
-  }
-
-  &__actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: -16px;
-
-    &:hover {
-      
-    }
-    
-    .ui-button {
+   .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+   
+      &__fields {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        margin: 0;
+      }
+     
+     &__error {
+       min-height: 20px;
+       color: var(--color-error, #d14343);
+       font-size: 14px;
+       line-height: 20px;
+       margin-top: -12px;
+       margin-bottom: 16px;
+       visibility: hidden;
+       opacity: 0;
+       transition: opacity 0.15s ease;
+   
+       &--visible {
+         visibility: visible;
+         opacity: 1;
+       }
+     }
+     
+     &__forgot {
+       align-self: flex-start;
+       font-size: 14px;
+       color: #5163eb;
+       font-weight: 600;
+       text-decoration: none;
+       transition: color .15s ease;
+       
+       &:hover {
+         color: #3242b0;
+       }
+   
+       &--disabled {
+         color: #bdc3c7;
+         cursor: not-allowed;
+         opacity: 0.6;
+         text-decoration: none;
+       }
+     }
+   
+    &__actions {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+  
+      .ui-button {
+        width: 100%;
+      }
+    }
+  
+  @media (max-width: $breakpoint-mobile) {
+    gap: 10px;
+
+    &__fields {
+      gap: 20px;
+    }
+
+    &__actions {
+      margin-bottom: 8px;
     }
   }
-}
-
-.auth-form__field {
-  position: relative;
-}
+ }
+  
+ .auth-form__field {
+    position: relative;
+  }

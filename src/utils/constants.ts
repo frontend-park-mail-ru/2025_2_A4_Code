@@ -15,7 +15,7 @@ export const SURNAME_HAS_INVALID_CHARS_ERROR = "Фамилия содержит 
 export const PATRONYMIC_HAS_INVALID_CHARS_ERROR = "Отчество содержит недопустимые символы";
 
 export const BIRTHDAY_EMPTY_ERROR = "Укажите дату рождения";
-export const BIRTHDAY_NOT_ALLOWED_ERROR = "Дата рождения должна быть в прошлом";
+export const BIRTHDAY_NOT_ALLOWED_ERROR = "Некорректная дата рождения";
 
 export const EMPTY_EMAIL_ERROR = "Укажите email получателя";
 export const INCORRECT_EMAIL_ERROR = "Некорректный email";
