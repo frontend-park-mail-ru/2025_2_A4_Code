@@ -8,7 +8,7 @@ import { CreateFolderModal } from "./components/CreateFolderModal/CreateFolderMo
 import { MoveToFolderModal } from "./components/MoveToFolderModal/MoveToFolderModal";
 import { MainLayout } from "@app/components/MainLayout/MainLayout";
 import { performLogout } from "@features/auth";
-import { Router, authManager } from "@infra";
+import { Router } from "@infra";
 import template from "./views/InboxPage.hbs";
 import { InboxStore, InboxState, buildForwardDraft, buildReplyDraft } from "@features/inbox";
 import type { ComposeDraft } from "@features/inbox";
@@ -20,19 +20,20 @@ import { HttpError } from "@shared/api/ApiService";
 import { showFolderNotification } from "@shared";
 import { apiService } from "@shared/api/ApiService";
 import { navigateToAuthPage } from "@shared/utils/authNavigation";
+import { getCachedProfilePreview, loadProfilePreview } from "@features/profile";
+import { InboxActions, type ComposePayload } from "./lib/InboxActions";
 
 type InboxPageParams = {
     messageId?: string;
     folderId?: string;
 };
 
-type ComposePayload = { to: string; subject: string; body: string };
-
 export class InboxPage extends Component {
     private readonly router = Router.getInstance();
     private readonly layout = new MainLayout();
     private readonly store = new InboxStore();
     private readonly loadingManager = new LayoutLoadingManager(() => this.layout);
+    private readonly actions: InboxActions;
 
     private readonly header: HeaderComponent;
     private readonly sidebar: SidebarComponent;
@@ -62,6 +63,10 @@ export class InboxPage extends Component {
             onSearch: (query) => console.log("search", query),
             onLogout: () => this.handleLogout(),
             onMenuToggle: () => this.layout.toggleSidebar(),
+            onProfile: () => this.router.navigate("/profile-info"),
+            onSettings: () => this.router.navigate("/profile"),
+            onLogoClick: () => this.router.navigate("/mail"),
+            avatarLabel: "--",
         });
 
         this.sidebar = new SidebarComponent({
@@ -74,6 +79,13 @@ export class InboxPage extends Component {
             items: [],
             onOpen: (id) => this.handleOpenMail(id),
             emptyMessage: INBOX_PAGE_TEXTS.emptyList,
+        });
+
+        this.actions = new InboxActions({
+            store: this.store,
+            router: this.router,
+            onUnauthorized: (error) => this.handleUnauthorized(error),
+            notifyFolderMove: (folderId) => this.notifyFolderMove(folderId),
         });
     }
 
@@ -100,6 +112,8 @@ export class InboxPage extends Component {
         this.layout.setSidebarWidth(null);
 
         this.unsubscribeFromStore = this.store.subscribe((state) => this.applyState(state));
+
+        await this.initializeHeaderProfile();
 
         try {
             await this.store.loadFolders();
@@ -216,7 +230,11 @@ export class InboxPage extends Component {
         this.layout.setSidebarOpen(false);
         const modal = new CreateFolderModal({
             onClose: () => this.closeModal(),
-            onSave: (name) => this.handleCreateFolder(name),
+            onSave: (name) =>
+                this.actions
+                    .createFolder(name)
+                    .then(() => this.closeModal())
+                    .catch((error) => console.error("Failed to create folder", error)),
         });
         this.createFolderModal = modal;
         this.composeModal = null;
@@ -264,11 +282,7 @@ export class InboxPage extends Component {
         this.lastRenderedMail = null;
         this.lastRenderedDraftId = mail.id;
 
-        this.openCompose(
-            draft,
-            (data) => this.handleSendDraft(data, mail.id, mail.threadId),
-            () => this.handleDeleteDraft(mail.id)
-        );
+        this.openCompose(draft, (data) => this.actions.sendDraft(data, { draftId: mail.id, threadId: mail.threadId }));
     }
 
     private renderOfflinePlaceholder(): void {
@@ -332,12 +346,12 @@ export class InboxPage extends Component {
 
     private handleReply(mail: MailDetail): void {
         const draft = buildReplyDraft(mail);
-        this.openCompose(draft, (data) => this.handleReplySubmit(mail, data));
+        this.openCompose(draft, (data) => this.actions.replyToMail(mail, data));
     }
 
     private handleForward(mail: MailDetail): void {
         const draft = buildForwardDraft(mail);
-        this.openCompose(draft, (data) => this.handleForwardSubmit(data));
+        this.openCompose(draft, (data) => this.actions.forwardMail(data));
     }
 
     private openCompose(
@@ -350,6 +364,17 @@ export class InboxPage extends Component {
         const draftId = draft.draftId;
         this.createFolderModal = null;
         this.moveFolderModal = null;
+
+        const deleteDraftHandler =
+            onDeleteDraft ||
+            (draftId
+                ? () =>
+                      this.actions
+                          .deleteDraft(draftId)
+                          .then(() => this.closeModal())
+                          .catch((error) => console.error("Failed to delete draft", error))
+                : undefined);
+
         const modal = new ComposeModal({
             initialTo: draft.initialTo,
             initialSubject: draft.initialSubject,
@@ -357,11 +382,15 @@ export class InboxPage extends Component {
             focusField: draft.focusField,
             onClose: () => this.closeModal(),
             onSend: (payload) => {
-                const handler = submit ?? ((data: ComposePayload) => this.handleSendMail(data));
+                const handler = submit ?? ((data: ComposePayload) => this.actions.sendMail(data));
                 this.handleComposeSubmit(handler, payload);
             },
-            onSaveDraft: (payload) => this.handleSaveDraft(payload, draftThreadId, draftId),
-            onDeleteDraft,
+            onSaveDraft: (payload) =>
+                this.actions
+                    .saveDraft(payload, draftThreadId, draftId)
+                    .then(() => this.closeModal())
+                    .catch((error) => console.error("Failed to save draft", error)),
+            onDeleteDraft: deleteDraftHandler,
             draftId,
         });
 
@@ -382,204 +411,16 @@ export class InboxPage extends Component {
         }
     }
 
+
     private handleComposeSubmit(
         submit: (data: ComposePayload) => Promise<void>,
         data: ComposePayload
     ): void {
         submit(data)
             .then(() => this.closeModal())
-            .then(() => this.closeModal())
             .catch((error) => {
                 console.error("Failed to send message", error);
             });
-    }
-
-    private async handleSendMail(data: ComposePayload): Promise<void> {
-        const recipient = data.to.trim();
-        if (!recipient) {
-            console.warn(INBOX_PAGE_TEXTS.recipientRequired);
-            return;
-        }
-        if (!data.body || data.body.trim().length === 0) {
-            console.warn(INBOX_PAGE_TEXTS.bodyRequired ?? "Тело письма обязательно");
-            return;
-        }
-
-        try {
-            await this.store.sendMail({
-                to: recipient,
-                subject: data.subject ?? "",
-                body: data.body ?? "",
-            });
-        } catch (error) {
-            if (this.handleUnauthorized(error)) {
-                throw error;
-            }
-            throw error;
-        }
-
-        this.store.clearSelection();
-        this.router.navigate("/mail").then();
-    }
-
-    private async handleReplySubmit(mail: MailDetail, data: ComposePayload): Promise<void> {
-        const recipient = data.to.trim();
-        if (!recipient) {
-            console.warn(INBOX_PAGE_TEXTS.recipientRequired);
-            return;
-        }
-        if (!data.body || data.body.trim().length === 0) {
-            console.warn(INBOX_PAGE_TEXTS.bodyRequired ?? "Тело письма обязательно");
-            return;
-        }
-
-        const rootMessageId = `${mail.id ?? ""}`.trim();
-        if (!rootMessageId) {
-            console.error("Unable to determine message id for reply");
-            return;
-        }
-
-        const threadRootCandidate = `${mail.threadId ?? rootMessageId}`.trim();
-        if (!/^\d+$/.test(threadRootCandidate)) {
-            console.error("Invalid thread id for reply", threadRootCandidate);
-            return;
-        }
-        const threadRoot = threadRootCandidate;
-
-        try {
-            await this.store.replyToMail({
-                to: recipient,
-                subject: data.subject ?? "",
-                body: data.body ?? "",
-                rootMessageId,
-                threadRoot,
-            });
-        } catch (error) {
-            if (this.handleUnauthorized(error)) {
-                throw error;
-            }
-            throw error;
-        }
-
-        await this.store.refreshSelectedMail();
-    }
-
-    private async handleCreateFolder(name: string): Promise<void> {
-        try {
-            const folder = await this.store.createFolder(name);
-            const path = folder.id === "inbox" ? "/mail" : `/mail/${encodeURIComponent(folder.id)}`;
-            this.router.navigate(path).then();
-        } catch (error) {
-            if (this.handleUnauthorized(error)) {
-                throw error;
-            }
-            if (error instanceof HttpError && error.status === 409) {
-                throw new Error("Папка с таким названием уже существует");
-            }
-            throw error;
-        }
-    }
-
-    private async handleForwardSubmit(data: ComposePayload): Promise<void> {
-        const recipient = data.to.trim();
-        if (!recipient) {
-            console.warn(INBOX_PAGE_TEXTS.recipientRequired);
-            return;
-        }
-        if (!data.body || data.body.trim().length === 0) {
-            console.warn(INBOX_PAGE_TEXTS.bodyRequired ?? "Тело письма обязательно");
-            return;
-        }
-
-        try {
-            await this.store.sendMail({
-                to: recipient,
-                subject: data.subject ?? "",
-                body: data.body ?? "",
-            });
-        } catch (error) {
-            if (this.handleUnauthorized(error)) {
-                throw error;
-            }
-            throw error;
-        }
-
-        await this.store.refreshSelectedMail();
-    }
-
-    private async handleSaveDraft(data: ComposePayload, threadId?: string, draftId?: string): Promise<void> {
-        try {
-            const savedDraftId = await this.store.saveDraft({
-                to: data.to.trim(),
-                subject: data.subject ?? "",
-                body: data.body ?? "",
-                threadId,
-                draftId,
-            });
-            this.store.clearSelection();
-            await this.store.loadFolder("draft");
-            const path = `/mail/draft/${encodeURIComponent(savedDraftId)}`;
-            this.router.navigate(path).then();
-            this.closeModal();
-        } catch (error) {
-            if (this.handleUnauthorized(error)) {
-                return;
-            }
-            console.error("Failed to save draft", error);
-        }
-    }
-
-    private async handleSendDraft(data: ComposePayload, draftId?: string, threadId?: string): Promise<void> {
-        const recipient = data.to.trim();
-        if (!recipient) {
-            console.warn(INBOX_PAGE_TEXTS.recipientRequired);
-            return;
-        }
-        if (!data.body || data.body.trim().length === 0) {
-            console.warn(INBOX_PAGE_TEXTS.bodyRequired ?? "����>�? ����?�?�?�� �?�+�?�����'��>�?�?�?");
-            return;
-        }
-
-        const subject = data.subject ?? "";
-        const body = data.body ?? "";
-
-        try {
-            const savedDraftId =
-                draftId ??
-                (await this.store.saveDraft({
-                    to: recipient,
-                    subject,
-                    body,
-                    threadId,
-                }));
-
-            await this.store.sendDraft({
-                draftId: savedDraftId,
-                to: recipient,
-                subject,
-                body,
-                threadId,
-            });
-            this.store.clearSelection();
-            this.closeModal();
-            this.router.navigate("/mail/sent").then();
-        } catch (error) {
-            if (this.handleUnauthorized(error)) {
-                return;
-            }
-            console.error("Failed to send draft", error);
-        }
-    }
-
-    private async handleDeleteDraft(draftId: string): Promise<void> {
-        if (!draftId) return;
-        try {
-            await this.store.deleteDraft(draftId);
-            this.router.navigate("/mail/draft").then();
-            this.closeModal();
-        } catch (error) {
-            console.error("Failed to delete draft", error);
-        }
     }
 
     private async handleLogout(): Promise<void> {
@@ -605,7 +446,12 @@ export class InboxPage extends Component {
         const modal = new MoveToFolderModal({
             folders,
             currentFolderId: activeFolderId,
-            onSelect: (folderId) => this.handleMoveToFolder(selectedMailId, folderId),
+            onSelect: (folderId) => {
+                this.actions
+                    .moveMessage(selectedMailId, folderId)
+                    .catch((error) => console.error("Failed to move message", error))
+                    .finally(() => this.closeModal());
+            },
             onClose: () => this.closeModal(),
         });
 
@@ -615,28 +461,15 @@ export class InboxPage extends Component {
         this.updateSlot("modal", modal).then();
     }
 
-    private async handleMoveToFolder(messageId: string, folderId: string): Promise<void> {
-        try {
-            await this.store.moveMessage(messageId, folderId);
-            this.store.clearSelection();
-            const path = folderId === "inbox" ? "/mail" : `/mail/${encodeURIComponent(folderId)}`;
-            this.router.navigate(path).then();
-            this.notifyFolderMove(folderId);
-        } catch (error) {
-            if (this.handleUnauthorized(error)) {
-                return;
-            }
-            console.error("Failed to move message", error);
-        } finally {
-            this.closeModal();
-        }
-    }
-
     private async handleDeleteMail(messageId: string): Promise<void> {
         if (!messageId) return;
         const trash = this.store.getState().folders.find((f) => f.type === "trash" || f.id === "trash");
         const targetId = trash?.id ?? "trash";
-        await this.handleMoveToFolder(messageId, targetId);
+        try {
+            await this.actions.moveMessage(messageId, targetId);
+        } catch (error) {
+            console.error("Failed to delete message", error);
+        }
     }
 
     private async handleMarkAsSpam(messageId: string): Promise<void> {
@@ -645,14 +478,8 @@ export class InboxPage extends Component {
         }
 
         try {
-            await this.store.markMessageAsSpam(messageId);
-            this.store.clearSelection();
-            this.router.navigate("/mail/spam").then();
-            this.notifyFolderMove("spam");
+            await this.actions.markAsSpam(messageId);
         } catch (error) {
-            if (this.handleUnauthorized(error)) {
-                return;
-            }
             console.error("Failed to mark as spam", error);
         }
     }
@@ -663,6 +490,30 @@ export class InboxPage extends Component {
             return true;
         }
         return false;
+    }
+
+    private async initializeHeaderProfile(): Promise<void> {
+        const cached = getCachedProfilePreview();
+        if (cached) {
+            this.header.setProps({
+                avatarLabel: cached.initials,
+                avatarImageUrl: cached.avatarUrl,
+                userName: cached.fullName,
+                userEmail: cached.email,
+            });
+        }
+
+        try {
+            const preview = await loadProfilePreview();
+            this.header.setProps({
+                avatarLabel: preview.initials,
+                avatarImageUrl: preview.avatarUrl,
+                userName: preview.fullName,
+                userEmail: preview.email,
+            });
+        } catch (error) {
+            console.warn("Failed to load profile preview for header", error);
+        }
     }
 
     private async triggerPostLogoutAuthCheck(): Promise<void> {

@@ -5,7 +5,7 @@ import {
     type LoginPayload,
     type RegisterPayload,
 } from "@entities/auth";
-import { AUTH_PAGE_TEXTS, REGISTER_PAGE_TEXTS } from "@pages/constants/texts";
+import { AUTH_ERROR_TEXTS, REGISTER_ERROR_TEXTS } from "../constants/messages";
 import { extractApiErrorMessage } from "@shared/utils/apiError";
 import { DATA_CACHE_PREFIX } from "../../../serviceWorker/cacheConfig";
 import { SW_MESSAGES } from "../../../serviceWorker/messages";
@@ -28,7 +28,7 @@ export async function authenticate(payload: LoginPayload): Promise<AuthResult> {
     } catch (error) {
         return {
             success: false,
-            message: extractApiErrorMessage(error, AUTH_PAGE_TEXTS.genericError),
+            message: extractApiErrorMessage(error, AUTH_ERROR_TEXTS.generic),
         };
     }
 }
@@ -45,7 +45,7 @@ export async function registerUser(payload: RegisterPayload): Promise<AuthResult
     } catch (error) {
         return {
             success: false,
-            message: extractApiErrorMessage(error, REGISTER_PAGE_TEXTS.genericError),
+            message: extractApiErrorMessage(error, REGISTER_ERROR_TEXTS.generic),
         };
     }
 }

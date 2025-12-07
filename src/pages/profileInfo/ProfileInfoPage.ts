@@ -40,6 +40,9 @@ export class ProfileInfoPage extends Component {
             userEmail: "",
             onLogout: () => this.handleLogout(),
             onMenuToggle: () => this.layout.toggleSidebar(),
+            onProfile: () => this.router.navigate("/profile-info"),
+            onSettings: () => this.router.navigate("/profile"),
+            onLogoClick: () => this.router.navigate("/mail"),
         });
 
         this.infoForm = new ProfileInfoFormComponent({

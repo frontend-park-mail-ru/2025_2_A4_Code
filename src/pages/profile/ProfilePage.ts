@@ -49,6 +49,7 @@ export class ProfilePage extends Component {
     private readonly form: ProfileFormComponent;
     private readonly interfaceView: InterfaceSettingsComponent;
     private readonly header: HeaderComponent;
+    private currentMain: Component | null = null;
     private profile: ProfileData | null = null;
     private globalLoadingDepth = 0;
     private profileLoadPromise: Promise<void> | null = null;
@@ -92,6 +93,9 @@ export class ProfilePage extends Component {
             userEmail: DEFAULT_PLACEHOLDER.email,
             onLogout: () => this.handleLogout(),
             onMenuToggle: () => this.layout.toggleSidebar(),
+            onProfile: () => this.router.navigate("/profile-info"),
+            onSettings: () => this.router.navigate("/profile"),
+            onLogoClick: () => this.router.navigate("/mail"),
         });
     }
 
@@ -132,20 +136,27 @@ export class ProfilePage extends Component {
     }
 
     private getSlotContent() {
+        const main = this.activeTab === "interface" ? this.interfaceView : this.form;
+        this.currentMain = main;
         return {
             header: this.header,
             sidebar: this.sidebar,
-            main: this.form,
+            main,
         };
     }
 
     private async renderActiveMain(): Promise<void> {
+        const target = this.activeTab === "interface" ? this.interfaceView : this.form;
+        if (this.currentMain === target) {
+            return;
+        }
+
         if (this.activeTab === "interface") {
             this.interfaceView.setActiveItem(this.interfaceSection);
-            await this.layout.updateSlot("main", this.interfaceView);
-        } else {
-            await this.layout.updateSlot("main", this.form);
         }
+
+        await this.layout.updateSlot("main", target);
+        this.currentMain = target;
     }
 
     private async loadProfile(): Promise<void> {
@@ -350,6 +361,7 @@ export class ProfilePage extends Component {
         }
         this.sidebar.setProps({ activeTab: tabId });
         this.layout.setSidebarOpen(false);
+        this.currentMain = null;
         void this.renderActiveMain();
     }
 
