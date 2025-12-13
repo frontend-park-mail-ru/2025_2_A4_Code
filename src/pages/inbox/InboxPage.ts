@@ -17,6 +17,8 @@ import type { MailDetail } from "@app-types/mail";
 import { OfflinePlaceholderComponent } from "@shared/components/OfflinePlaceholder/OfflinePlaceholder";
 import { INBOX_PAGE_TEXTS } from "@pages/constants/texts";
 import { HttpError } from "@shared/api/ApiService";
+import { showNotification } from "@shared/utils/notifications";
+
 
 type InboxPageParams = {
     messageId?: string;
@@ -290,7 +292,7 @@ export class InboxPage extends Page {
                 to: recipient,
                 subject: data.subject ?? "",
                 body: data.body ?? "",
-                // attachments: data.attachments // подключишь, когда настроишь API
+                // attachments: data.attachments 
             });
         } catch (error) {
             if (this.handleUnauthorized(error)) {
@@ -299,6 +301,16 @@ export class InboxPage extends Page {
             throw error;
         }
 
+        await this.store.sendMail({
+            to: recipient,
+            subject: data.subject ?? "",
+            body: data.body ?? "",
+          });
+          
+          await showNotification("Письмо отправлено ", {
+            body: `${recipient}`,
+          });
+          
         this.store.clearSelection();
         this.router.navigate("/inbox").then();
     }
@@ -332,10 +344,19 @@ export class InboxPage extends Page {
             }
             throw error;
         }
+        await this.store.sendMail({
+            to: recipient,
+            subject: data.subject ?? "",
+            body: data.body ?? "",
+          });
+          
+          await showNotification("Письмо отправлено ", {
+            body: `${recipient}`,
+          });
 
         await this.store.refreshSelectedMail();
     }
-
+    
     private async handleForwardSubmit(data: ComposePayload): Promise<void> {
         const recipient = data.to.trim();
         if (!recipient) {
@@ -355,6 +376,15 @@ export class InboxPage extends Page {
             }
             throw error;
         }
+        await this.store.sendMail({
+            to: recipient,
+            subject: data.subject ?? "",
+            body: data.body ?? "",
+          });
+          
+          await showNotification("Письмо отправлено ", {
+            body: `${recipient}`,
+          });
 
         await this.store.refreshSelectedMail();
     }
