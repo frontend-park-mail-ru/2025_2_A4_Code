@@ -47,14 +47,17 @@ export class SidebarComponent extends Component<Props> {
     }
 
     protected afterRender(): void {
+        console.log("Sidebar afterRender");
         const element = this.element!;
         const composeBtn = element.querySelector('[data-compose]') as HTMLElement | null;
+        console.log("Sidebar afterRender, composeBtn:", composeBtn); 
         this.foldersRoot = element.querySelector('[data-slot="folders"]') as HTMLElement | null;
         this.composeButton = composeBtn;
-
+        
         if (composeBtn) {
             this.composeHandler = (event: Event) => {
                 event.preventDefault();
+                console.log("Sidebar compose click");
                 if (!this.isOnline) {
                     return;
                 }

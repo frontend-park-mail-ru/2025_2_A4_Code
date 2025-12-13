@@ -19,7 +19,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  
+
   &__close {
     position: absolute;
     top: 20px;
@@ -34,6 +34,7 @@
     padding: 0;
     cursor: pointer;
     transition: opacity 0.2s ease;
+
     &:hover {
       opacity: 0.7;
     }
@@ -146,6 +147,86 @@
   .compose-modal__actions {
     margin-left: 0;
   }
+}
+
+.compose-modal__attachments {
+  margin: 12px 0;
+}
+
+/* список вложений в виде плиток */
+.attachments-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px 0;
+  min-height: 64px;
+}
+
+.attachments-empty {
+  color: #999;
+  font-style: italic;
+  padding: 16px 0;
+}
+
+/* одна плитка вложения */
+.attachment-tile {
+  width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #1f2544;
+}
+
+.attachment-tile__icon {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #f3f5ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.attachment-tile__icon img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.attachment-tile__remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  color: #8f96ad;
+  font-size: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.attachment-tile__remove:hover {
+  color: #e53935;
+}
+
+.attachment-tile__label {
+  text-align: center;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .compose-modal__textarea {

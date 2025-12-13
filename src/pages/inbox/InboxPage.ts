@@ -22,7 +22,12 @@ type InboxPageParams = {
     messageId?: string;
 };
 
-type ComposePayload = { to: string; subject: string; body: string };
+type ComposePayload = {
+    to: string;
+    subject: string;
+    body: string;
+    attachments?: File[];
+};
 
 export class InboxPage extends Page {
     private readonly store = new InboxStore();
@@ -233,7 +238,11 @@ export class InboxPage extends Page {
         this.openCompose(draft, (data) => this.handleForwardSubmit(data));
     }
 
-    private openCompose(draft: ComposeDraft = {}, submit?: (data: ComposePayload) => Promise<void>): void {
+    private openCompose(
+        draft: ComposeDraft = {},
+        submit?: (data: ComposePayload) => Promise<void>
+    ): void {
+        console.log("openCompose called");
         const modal = new ComposeModal({
             initialTo: draft.initialTo,
             initialSubject: draft.initialSubject,
@@ -267,7 +276,9 @@ export class InboxPage extends Page {
             });
     }
 
+    //вложения пока игнорируются
     private async handleSendMail(data: ComposePayload): Promise<void> {
+        console.log("handleSendMail called", data);
         const recipient = data.to.trim();
         if (!recipient) {
             console.warn(INBOX_PAGE_TEXTS.recipientRequired);
@@ -279,6 +290,7 @@ export class InboxPage extends Page {
                 to: recipient,
                 subject: data.subject ?? "",
                 body: data.body ?? "",
+                // attachments: data.attachments // подключишь, когда настроишь API
             });
         } catch (error) {
             if (this.handleUnauthorized(error)) {
@@ -376,6 +388,3 @@ export class InboxPage extends Page {
         return false;
     }
 }
-
-
-
