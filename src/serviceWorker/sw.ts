@@ -101,7 +101,45 @@ self.addEventListener("install", (event) => {
         })()
     );
 });
+self.addEventListener("push", (event: PushEvent) => {
+    const data = event.data ? event.data.json() as any : {};
 
+    const title = data.title || "Новое письмо";
+    const options: NotificationOptions = {
+        body: data.body || `От: ${data.from}`,
+        icon: "/img/logo.svg",
+        badge: "/img/logo.svg",
+        data: {
+            url: data.url || "/inbox",
+        },
+    };
+
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event: NotificationEvent) => {
+    event.notification.close();
+    const url =
+        (event.notification.data && (event.notification.data as any).url) || "/inbox";
+
+    event.waitUntil(
+        self.clients
+            .matchAll({ type: "window", includeUncontrolled: true })
+            .then((clientList) => {
+                for (const client of clientList) {
+                    if ("focus" in client) {
+                        (client as WindowClient).navigate(url);
+                        return (client as WindowClient).focus();
+                    }
+                }
+                if (self.clients.openWindow) {
+                    return self.clients.openWindow(url);
+                }
+            })
+    );
+});
+
+  
 self.addEventListener("activate", (event) => {
     debugLog("activate:start");
     event.waitUntil(
