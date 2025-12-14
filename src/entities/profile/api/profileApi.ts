@@ -61,15 +61,6 @@ function getApiBaseUrl(): string {
     return "";
 }
 
-function resolveAssetUrl(path: string | null | undefined): string | null {
-    if (!path) {
-        return null;
-    }
-
-    const base = getApiBaseUrl();
-    return `${base}/user/avatar`;
-}
-
 function mapProfileResponse(body: ProfileResponseBody): ProfileData {
     const firstName = body.name?.trim() ?? "";
     const lastName = body.surname?.trim() ?? "";
@@ -94,7 +85,7 @@ function mapProfileResponse(body: ProfileResponseBody): ProfileData {
         middleName,
         gender: normalizedGender ?? "",
         birthday: formatDateFromBackend(body.date_of_birth),
-        avatarUrl: resolveAssetUrl(body.avatar_path),
+        avatarUrl: ensureHttpsAssetUrl(body.avatar_path),
         createdAt: body.created_at,
         role: body.role?.trim().toLowerCase() || "user",
     };
@@ -114,7 +105,7 @@ export async function uploadProfileAvatar(file: File): Promise<string> {
         body: formData,
     });
 
-    return resolveAssetUrl(response.body.avatar_path) ?? ensureHttpsAssetUrl(response.body.avatar_path) ?? "";
+    return ensureHttpsAssetUrl(response.body.avatar_path) ?? "";
 }
 
 export async function updateProfile(payload: UpdateProfilePayload): Promise<ProfileData> {

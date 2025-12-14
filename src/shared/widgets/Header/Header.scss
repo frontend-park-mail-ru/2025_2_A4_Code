@@ -60,15 +60,6 @@
     line-height: 1;
   }
 
-  &__center {
-    flex: 1 1 420px;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-left: 24px;
-  }
-
   &__right {
     position: relative;
     display: flex;
@@ -111,11 +102,6 @@
       font-size: 28px;
     }
 
-    &__center {
-      margin-left: 12px;
-      flex-basis: 360px;
-      min-width: 0;
-    }
   }
 }
 
@@ -133,16 +119,8 @@
       display: none;
     }
 
-    &__center {
-      order: 2;
-      flex: 0 0 auto;
-      margin-left: 0;
-      min-width: 0;
-      display: none;
-    }
-
     &__right {
-      order: 3;
+      order: 2;
       width: auto;
       justify-content: flex-end;
       gap: 8px;

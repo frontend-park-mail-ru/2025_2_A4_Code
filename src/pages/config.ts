@@ -3,7 +3,6 @@ import { AuthPage } from "./auth";
 import { RegisterPage } from "./register";
 import { InboxPage } from "./inbox/InboxPage";
 import { ProfilePage } from "./profile";
-import { ProfileInfoPage } from "./profileInfo";
 
 const routeDefinitions: RouteConfig[] = [
     {
@@ -23,31 +22,11 @@ const routeDefinitions: RouteConfig[] = [
         requiresAuth: true,
     },
     {
-        path: "/profile",
-        createView: () => new ProfilePage({ activeTab: "personal" }),
-        requiresAuth: true,
-    },
-    {
-        path: "/profile-info",
-        createView: () => new ProfileInfoPage(),
-        requiresAuth: true,
-    },
-    {
-        path: "/interface",
-        createView: () => new ProfilePage({ activeTab: "interface", interfaceSection: "folders" }),
-        requiresAuth: true,
-    },
-    {
-        path: "/settings/profile",
-        createView: () => new ProfilePage({ activeTab: "personal" }),
-        requiresAuth: true,
-    },
-    {
-        path: "/settings/interface/:section?",
+        path: "/profile/:activeTab?/:section?",
         createView: (params: Record<string, string>) =>
             new ProfilePage({
-                activeTab: "interface",
-                interfaceSection: (params.section as any) ?? "folders",
+                activeTab: params.activeTab ?? "personal",
+                interfaceSection: params.section,
             }),
         requiresAuth: true,
     },

@@ -17,11 +17,12 @@ import type { MailDetail } from "@app-types/mail";
 import { OfflinePlaceholderComponent } from "@shared/components/OfflinePlaceholder/OfflinePlaceholder";
 import { INBOX_PAGE_TEXTS } from "@pages/constants/texts";
 import { HttpError } from "@shared/api/ApiService";
-import { showFolderNotification } from "@shared";
+import { showFolderNotification, showToast } from "@shared";
 import { apiService } from "@shared/api/ApiService";
 import { navigateToAuthPage } from "@shared/utils/authNavigation";
 import { getCachedProfilePreview, loadProfilePreview } from "@features/profile";
 import { InboxActions, type ComposePayload } from "./lib/InboxActions";
+import { NewMailWatcher } from "@features/inbox/lib/NewMailWatcher";
 
 type InboxPageParams = {
     messageId?: string;
@@ -53,6 +54,8 @@ export class InboxPage extends Component {
     private offlinePlaceholder: OfflinePlaceholderComponent | null = null;
     private showingOfflinePlaceholder = false;
     private postLogoutCheckStarted = false;
+    private newMailWatcher: NewMailWatcher | null = null;
+    private readonly loadMoreHandler = () => this.handleLoadMore();
 
     constructor(params: InboxPageParams = {}) {
         super();
@@ -60,10 +63,8 @@ export class InboxPage extends Component {
         this.initialFolderId = params.folderId || "inbox";
 
         this.header = new HeaderComponent({
-            onSearch: (query) => console.log("search", query),
             onLogout: () => this.handleLogout(),
             onMenuToggle: () => this.layout.toggleSidebar(),
-            onProfile: () => this.router.navigate("/profile-info"),
             onSettings: () => this.router.navigate("/profile"),
             onLogoClick: () => this.router.navigate("/mail"),
             avatarLabel: "--",
@@ -79,6 +80,7 @@ export class InboxPage extends Component {
             items: [],
             onOpen: (id) => this.handleOpenMail(id),
             emptyMessage: INBOX_PAGE_TEXTS.emptyList,
+            onLoadMore: this.loadMoreHandler,
         });
 
         this.actions = new InboxActions({
@@ -112,15 +114,14 @@ export class InboxPage extends Component {
         this.layout.setSidebarWidth(null);
 
         this.unsubscribeFromStore = this.store.subscribe((state) => this.applyState(state));
+        this.newMailWatcher = new NewMailWatcher(this.store);
+        this.newMailWatcher.start();
 
         await this.initializeHeaderProfile();
 
         try {
             await this.store.loadFolders();
             await this.store.loadFolder(this.initialFolderId);
-            if (this.initialMessageId) {
-                await this.store.openMail(this.initialMessageId);
-            }
         } catch (error) {
             if (this.handleUnauthorized(error)) {
                 return;
@@ -159,6 +160,8 @@ export class InboxPage extends Component {
     public async unmount(): Promise<void> {
         this.unsubscribeFromStore?.();
         this.unsubscribeFromStore = undefined;
+        this.newMailWatcher?.stop();
+        this.newMailWatcher = null;
         this.loadingManager.reset();
         this.composeModal = null;
         this.createFolderModal = null;
@@ -200,7 +203,11 @@ export class InboxPage extends Component {
             this.offlinePlaceholder = null;
         }
 
-        this.mailList.setProps({ items: state.mails });
+        this.mailList.setProps({
+            items: state.mails,
+            hasMore: state.pagination?.hasNext ?? false,
+            loadingMore: state.loadingMore,
+        });
         this.sidebar.setProps({
             folders: state.folders,
             activeFolderId: state.activeFolderId,
@@ -275,6 +282,7 @@ export class InboxPage extends Component {
             focusField: "to",
             threadId: mail.threadId,
             draftId: mail.id,
+            attachments: mail.attachments,
         };
 
         this.showingList = true;
@@ -315,6 +323,7 @@ export class InboxPage extends Component {
             body: mail.body,
             avatarUrl: mail.avatarUrl ?? null,
             fromEmail: mail.fromEmail ?? mail.from,
+            attachments: mail.attachments ?? [],
             currentFolderId: activeFolderId,
             currentFolderType: folderType,
             onBack: () => this.handleBackToList(),
@@ -342,6 +351,12 @@ export class InboxPage extends Component {
         this.store.clearSelection();
         const path = folder === "inbox" ? "/mail" : `/mail/${encodeURIComponent(folder)}`;
         this.router.navigate(path).then();
+    }
+
+    private handleLoadMore(): void {
+        this.store.loadMore().catch((error) => {
+            console.error("Failed to load more messages", error);
+        });
     }
 
     private handleReply(mail: MailDetail): void {
@@ -380,6 +395,7 @@ export class InboxPage extends Component {
             initialSubject: draft.initialSubject,
             initialBody: draft.initialBody,
             focusField: draft.focusField,
+            initialAttachments: draft.attachments,
             onClose: () => this.closeModal(),
             onSend: (payload) => {
                 const handler = submit ?? ((data: ComposePayload) => this.actions.sendMail(data));
@@ -420,6 +436,8 @@ export class InboxPage extends Component {
             .then(() => this.closeModal())
             .catch((error) => {
                 console.error("Failed to send message", error);
+                this.closeModal();
+                showToast("Не удалось отправить письмо", "error");
             });
     }
 

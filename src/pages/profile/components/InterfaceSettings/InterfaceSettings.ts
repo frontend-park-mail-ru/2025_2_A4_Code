@@ -7,16 +7,30 @@ import { fetchFolders, createFolder, renameFolder, deleteFolder, type FolderSumm
 import { SIDEBAR_TEXTS } from "@shared/constants/texts";
 import { CreateFolderModal } from "../../../inbox/components/CreateFolderModal/CreateFolderModal";
 
-export type ItemId = "theme" | "signature" | "folders" | "security";
+export type ItemId = "theme" | "signature" | "folders";
 
 const MAX_NAME_LENGTH = MAX_FOLDER_NAME_LENGTH;
+const THEME_STORAGE_KEY = "ui-theme";
+type ThemeId = "light" | "dark";
+const THEME_PRESETS: Record<ThemeId, { name: string; description: string; colors: { bg: string; panel: string; text: string; muted: string; border: string } }> = {
+    light: {
+        name: "Стандартная",
+        description: "Светлые фоны и привычный контраст.",
+        colors: { bg: "#EFF2F7", panel: "#FFFFFF", text: "#1f2544", muted: "#6b7280", border: "#dbe1f1" },
+    },
+    dark: {
+        name: "Темная",
+        description: "Темные панели и мягкие акценты.",
+        colors: { bg: "#0b1220", panel: "#0f172a", text: "#e5e7eb", muted: "#cbd5e1", border: "#243047" },
+    },
+};
+const THEME_ORDER: ThemeId[] = ["light", "dark"];
 
 export class InterfaceSettingsComponent extends Component {
     private readonly items: { id: ItemId; slot: string; label: string; icon: string }[] = [
         { id: "theme", slot: "theme", label: "Оформление", icon: "/img/interface-theme.svg" },
         { id: "signature", slot: "signature", label: "Подпись", icon: "/img/interface-signature.svg" },
         { id: "folders", slot: "folders", label: "Папки", icon: "/img/interface-folders.svg" },
-        { id: "security", slot: "security", label: "Безопасность", icon: "/img/interface-security.png" },
     ];
 
     private activeItem: ItemId = "folders";
@@ -36,17 +50,19 @@ export class InterfaceSettingsComponent extends Component {
     private cancelBtn?: ButtonComponent;
     private editingValue: string | null = null;
     private footerEl: HTMLElement | null = null;
+    private currentTheme: ThemeId = "light";
+    private themeRoot: HTMLElement | null = null;
 
     private readonly placeholders: Record<ItemId, string> = {
-        theme: "мы работаем над этим",
+        theme: "",
         signature: "мы работаем над этим",
         folders: "",
-        security: "мы работаем над этим",
     };
 
     constructor(private readonly props: { initialItem?: ItemId } = {}) {
         super();
         this.activeItem = props.initialItem ?? "folders";
+        this.currentTheme = this.readStoredTheme();
     }
 
     protected renderTemplate(): string {
@@ -74,6 +90,8 @@ export class InterfaceSettingsComponent extends Component {
             }
         });
 
+        this.applyTheme(this.currentTheme, false);
+        this.renderContent();
         void this.loadFolders();
     }
 
@@ -126,13 +144,24 @@ export class InterfaceSettingsComponent extends Component {
         const contentRoot = this.getContentRoot();
         if (!contentRoot) return;
 
-        if (this.activeItem !== "folders") {
+        if (this.activeItem !== "theme") {
+            this.themeRoot = null;
+        }
+
+        if (this.activeItem === "theme") {
+            this.teardownFolderView();
+            const themeContent = this.renderThemeContent();
+            contentRoot.replaceChildren(themeContent);
+            return;
+        }
+
+        if (this.activeItem === "signature") {
             this.teardownFolderView();
             contentRoot.innerHTML = "";
             const placeholder = document.createElement("div");
             placeholder.className = "interface-settings__state interface-settings__state--placeholder";
-            const label = this.placeholders[this.activeItem] || "�����: ���� �� ���������";
-            placeholder.textContent = label;
+            placeholder.textContent =
+                this.placeholders.signature || "Скоро здесь появится управление подписью";
             contentRoot.appendChild(placeholder);
             return;
         }
@@ -650,5 +679,107 @@ export class InterfaceSettingsComponent extends Component {
         }
 
         return false;
+    }
+
+    private renderThemeContent(): HTMLElement {
+        const wrapper = document.createElement("div");
+        wrapper.className = "interface-settings__theme";
+        this.themeRoot = wrapper;
+
+        const title = document.createElement("p");
+        title.className = "interface-settings__theme-title";
+        title.textContent = "Выберите тему оформления";
+        wrapper.appendChild(title);
+
+        const grid = document.createElement("div");
+        grid.className = "interface-settings__theme-grid";
+        wrapper.appendChild(grid);
+
+        THEME_ORDER.forEach((id) => {
+            const preset = THEME_PRESETS[id];
+            const card = document.createElement("button");
+            card.type = "button";
+            card.className = "interface-settings__theme-card";
+            card.setAttribute("data-theme-id", id);
+            if (id === this.currentTheme) {
+                card.classList.add("interface-settings__theme-card--active");
+            }
+            card.onclick = () => this.handleThemeSelect(id);
+
+            const info = document.createElement("div");
+            info.className = "interface-settings__theme-info";
+
+            const name = document.createElement("div");
+            name.className = "interface-settings__theme-name";
+            name.textContent = preset.name;
+
+            const desc = document.createElement("div");
+            desc.className = "interface-settings__theme-desc";
+            desc.textContent = preset.description;
+
+            info.append(name, desc);
+
+            const swatches = document.createElement("div");
+            swatches.className = "interface-settings__theme-swatches";
+            [preset.colors.bg, preset.colors.panel, preset.colors.text].forEach((color) => {
+                const swatch = document.createElement("span");
+                swatch.className = "interface-settings__theme-swatch";
+                swatch.style.backgroundColor = color;
+                swatches.appendChild(swatch);
+            });
+
+            card.append(info, swatches);
+            grid.appendChild(card);
+        });
+
+        return wrapper;
+    }
+
+    private handleThemeSelect(theme: ThemeId): void {
+        if (theme === this.currentTheme) {
+            return;
+        }
+        this.applyTheme(theme);
+    }
+
+    private applyTheme(theme: ThemeId, persist = true): void {
+        const preset = THEME_PRESETS[theme];
+        if (!preset) return;
+        const root = document.documentElement;
+        root.style.setProperty("--color-bg", preset.colors.bg);
+        root.style.setProperty("--color-panel", preset.colors.panel);
+        root.style.setProperty("--color-text", preset.colors.text);
+        root.style.setProperty("--color-muted", preset.colors.muted);
+        root.style.setProperty("--color-border", preset.colors.border);
+        root.setAttribute("data-theme", theme);
+        if (persist) {
+            try {
+                localStorage.setItem(THEME_STORAGE_KEY, theme);
+            } catch {
+                // ignore
+            }
+        }
+        this.currentTheme = theme;
+        this.updateThemeActiveState();
+    }
+
+    private updateThemeActiveState(): void {
+        if (!this.themeRoot) return;
+        this.themeRoot.querySelectorAll<HTMLButtonElement>(".interface-settings__theme-card").forEach((card) => {
+            const id = card.getAttribute("data-theme-id");
+            card.classList.toggle("interface-settings__theme-card--active", id === this.currentTheme);
+        });
+    }
+
+    private readStoredTheme(): ThemeId {
+        try {
+            const stored = localStorage.getItem(THEME_STORAGE_KEY) as ThemeId | null;
+            if (stored && THEME_ORDER.includes(stored)) {
+                return stored;
+            }
+        } catch {
+            // ignore
+        }
+        return "light";
     }
 }

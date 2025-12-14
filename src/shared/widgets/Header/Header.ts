@@ -1,35 +1,28 @@
 import { Component } from "@shared/base/Component";
 import template from "./Header.hbs";
 import "./Header.scss";
-import { SearchInputComponent } from "@shared/components/SearchInput/SearchInput";
 import { AvatarButtonComponent } from "@shared/components/AvatarButton/AvatarButton";
 import { AvatarMenu } from "@shared/widgets/AvatarMenu/AvatarMenu";
 import { HEADER_TEXTS } from "@shared/constants/texts";
 
 type Props = {
-    onSearch?: (query: string) => void;
-    onProfile?: () => void;
     onSettings?: () => void;
     onLogout?: () => void;
     onMenuToggle?: () => void;
-    searchPlaceholder?: string;
     avatarLabel?: string;
     avatarImageUrl?: string | null;
     userName?: string;
     userEmail?: string;
-    showSearch?: boolean;
     onLogoClick?: () => void;
 };
 
 export class HeaderComponent extends Component<Props> {
-    private readonly searchInput?: SearchInputComponent;
     private readonly avatarButton: AvatarButtonComponent;
     private readonly avatarMenu: AvatarMenu;
     private menuElement?: HTMLElement | null;
     private avatarButtonElement?: HTMLElement | null;
     private logoElement?: HTMLElement | null;
     private menuButton?: HTMLElement | null;
-    private showSearch: boolean;
 
     private outsideClickHandler = (event: MouseEvent) => {
         const target = event.target as Node | null;
@@ -45,15 +38,6 @@ export class HeaderComponent extends Component<Props> {
     constructor(props: Props = {}) {
         super(props);
 
-        this.showSearch = props.showSearch ?? true;
-        if (this.showSearch) {
-            this.searchInput = new SearchInputComponent({
-                placeholder: props.searchPlaceholder ?? HEADER_TEXTS.defaultSearchPlaceholder,
-                debounce: 300,
-                onInput: (value) => this.props.onSearch?.(value),
-            });
-        }
-
         this.avatarButton = new AvatarButtonComponent({
             label: props.avatarLabel ?? HEADER_TEXTS.defaultAvatarLabel,
             imageUrl: props.avatarImageUrl ?? null,
@@ -61,10 +45,6 @@ export class HeaderComponent extends Component<Props> {
         });
 
         this.avatarMenu = new AvatarMenu({
-            onProfile: () =>
-                this.handleMenuSelect(async () => {
-                    await this.props.onProfile?.();
-                }),
             onSettings: () =>
                 this.handleMenuSelect(async () => {
                     await this.props.onSettings?.();
@@ -90,17 +70,6 @@ export class HeaderComponent extends Component<Props> {
                 event.preventDefault();
                 this.props.onLogoClick?.();
             };
-        }
-
-        const searchSlot = element.querySelector('[data-slot="search"]') as HTMLElement | null;
-        if (searchSlot) {
-            searchSlot.innerHTML = "";
-            if (this.showSearch && this.searchInput) {
-                this.searchInput.unmount().then();
-                const searchEl = this.searchInput.render();
-                searchSlot.appendChild(searchEl);
-                this.searchInput.mount(searchSlot).then();
-            }
         }
 
         const avatarSlot = element.querySelector('[data-slot="avatar"]') as HTMLElement | null;
@@ -133,14 +102,6 @@ export class HeaderComponent extends Component<Props> {
 
     public setProps(newProps: Partial<Props>): void {
         this.props = { ...this.props, ...newProps };
-        if (typeof newProps.showSearch !== "undefined") {
-            this.showSearch = newProps.showSearch;
-        }
-
-        this.searchInput?.setProps({
-            placeholder: this.props.searchPlaceholder ?? HEADER_TEXTS.defaultSearchPlaceholder,
-            onInput: (value) => this.props.onSearch?.(value),
-        });
 
         this.avatarButton.setProps({
             label: this.props.avatarLabel ?? HEADER_TEXTS.defaultAvatarLabel,
@@ -154,10 +115,6 @@ export class HeaderComponent extends Component<Props> {
         }
 
         this.avatarMenu.setProps({
-            onProfile: () =>
-                this.handleMenuSelect(async () => {
-                    await this.props.onProfile?.();
-                }),
             onSettings: () =>
                 this.handleMenuSelect(async () => {
                     await this.props.onSettings?.();
@@ -220,7 +177,6 @@ export class HeaderComponent extends Component<Props> {
             this.menuButton.onclick = null;
             this.menuButton = null;
         }
-        await this.searchInput?.unmount();
         await this.avatarButton.unmount();
         await this.avatarMenu.unmount();
         await super.unmount();

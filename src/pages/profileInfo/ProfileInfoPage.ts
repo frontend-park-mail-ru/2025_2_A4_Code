@@ -33,14 +33,12 @@ export class ProfileInfoPage extends Component {
         });
 
         this.header = new HeaderComponent({
-            showSearch: false,
             avatarLabel: "--",
             avatarImageUrl: null,
             userName: "",
             userEmail: "",
             onLogout: () => this.handleLogout(),
             onMenuToggle: () => this.layout.toggleSidebar(),
-            onProfile: () => this.router.navigate("/profile-info"),
             onSettings: () => this.router.navigate("/profile"),
             onLogoClick: () => this.router.navigate("/mail"),
         });

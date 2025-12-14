@@ -1,4 +1,4 @@
-import { Component } from "@shared/base/Component";
+﻿import { Component } from "@shared/base/Component";
 import { HeaderComponent } from "@shared/widgets/Header/Header";
 import { ProfileSidebarComponent } from "./components/ProfileSidebar/ProfileSidebar";
 import { ProfileFormComponent } from "./components/ProfileForm/ProfileForm";
@@ -86,14 +86,12 @@ export class ProfilePage extends Component {
         this.interfaceView = new InterfaceSettingsComponent({ initialItem: this.interfaceSection });
 
         this.header = new HeaderComponent({
-            showSearch: false,
             avatarLabel: "--",
             avatarImageUrl: DEFAULT_PLACEHOLDER.avatarUrl,
             userName: DEFAULT_PLACEHOLDER.fullName,
             userEmail: DEFAULT_PLACEHOLDER.email,
             onLogout: () => this.handleLogout(),
             onMenuToggle: () => this.layout.toggleSidebar(),
-            onProfile: () => this.router.navigate("/profile-info"),
             onSettings: () => this.router.navigate("/profile"),
             onLogoClick: () => this.router.navigate("/mail"),
         });
@@ -368,7 +366,7 @@ export class ProfilePage extends Component {
     public async update(params: Record<string, string>): Promise<void> {
         const tab = params.section ? "interface" : params.tab === "interface" ? "interface" : "personal";
         const sectionParam = (params.section as InterfaceItemId | undefined) ?? "folders";
-        const nextSection: InterfaceItemId = ["theme", "signature", "folders", "security"].includes(sectionParam)
+        const nextSection: InterfaceItemId = ["theme", "signature", "folders"].includes(sectionParam)
             ? sectionParam
             : "folders";
 

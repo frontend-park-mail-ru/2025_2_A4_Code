@@ -2,6 +2,11 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  height: 100%;
+  max-height: none;
+  overflow: hidden;
+  flex: 1 1 auto;
+  min-height: 0;
 
   &__header {
     display: flex;
@@ -19,6 +24,35 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0 4px;
+    position: relative;
+  }
+
+  &__load-more {
+    display: inline-flex;
+  }
+
+  &__loading {
+    color: #6b7280;
+    font-weight: 600;
+  }
+
+  &__sentinel {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    height: 1px;
+    width: 100%;
+    opacity: 0;
   }
 
   &__empty {
@@ -29,5 +63,12 @@
     color: #6b7280;
     font-size: 16px;
     text-align: center;
+  }
+}
+
+@media (max-width: 720px) {
+  .mail-list {
+    height: 100%;
+    max-height: none;
   }
 }

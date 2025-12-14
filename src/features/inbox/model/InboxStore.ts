@@ -15,11 +15,14 @@ import {
     markAsSpam,
     type SaveDraftPayload,
     type SendDraftPayload,
+    type PaginationCursor,
+    type NormalizedPagination,
 } from "@entities/mail";
 import type { Mail, MailDetail } from "@app-types/mail";
 import type { ReplyMessagePayload, SendMessagePayload } from "@entities/mail";
 import { isOfflineError } from "@shared/api/ApiService";
 import { SIDEBAR_TEXTS } from "@shared/constants/texts";
+import { showToast } from "@shared";
 
 type InboxSubscriber = (state: InboxState) => void;
 
@@ -30,12 +33,14 @@ export type InboxState = {
     total: number;
     unread: number;
     loadingList: boolean;
+    loadingMore: boolean;
     loadingSelection: boolean;
     mutating: boolean;
     error: string | null;
     offlineSelectionFallback: boolean;
     folders: FolderSummary[];
     activeFolderId: string;
+    pagination: NormalizedPagination;
 };
 
 export type FolderSummary = {
@@ -56,17 +61,20 @@ const initialState: InboxState = {
     total: 0,
     unread: 0,
     loadingList: false,
+    loadingMore: false,
     loadingSelection: false,
     mutating: false,
     error: null,
     offlineSelectionFallback: false,
     folders: [],
     activeFolderId: DEFAULT_FOLDER_ID,
+    pagination: { hasNext: false },
 };
 
 export class InboxStore {
     private state: InboxState = initialState;
     private subscribers = new Set<InboxSubscriber>();
+    private readonly localReadIds: Set<string> = loadReadIds();
 
     public subscribe(listener: InboxSubscriber): () => void {
         this.subscribers.add(listener);
@@ -116,16 +124,16 @@ export class InboxStore {
         this.setState((state) => ({
             ...state,
             loadingList: true,
+            loadingMore: false,
             error: null,
+            pagination: { hasNext: false },
+            mails: targetFolder === state.activeFolderId ? state.mails : [],
         }));
 
         try {
             const summary = await this.fetchFolderSummary(targetFolder);
             cacheInboxSummary(targetFolder, summary);
-            const normalizedItems =
-                targetFolder === "draft"
-                    ? summary.items.map((mail) => ({ ...mail, isRead: true }))
-                    : summary.items;
+            const normalizedItems = this.applyLocalRead(summary.items, targetFolder);
             this.setState((state) => {
                 const selectedMailId = state.selectedMailId;
                 const matchedMail = selectedMailId
@@ -151,6 +159,8 @@ export class InboxStore {
                     total: summary.total,
                     unread: targetFolder === "draft" ? 0 : summary.unread,
                     loadingList: false,
+                    loadingMore: false,
+                    pagination: summary.pagination ?? { hasNext: false },
                     selectedMailId: matchedMail ? state.selectedMailId : undefined,
                     selectedMail: matchedMail ? nextSelectedMail : null,
                     offlineSelectionFallback: matchedMail ? state.offlineSelectionFallback : false,
@@ -175,6 +185,7 @@ export class InboxStore {
             this.setState((state) => ({
                 ...state,
                 loadingList: false,
+                loadingMore: false,
                 error: toErrorMessage(error),
             }));
             throw error;
@@ -216,6 +227,11 @@ export class InboxStore {
                 const updatedMails = state.mails.map((mail) =>
                     mail.id === id ? { ...mail, isRead: true } : mail
                 );
+
+                if (wasUnread || !this.localReadIds.has(id)) {
+                    this.localReadIds.add(id);
+                    saveReadIds(this.localReadIds);
+                }
 
                 return {
                     ...state,
@@ -271,7 +287,14 @@ export class InboxStore {
 
     public async createFolder(name: string): Promise<FolderSummary> {
         return this.runMutation(async () => {
-            const created = await createFolder(name);
+            let created: FolderSummary;
+            try {
+                created = await createFolder(name);
+            } catch (error: any) {
+                const message = toErrorMessage(error);
+                showToast(message || "Не удалось создать папку", "error");
+                throw error;
+            }
             await this.loadFolders();
             await this.loadFolder(created.id);
             return created;
@@ -318,6 +341,46 @@ export class InboxStore {
         await this.openMail(selectedId);
     }
 
+    public async loadMore(): Promise<void> {
+        const { activeFolderId, pagination, loadingList, loadingMore } = this.state;
+        if (loadingList || loadingMore || !pagination?.hasNext) {
+            return;
+        }
+
+        this.setState((state) => ({
+            ...state,
+            loadingMore: true,
+            error: null,
+        }));
+
+        try {
+            const summary = await this.fetchFolderSummary(activeFolderId, {
+                lastMessageId: pagination.nextLastMessageId,
+                lastDatetime: pagination.nextLastDatetime,
+            });
+            const normalizedItems = this.applyLocalRead(summary.items, activeFolderId);
+            this.setState((state) => {
+                const existingIds = new Set(state.mails.map((m) => m.id));
+                const deduped = normalizedItems.filter((mail) => !existingIds.has(mail.id));
+                return {
+                    ...state,
+                    mails: [...state.mails, ...deduped],
+                    total: summary.total,
+                    unread: activeFolderId === "draft" ? 0 : summary.unread,
+                    loadingMore: false,
+                    pagination: summary.pagination ?? { hasNext: false },
+                };
+            });
+        } catch (error) {
+            this.setState((state) => ({
+                ...state,
+                loadingMore: false,
+                error: toErrorMessage(error),
+            }));
+            throw error;
+        }
+    }
+
     private async runMutation<T>(task: () => Promise<T>): Promise<T> {
         this.setState((state) => ({
             ...state,
@@ -341,11 +404,18 @@ export class InboxStore {
         }
     }
 
-    private async fetchFolderSummary(folderId: string): Promise<InboxSummary> {
+    private async fetchFolderSummary(folderId: string, cursor?: PaginationCursor): Promise<InboxSummary> {
         if (!folderId || folderId === "inbox") {
-            return fetchInboxMessages();
+            return fetchInboxMessages(cursor);
         }
-        return fetchFolderMessages(folderId);
+        return fetchFolderMessages(folderId, cursor);
+    }
+
+    private applyLocalRead(items: Mail[], folderId: string): Mail[] {
+        if (folderId === "draft") {
+            return items.map((mail) => ({ ...mail, isRead: true }));
+        }
+        return items.map((mail) => (this.localReadIds.has(mail.id) ? { ...mail, isRead: true } : mail));
     }
 
     private setState(updater: (prev: InboxState) => InboxState): void {
@@ -372,16 +442,33 @@ export class InboxStore {
 
 function toErrorMessage(error: unknown): string {
     if (error instanceof Error && error.message) {
-        return error.message;
+        const parsed = tryParseMessage(error.message);
+        return parsed ?? error.message;
     }
     if (typeof error === "string") {
-        return error;
+        const parsed = tryParseMessage(error);
+        return parsed ?? error;
     }
     return "Unexpected error";
 }
 
+function tryParseMessage(raw: string): string | null {
+    try {
+        const data = JSON.parse(raw);
+        if (data && typeof data === "object" && "message" in data) {
+            const msg = (data as { message?: unknown }).message;
+            if (typeof msg === "string") return msg;
+        }
+    } catch {
+        // ignore parse errors
+    }
+    return null;
+}
+
 const INBOX_CACHE_KEY_PREFIX = "inbox:summary:";
 const INBOX_CACHE_TTL_MS = 1000 * 60 * 60; // 1 hour
+const READ_CACHE_KEY = "inbox:read-ids";
+const READ_CACHE_LIMIT = 500;
 
 type CachedInboxSummary = {
     total: number;
@@ -432,6 +519,33 @@ function readCachedInboxSummary(folderId: string): CachedInboxSummary | null {
         return parsed;
     } catch {
         return null;
+    }
+}
+
+function loadReadIds(): Set<string> {
+    if (typeof window === "undefined") {
+        return new Set();
+    }
+    try {
+        const raw = window.localStorage.getItem(READ_CACHE_KEY);
+        if (!raw) return new Set();
+        const arr = JSON.parse(raw);
+        if (!Array.isArray(arr)) return new Set();
+        return new Set(arr.filter((id) => typeof id === "string" && id));
+    } catch {
+        return new Set();
+    }
+}
+
+function saveReadIds(ids: Set<string>): void {
+    if (typeof window === "undefined") {
+        return;
+    }
+    try {
+        const arr = Array.from(ids).slice(-READ_CACHE_LIMIT);
+        window.localStorage.setItem(READ_CACHE_KEY, JSON.stringify(arr));
+    } catch {
+        // ignore storage errors
     }
 }
 

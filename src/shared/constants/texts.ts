@@ -4,7 +4,6 @@ export const HEADER_TEXTS = {
 } as const;
 
 export const AVATAR_MENU_TEXTS = {
-    profile: "Профиль",
     settings: "Настройки",
     logout: "Выйти",
 } as const;
@@ -50,4 +49,3 @@ export const INBOX_PAGE_TEXTS = {
     offlineBackAction: 'Назад',
     emptyList: 'Пусто',
 } as const;
-

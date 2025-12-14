@@ -1,9 +1,9 @@
-import type { MailDetail } from "@app-types/mail";
+import type { MailAttachment, MailDetail } from "@app-types/mail";
 import { InboxStore } from "@features/inbox";
 import { Router } from "@infra";
 import { INBOX_PAGE_TEXTS } from "@pages/constants/texts";
 
-export type ComposePayload = { to: string; subject: string; body: string };
+export type ComposePayload = { to: string; subject: string; body: string; attachments?: MailAttachment[] };
 
 type Dependencies = {
     store: InboxStore;
@@ -33,6 +33,7 @@ export class InboxActions {
                 to: recipient,
                 subject: data.subject ?? "",
                 body: data.body ?? "",
+                attachments: data.attachments,
             });
             this.store.clearSelection();
             await this.router.navigate("/mail");
@@ -64,6 +65,7 @@ export class InboxActions {
                 body: data.body ?? "",
                 rootMessageId,
                 threadRoot: threadRootCandidate,
+                attachments: data.attachments,
             });
             await this.store.refreshSelectedMail();
         } catch (error) {
@@ -82,6 +84,7 @@ export class InboxActions {
                 to: recipient,
                 subject: data.subject ?? "",
                 body: data.body ?? "",
+                attachments: data.attachments,
             });
             await this.store.refreshSelectedMail();
         } catch (error) {
@@ -100,6 +103,7 @@ export class InboxActions {
                 body: data.body ?? "",
                 threadId,
                 draftId,
+                attachments: data.attachments,
             });
             this.store.clearSelection();
             await this.store.loadFolder("draft");
@@ -131,6 +135,7 @@ export class InboxActions {
                     subject,
                     body,
                     threadId: context.threadId,
+                    attachments: data.attachments,
                 }));
 
             await this.store.sendDraft({
@@ -139,6 +144,7 @@ export class InboxActions {
                 subject,
                 body,
                 threadId: context.threadId,
+                attachments: data.attachments,
             });
             this.store.clearSelection();
             await this.router.navigate("/mail/sent");

@@ -5,6 +5,8 @@ import "./MailView.scss";
 import { MAIL_VIEW_TEXTS } from "@pages/constants/texts";
 import { getOnlineStatus, subscribeToOnlineStatus } from "@shared/utils/onlineStatus";
 import { probeOnlineStatus } from "@shared/utils/networkProbe";
+import type { MailAttachment } from "@app-types/mail";
+import { getAccessToken } from "@shared/api/authTokens";
 
 type Props = {
     id: string;
@@ -15,6 +17,7 @@ type Props = {
     avatarUrl?: string | null;
     fromEmail?: string;
     recipient?: string;
+    attachments?: MailAttachment[];
     currentFolderId?: string;
     currentFolderType?: string;
     onBack?: () => void;
@@ -159,6 +162,7 @@ export class MailViewComponent extends Component<Props> {
             fromEmail: this.props.fromEmail ?? from,
             recipient: this.props.recipient ?? MAIL_VIEW_TEXTS.recipientFallback,
             recipientLabel: MAIL_VIEW_TEXTS.recipientLabel,
+            hasAttachments: Boolean(this.props.attachments && this.props.attachments.length > 0),
         });
     }
 
@@ -192,6 +196,7 @@ export class MailViewComponent extends Component<Props> {
         }
 
         this.updateAvatarDisplay();
+        this.renderAttachments();
     }
 
     public async unmount(): Promise<void> {
@@ -247,5 +252,214 @@ export class MailViewComponent extends Component<Props> {
 
     private computeInitials(from: string | undefined): string {
         return (from?.[0] || "").toUpperCase();
+    }
+
+    private renderAttachments(): void {
+        if (!this.element) return;
+        const list = this.element.querySelector("[data-attachments-list]") as HTMLElement | null;
+        const root = this.element.querySelector("[data-attachments]") as HTMLElement | null;
+        if (!list || !root) {
+            return;
+        }
+
+        const attachments = this.props.attachments ?? [];
+        if (attachments.length === 0) {
+            root.setAttribute("hidden", "true");
+            list.innerHTML = "";
+            return;
+        }
+
+        root.removeAttribute("hidden");
+        list.innerHTML = "";
+
+        attachments.forEach((item) => {
+            const card = document.createElement("div");
+            card.className = "mail-view__attachment";
+            const href = this.resolveAttachmentUrl(item.storagePath);
+            if (href) {
+                card.setAttribute("data-href", href);
+            }
+
+            const name = document.createElement("div");
+            name.className = "mail-view__attachment-name";
+            name.textContent = item.name;
+
+            const meta = document.createElement("div");
+            meta.className = "mail-view__attachment-meta";
+            meta.textContent = this.formatSize(item.size);
+
+            const actions = document.createElement("div");
+            actions.className = "mail-view__attachment-actions";
+
+            const download = document.createElement("a");
+            download.className = "mail-view__attachment-download";
+            download.textContent = "Скачать";
+            if (href) {
+                download.href = href;
+                download.download = item.name || undefined;
+                download.rel = "noopener noreferrer";
+                download.target = "_blank";
+            } else {
+                download.href = "#";
+            }
+
+            actions.appendChild(download);
+
+            card.appendChild(name);
+            card.appendChild(meta);
+            card.appendChild(actions);
+            card.onclick = (ev) => {
+                const url = href;
+                if (!url) return;
+                ev.preventDefault();
+                if (this.isPreviewable(item)) {
+                    void this.openPreview(item, url);
+                } else {
+                    window.open(url, "_blank", "noopener");
+                }
+            };
+
+            download.addEventListener("click", (ev) => {
+                ev.stopPropagation();
+            });
+
+            list.appendChild(card);
+        });
+    }
+
+    private resolveAttachmentUrl(storagePath?: string | null): string | null {
+        if (!storagePath) return null;
+        if (/^https?:\/\//i.test(storagePath)) {
+            return storagePath;
+        }
+        const base = typeof window !== "undefined" ? window.__API_BASE_URL__ ?? "" : "";
+        const normalizedPath = storagePath.startsWith("/") ? storagePath.slice(1) : storagePath;
+        const encodedPath = normalizedPath
+            .split("/")
+            .filter(Boolean)
+            .map((part) => encodeURIComponent(part))
+            .join("/");
+        const token = getAccessToken();
+        const query = token ? `?token=${encodeURIComponent(token)}` : "";
+        return `${base}/files/${encodedPath}${query}`;
+    }
+
+    private isPreviewable(item: MailAttachment): boolean {
+        const type = (item.fileType || "").toLowerCase();
+        if (type.startsWith("image/")) return true;
+        if (type === "application/pdf") return true;
+        if (type.startsWith("text/")) return true;
+        return false;
+    }
+
+    private async openPreview(item: MailAttachment, url: string): Promise<void> {
+        const overlay = document.createElement("div");
+        overlay.className = "mail-attachment-preview";
+        overlay.setAttribute("role", "dialog");
+        overlay.setAttribute("aria-modal", "true");
+
+        const content = document.createElement("div");
+        content.className = "mail-attachment-preview__content";
+
+        const header = document.createElement("div");
+        header.className = "mail-attachment-preview__header";
+        const title = document.createElement("div");
+        title.className = "mail-attachment-preview__title";
+        title.textContent = item.name || "Вложение";
+        const closeBtn = document.createElement("button");
+        closeBtn.className = "mail-attachment-preview__close";
+        closeBtn.innerHTML = "&times;";
+        closeBtn.type = "button";
+
+        const download = document.createElement("a");
+        download.className = "mail-attachment-preview__download";
+        download.href = url;
+        download.download = item.name || undefined;
+        download.target = "_blank";
+        download.rel = "noopener noreferrer";
+        download.textContent = "Скачать";
+
+        header.appendChild(title);
+        header.appendChild(download);
+        header.appendChild(closeBtn);
+
+        const body = document.createElement("div");
+        body.className = "mail-attachment-preview__body";
+
+        const loading = document.createElement("div");
+        loading.textContent = "Загрузка...";
+        body.appendChild(loading);
+
+        content.appendChild(header);
+        content.appendChild(body);
+        overlay.appendChild(content);
+
+        const close = () => {
+            overlay.remove();
+            if (previewUrl && previewUrl.startsWith("blob:")) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+        closeBtn.onclick = close;
+        overlay.onclick = (ev) => {
+            if (ev.target === overlay) {
+                close();
+            }
+        };
+        document.addEventListener(
+            "keydown",
+            (ev) => {
+                if (ev.key === "Escape") {
+                    close();
+                }
+            },
+            { once: true }
+        );
+
+        document.body.appendChild(overlay);
+
+        let previewUrl: string | null = null;
+        try {
+            const token = getAccessToken();
+            const resp = await fetch(url, {
+                headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+            });
+            if (!resp.ok) {
+                window.open(url, "_blank", "noopener");
+                close();
+                return;
+            }
+            const blob = await resp.blob();
+            previewUrl = URL.createObjectURL(blob);
+            body.innerHTML = "";
+
+            if (item.fileType?.startsWith("image/")) {
+                const img = document.createElement("img");
+                img.src = previewUrl;
+                img.alt = item.name || "";
+                body.appendChild(img);
+            } else {
+                const frame = document.createElement("iframe");
+                frame.src = previewUrl;
+                frame.title = item.name || "preview";
+                frame.setAttribute("loading", "lazy");
+                body.appendChild(frame);
+            }
+        } catch (error) {
+            console.error("Failed to load attachment preview", error);
+            window.open(url, "_blank", "noopener");
+            close();
+        }
+    }
+
+    private formatSize(size: number | undefined): string {
+        if (!size || Number.isNaN(size)) return "";
+        if (size >= 1024 * 1024) {
+            return `${(size / (1024 * 1024)).toFixed(1)} МБ`;
+        }
+        if (size >= 1024) {
+            return `${(size / 1024).toFixed(0)} КБ`;
+        }
+        return `${size} Б`;
     }
 }

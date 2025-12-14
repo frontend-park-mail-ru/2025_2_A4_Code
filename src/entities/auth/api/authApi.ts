@@ -6,6 +6,13 @@ export type LoginPayload = {
     password: string;
 };
 
+export type TokenResponseBody = {
+    access_token?: string;
+    refresh_token?: string;
+    accessToken?: string;
+    refreshToken?: string;
+};
+
 export type RegisterPayload = {
     name: string;
     username: string;
@@ -15,9 +22,10 @@ export type RegisterPayload = {
 };
 
 type VoidResponse = ApiResponse<unknown>;
+type LoginResponse = ApiResponse<TokenResponseBody>;
 
-export async function login(payload: LoginPayload): Promise<VoidResponse> {
-    return apiService.request<VoidResponse>("/auth/login", {
+export async function login(payload: LoginPayload): Promise<LoginResponse> {
+    return apiService.request<LoginResponse>("/auth/login", {
         method: "POST",
         body: payload,
         skipAuthRefresh: true,

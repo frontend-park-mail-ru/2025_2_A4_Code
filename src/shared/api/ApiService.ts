@@ -1,5 +1,12 @@
 import { setOnlineStatus } from "@shared/utils/onlineStatus";
 import { DATA_CACHE_PREFIX } from "../../serviceWorker/cacheConfig";
+import {
+    getAccessToken,
+    getRefreshToken,
+    setTokens,
+    clearTokens,
+    extractTokens,
+} from "./authTokens";
 
 export interface RequestOptions extends Omit<RequestInit, "body" | "headers"> {
     parseJson?: boolean;
@@ -89,10 +96,21 @@ export class ApiService {
             bodyType: body === undefined ? "none" : isJsonPayload ? "json" : typeof body,
         });
 
+        let accessToken = getAccessToken();
+
+        if (!accessToken && getRefreshToken() && !skipAuthRefresh) {
+            await this.tryRefreshTokens();
+            accessToken = getAccessToken();
+        }
+
         const preparedHeaders: Record<string, string> = {
             ...(isJsonPayload ? { "Content-Type": "application/json" } : {}),
             ...headers,
         };
+
+        if (accessToken && !preparedHeaders.Authorization && !preparedHeaders.authorization) {
+            preparedHeaders.Authorization = `Bearer ${accessToken}`;
+        }
 
         const preparedBody =
             body === undefined
@@ -136,6 +154,7 @@ export class ApiService {
             if (!response.ok) {
                 if (response.status === 401) {
                     this.unauthorizedHandler?.({ url: requestUrl, method, status: response.status });
+                    clearTokens();
                 }
                 const errorText = await response.text();
                 throw new HttpError(response.status, requestUrl, errorText || undefined);
@@ -179,7 +198,8 @@ export class ApiService {
             !url.startsWith("/auth/login") &&
             !url.startsWith("/auth/signup") &&
             !url.startsWith("/auth/refresh") &&
-            !url.startsWith("/auth/logout")
+            !url.startsWith("/auth/logout") &&
+            !!getRefreshToken()
         );
     }
 
@@ -199,21 +219,54 @@ export class ApiService {
     }
 
     private async performRefresh(): Promise<boolean> {
+        const refreshToken = getRefreshToken();
+        if (!refreshToken) {
+            return false;
+        }
+
         try {
             const response = await fetch(`${this.baseUrl}/auth/refresh`, {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${refreshToken}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ refresh_token: refreshToken }),
                 credentials: "include",
             });
 
             if (!response.ok) {
                 console.warn("[api] token refresh failed", { status: response.status });
+                clearTokens();
                 return false;
             }
 
+            const data = await response.json().catch(() => null);
+            const access =
+                (data as any)?.access_token ??
+                (data as any)?.accessToken ??
+                (data as any)?.body?.access_token ??
+                (data as any)?.body?.accessToken ??
+                null;
+            const refresh =
+                (data as any)?.refresh_token ??
+                (data as any)?.refreshToken ??
+                (data as any)?.body?.refresh_token ??
+                (data as any)?.body?.refreshToken ??
+                refreshToken;
+
+            if (!access) {
+                console.warn("[api] token refresh missing access token");
+                clearTokens();
+                return false;
+            }
+
+            setTokens(access, refresh);
             console.info("[api] token refresh success");
             return true;
         } catch (error) {
             console.error("[api] token refresh network error", error);
+            clearTokens();
             return false;
         }
     }

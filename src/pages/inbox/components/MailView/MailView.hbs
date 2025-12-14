@@ -32,5 +32,9 @@
     </div>
   </div>
 
+  <div class="mail-view__attachments" data-attachments {{#unless hasAttachments}}hidden{{/unless}}>
+    <div class="mail-view__attachments-list" data-attachments-list></div>
+  </div>
+
   <div class="mail-view__body">{{{body}}}</div>
 </div>

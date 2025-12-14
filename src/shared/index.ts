@@ -39,3 +39,4 @@ export {
 } from "./constants/texts";
 
 export { showFolderNotification } from "./components/FolderToast/FolderToast";
+export { showToast, type ToastVariant } from "./components/Toast/Toast";

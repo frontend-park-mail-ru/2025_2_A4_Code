@@ -1,4 +1,4 @@
-import type { MailDetail } from "@app-types/mail";
+import type { MailAttachment, MailDetail } from "@app-types/mail";
 
 export type ComposeDraft = {
     initialTo?: string;
@@ -7,6 +7,7 @@ export type ComposeDraft = {
     focusField?: "to" | "subject" | "body";
     threadId?: string;
     draftId?: string;
+    attachments?: MailAttachment[];
 };
 
 export function buildReplyDraft(mail: MailDetail): ComposeDraft {

@@ -1,8 +1,24 @@
+:root {
+  --color-bg: #EFF2F7;
+  --color-panel: #FFFFFF;
+  --color-text: #1f2544;
+  --color-muted: #6b7280;
+  --color-border: #dbe1f1;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  margin: 0;
+}
+
 .main-layout {
+  height: 100vh;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #EFF2F7;
+  overflow: hidden;
+  background: var(--color-bg, #EFF2F7);
   font-family: 'Nunito Sans', sans-serif;
   
   &__header {
@@ -16,6 +32,7 @@
   &__container {
     display: flex;
     flex: 1;
+    min-height: 0;
     overflow: hidden;
   }
 
@@ -34,7 +51,10 @@
     flex: 1;
     padding: 20px;
     overflow-y: auto;
-    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background-color: var(--color-panel, #FFFFFF);
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
 
@@ -133,7 +153,7 @@
       bottom: 0;
       width: 280px;
       max-width: 80vw;
-      background: #eff2f7;
+      background: var(--color-bg, #eff2f7);
       box-shadow: 8px 0 20px rgba(17, 24, 56, 0.12);
       transform: translateX(-110%);
       transition: transform 0.2s ease;

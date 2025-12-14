@@ -5,12 +5,12 @@ import { formatDateTimeFromBackend } from "@utils";
 import { ensureHttpsAssetUrl } from "@shared/utils/url";
 
 type InboxApiResponse = {
-    message_total: number;
-    message_unread: number;
+    message_total: number | string;
+    message_unread: number | string;
     messages: InboxMessageDto[];
     pagination: {
-        has_next: boolean;
-        next_last_message_id?: number;
+        has_next: boolean | string;
+        next_last_message_id?: number | string;
         next_last_datetime?: string;
     };
 };
@@ -26,6 +26,7 @@ type InboxMessageDto = {
     snippet: string;
     datetime: string;
     is_read: boolean | string;
+    read_status?: boolean | string;
 };
 
 type MessageDetailsDto = {
@@ -48,8 +49,20 @@ type MessageDetailsDto = {
 type MessageFileDto = {
     name: string;
     file_type: string;
-    size: number;
+    size: number | string;
     storage_path?: string | null;
+};
+type PreparedAttachment = {
+    name: string;
+    file_type: string;
+    size: string;
+    storage_path: string;
+};
+type UploadAttachmentResponse = {
+    storage_path: string;
+    name: string;
+    size: number;
+    file_type: string;
 };
 
 type SendMessageRequest = {
@@ -72,13 +85,26 @@ export type InboxSummary = {
     total: number;
     unread: number;
     items: Mail[];
-    pagination: InboxApiResponse["pagination"];
+    pagination: NormalizedPagination;
+};
+
+export type PaginationCursor = {
+    lastMessageId?: string | number;
+    lastDatetime?: string;
+    limit?: number;
+};
+
+export type NormalizedPagination = {
+    hasNext: boolean;
+    nextLastMessageId?: string;
+    nextLastDatetime?: string;
 };
 
 export type SendMessagePayload = {
     to: string;
     subject: string;
     body: string;
+    attachments?: MailAttachment[];
 };
 
 export type ReplyMessagePayload = {
@@ -87,6 +113,7 @@ export type ReplyMessagePayload = {
     body: string;
     rootMessageId: string;
     threadRoot: string;
+    attachments?: MailAttachment[];
 };
 
 export type SaveDraftPayload = {
@@ -95,6 +122,7 @@ export type SaveDraftPayload = {
     body?: string;
     threadId?: string;
     draftId?: string;
+    attachments?: MailAttachment[];
 };
 
 export type SendDraftPayload = {
@@ -103,6 +131,7 @@ export type SendDraftPayload = {
     subject?: string;
     body?: string;
     threadId?: string;
+    attachments?: MailAttachment[];
 };
 
 export type FolderSummary = {
@@ -117,6 +146,7 @@ export type FolderSummary = {
 export const MAX_FOLDER_NAME_LENGTH = 21;
 
 const INBOX_ENDPOINT = "/messages/inbox";
+const DEFAULT_PAGE_LIMIT = 100;
 const FOLDERS_ENDPOINT = "/messages/get-folders";
 const FOLDER_ENDPOINT = (name: string) => `/folders/${encodeURIComponent(name)}`;
 const MESSAGE_ENDPOINT = (id: string) => `/messages/${id}`;
@@ -131,16 +161,15 @@ const DELETE_FOLDER_ENDPOINT = "/messages/delete-folder";
 const SEND_DRAFT_ENDPOINT = "/messages/send-draft";
 const MARK_SPAM_ENDPOINT = "/messages/mark-as-spam";
 const SENDER_FALLBACK = "Неизвестный отправитель";
+const ATTACHMENT_PATH_PREFIX = "attachments";
+const MAX_STORAGE_PATH_LENGTH = 180;
+const DEFAULT_ATTACHMENT_EXTENSION = "bin";
 
-export async function fetchInboxMessages(): Promise<InboxSummary> {
-    const response = await apiService.request<ApiResponse<InboxApiResponse>>(INBOX_ENDPOINT);
-    const messages = response.body?.messages ?? [];
-    return {
-        total: Number(response.body.message_total) || 0,
-        unread: Number(response.body.message_unread) || 0,
-        items: messages.map(mapInboxMessage),
-        pagination: response.body.pagination,
-    };
+export async function fetchInboxMessages(cursor?: PaginationCursor): Promise<InboxSummary> {
+    const response = await apiService.request<ApiResponse<InboxApiResponse>>(
+        INBOX_ENDPOINT + buildPaginationQuery(cursor ?? { limit: DEFAULT_PAGE_LIMIT })
+    );
+    return normalizeInboxSummary(response.body);
 }
 
 export async function fetchFolders(): Promise<FolderSummary[]> {
@@ -164,19 +193,15 @@ export async function fetchFolders(): Promise<FolderSummary[]> {
     });
 }
 
-export async function fetchFolderMessages(folderName: string): Promise<InboxSummary> {
+export async function fetchFolderMessages(folderName: string, cursor?: PaginationCursor): Promise<InboxSummary> {
     if (!folderName || folderName === "inbox") {
-        return fetchInboxMessages();
+        return fetchInboxMessages(cursor);
     }
 
-    const response = await apiService.request<ApiResponse<InboxApiResponse>>(FOLDER_ENDPOINT(folderName));
-    const messages = response.body?.messages ?? [];
-    return {
-        total: Number(response.body.message_total) || 0,
-        unread: Number(response.body.message_unread) || 0,
-        items: messages.map(mapInboxMessage),
-        pagination: response.body.pagination,
-    };
+    const response = await apiService.request<ApiResponse<InboxApiResponse>>(
+        FOLDER_ENDPOINT(folderName) + buildPaginationQuery(cursor ?? { limit: DEFAULT_PAGE_LIMIT })
+    );
+    return normalizeInboxSummary(response.body);
 }
 
 export async function fetchMessageById(id: string): Promise<MailDetail> {
@@ -198,7 +223,7 @@ export async function sendMessage(payload: SendMessagePayload): Promise<void> {
         topic: payload.subject.trim(),
         text: payload.body,
         receivers: [{ email: trimmedTo }],
-        files: [],
+        files: mapAttachmentsToDto(payload.attachments),
     };
 
     await apiService.request<ApiResponse<unknown>>(SEND_ENDPOINT, {
@@ -222,7 +247,7 @@ export async function replyToMessage(payload: ReplyMessagePayload): Promise<void
         text: payload.body,
         thread_root: threadRoot,
         receivers: [{ email: trimmedTo }],
-        files: [],
+        files: mapAttachmentsToDto(payload.attachments),
     };
 
     await apiService.request<ApiResponse<unknown>>(REPLY_ENDPOINT, {
@@ -286,7 +311,7 @@ export async function saveDraft(payload: SaveDraftPayload): Promise<{ draftId: s
         topic: (payload.subject ?? "").trim(),
         text: payload.body ?? "",
         receivers: trimmedTo ? [{ email: trimmedTo }] : [],
-        files: [],
+        files: mapAttachmentsToDto(payload.attachments),
     };
 
     const response = await apiService.request<ApiResponse<{ draft_id?: string }>>(SAVE_DRAFT_ENDPOINT, {
@@ -334,6 +359,7 @@ export async function sendDraft(payload: SendDraftPayload): Promise<void> {
             subject: payload.subject,
             body: payload.body,
             threadId: payload.threadId,
+            attachments: payload.attachments,
         });
     }
 
@@ -353,11 +379,95 @@ export async function deleteDraft(draftId: string): Promise<void> {
     });
 }
 
+export async function uploadAttachment(file: File, desiredPath?: string): Promise<MailAttachment> {
+    const formData = new FormData();
+    formData.append("file", file, file.name);
+    if (desiredPath) {
+        formData.append("path", desiredPath);
+    }
+
+    const response = await apiService.request<ApiResponse<UploadAttachmentResponse>>("/files/upload", {
+        method: "POST",
+        body: formData,
+    });
+
+    const body = response.body as UploadAttachmentResponse;
+    return {
+        name: body?.name ?? file.name,
+        fileType: body?.file_type ?? file.type ?? "",
+        size: Number(body?.size ?? file.size),
+        storagePath: body?.storage_path ?? desiredPath ?? "",
+    };
+}
+
+function buildPaginationQuery(cursor?: PaginationCursor): string {
+    if (!cursor) {
+        return "";
+    }
+    const params = new URLSearchParams();
+    if (cursor.lastMessageId !== undefined) {
+        params.set("last_message_id", String(cursor.lastMessageId));
+    }
+    if (cursor.lastDatetime) {
+        params.set("last_datetime", cursor.lastDatetime);
+    }
+    if (cursor.limit) {
+        params.set("limit", String(cursor.limit));
+    }
+    const qs = params.toString();
+    return qs ? `?${qs}` : "";
+}
+
+function normalizeInboxSummary(api?: InboxApiResponse): InboxSummary {
+    const messages = api?.messages ?? [];
+    return {
+        total: Number(api?.message_total) || 0,
+        unread: Number(api?.message_unread) || 0,
+        items: messages.map(mapInboxMessage),
+        pagination: normalizePagination(api?.pagination),
+    };
+}
+
+function mapAttachmentsToDto(attachments?: MailAttachment[]): PreparedAttachment[] {
+    if (!attachments || attachments.length === 0) {
+        return [];
+    }
+
+    return attachments.map((attachment) => ({
+        name: attachment.name,
+        file_type: attachment.fileType || "",
+        size: String(Number(attachment.size) || 0),
+        storage_path: normalizeStoragePath(attachment),
+    }));
+}
+
+function normalizeStoragePath(attachment: MailAttachment): string {
+    const candidate = (attachment.storagePath ?? "").trim();
+    if (candidate.length > 0) {
+        return candidate;
+    }
+    const safeName = buildSafeFileName(attachment.name);
+    const path = `${ATTACHMENT_PATH_PREFIX}/${Date.now()}-${safeName}`;
+    return path.slice(0, MAX_STORAGE_PATH_LENGTH);
+}
+
+function buildSafeFileName(name: string): string {
+    const trimmed = name.trim() || DEFAULT_ATTACHMENT_EXTENSION;
+    const parts = trimmed.split(".");
+    const extRaw = parts.length > 1 ? parts.pop() || DEFAULT_ATTACHMENT_EXTENSION : DEFAULT_ATTACHMENT_EXTENSION;
+    const baseRaw = parts.join(".") || "file";
+    const ext = extRaw.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10) || DEFAULT_ATTACHMENT_EXTENSION;
+    const base = baseRaw.replace(/[^a-zA-Z0-9_-]/g, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "") || "file";
+    const limitedBase = base.slice(0, 80);
+    return `${limitedBase}.${ext}`;
+}
+
 function mapInboxMessage(apiMessage: InboxMessageDto): Mail {
-    const isRead =
-        typeof apiMessage.is_read === "string"
-            ? apiMessage.is_read.toLowerCase() === "true"
-            : Boolean(apiMessage.is_read);
+    const isRead = parseIsRead(
+        apiMessage.is_read ??
+            (apiMessage as unknown as { read_status?: unknown }).read_status ??
+            (apiMessage as unknown as { readStatus?: unknown }).readStatus
+    );
     return {
         id: apiMessage.id,
         from: apiMessage.sender.username || apiMessage.sender.email,
@@ -367,6 +477,26 @@ function mapInboxMessage(apiMessage: InboxMessageDto): Mail {
         avatarUrl: ensureHttpsAssetUrl(apiMessage.sender.avatar),
         isRead,
     };
+}
+
+function normalizePagination(pagination?: InboxApiResponse["pagination"]): NormalizedPagination {
+    return {
+        hasNext: parseBooleanLike(pagination?.has_next),
+        nextLastMessageId: pagination?.next_last_message_id
+            ? String(pagination.next_last_message_id)
+            : undefined,
+        nextLastDatetime: pagination?.next_last_datetime || undefined,
+    };
+}
+
+function parseBooleanLike(raw: unknown): boolean {
+    if (typeof raw === "boolean") return raw;
+    if (typeof raw === "number") return raw > 0;
+    if (typeof raw === "string") {
+        const norm = raw.trim().toLowerCase();
+        return norm === "true" || norm === "1" || norm === "yes";
+    }
+    return false;
 }
 
 function mapMessageDetails(id: string, dto: MessageDetailsDto): MailDetail {
@@ -391,6 +521,20 @@ function mapMessageDetails(id: string, dto: MessageDetailsDto): MailDetail {
     };
 }
 
+function parseIsRead(raw: unknown): boolean {
+    if (typeof raw === "boolean") {
+        return raw;
+    }
+    if (typeof raw === "number") {
+        return raw > 0;
+    }
+    if (typeof raw === "string") {
+        const normalized = raw.trim().toLowerCase();
+        return normalized === "true" || normalized === "1" || normalized === "yes";
+    }
+    return false;
+}
+
 function mapAttachments(files: MessageFileDto[] | undefined): MailAttachment[] | undefined {
     if (!files?.length) {
         return undefined;
@@ -399,7 +543,7 @@ function mapAttachments(files: MessageFileDto[] | undefined): MailAttachment[] |
     return files.map((file) => ({
         name: file.name,
         fileType: file.file_type,
-        size: file.size,
+        size: typeof file.size === "string" ? Number(file.size) || 0 : file.size,
         storagePath: file.storage_path ?? null,
     }));
 }
