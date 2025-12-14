@@ -345,16 +345,30 @@ export class MailViewComponent extends Component<Props> {
     }
 
     private isPreviewable(item: MailAttachment): boolean {
-        const byType = (item.fileType || "").toLowerCase();
-        const type = byType || this.detectTypeByExtension(item.name);
+        const type = this.getEffectiveType(item);
         if (type.startsWith("image/")) return true;
         if (type === "application/pdf") return true;
         if (type.startsWith("text/")) return true;
         return false;
     }
 
-    private detectTypeByExtension(name?: string): string {
-        const ext = (name?.split(".").pop() || "").toLowerCase();
+    private getEffectiveType(item: MailAttachment): string {
+        const direct = this.normalizeType(item.fileType || "");
+        if (direct && direct !== "application/octet-stream") {
+            return direct;
+        }
+        const byName = this.detectTypeByExtension(item.name);
+        if (byName) return byName;
+        return this.detectTypeByExtension(item.storagePath);
+    }
+
+    private normalizeType(raw: string): string {
+        const base = (raw || "").split(";")[0].trim().toLowerCase();
+        return base;
+    }
+
+    private detectTypeByExtension(nameOrPath?: string | null): string {
+        const ext = (nameOrPath?.split(".").pop() || "").toLowerCase();
         const map: Record<string, string> = {
             jpg: "image/jpeg",
             jpeg: "image/jpeg",
