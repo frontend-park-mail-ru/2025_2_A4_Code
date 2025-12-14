@@ -345,11 +345,24 @@ export class MailViewComponent extends Component<Props> {
     }
 
     private isPreviewable(item: MailAttachment): boolean {
-        const type = (item.fileType || "").toLowerCase();
+        const byType = (item.fileType || "").toLowerCase();
+        const type = byType || this.detectTypeByExtension(item.name);
         if (type.startsWith("image/")) return true;
         if (type === "application/pdf") return true;
         if (type.startsWith("text/")) return true;
         return false;
+    }
+
+    private detectTypeByExtension(name?: string): string {
+        const ext = (name?.split(".").pop() || "").toLowerCase();
+        const map: Record<string, string> = {
+            jpg: "image/jpeg",
+            jpeg: "image/jpeg",
+            png: "image/png",
+            pdf: "application/pdf",
+            txt: "text/plain",
+        };
+        return map[ext] ?? "";
     }
 
     private async openPreview(item: MailAttachment, url: string): Promise<void> {

@@ -9,9 +9,9 @@ import { uploadAttachment } from "@entities/mail";
 import { showToast } from "@shared";
 
 const ALLOWED_FILE_TYPES = new Set(["image/jpeg", "image/png", "application/pdf", "text/plain"]);
-const MAX_FILE_SIZE = 25 * 1024 * 1024;
+const MAX_FILE_SIZE = 40 * 1024 * 1024;
 const MAX_ATTACHMENTS = 20;
-const MAX_TOTAL_SIZE = 25 * 1024 * 1024;
+const MAX_TOTAL_SIZE = 40 * 1024 * 1024;
 
 type Props = {
     onClose?: () => void;
@@ -237,7 +237,7 @@ export class ComposeModal extends Component<Props> {
                 }
                 const nextTotal = this.getCurrentTotalSize() + file.size;
                 if (nextTotal > MAX_TOTAL_SIZE) {
-                    this.setAttachError("Суммарный размер вложений превышает 25 МБ");
+                    this.setAttachError("Суммарный размер вложений превышает 40 МБ");
                     return;
                 }
                 this.uploadAndAddAttachment(file);
@@ -338,7 +338,7 @@ export class ComposeModal extends Component<Props> {
             return "Этот тип файла не поддерживается";
         }
         if (file.size > MAX_FILE_SIZE) {
-            return "Размер файла превышает 25 МБ";
+            return "Размер файла превышает 40 МБ";
         }
         return null;
     }
