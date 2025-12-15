@@ -110,25 +110,32 @@ export class InboxStore {
         }
     }
 
-    public async loadFolder(folderId: string): Promise<void> {
+    public async loadFolder(folderId: string, opts?: { silent?: boolean }): Promise<void> {
         this.setState((state) => ({
             ...state,
             activeFolderId: folderId,
         }));
-        await this.loadList(folderId);
+        await this.loadList(folderId, opts?.silent);
     }
 
-    public async loadList(folderId?: string): Promise<void> {
+    public async loadList(folderId?: string, silent = false): Promise<void> {
         const targetFolder = folderId ?? this.state.activeFolderId ?? DEFAULT_FOLDER_ID;
 
-        this.setState((state) => ({
-            ...state,
-            loadingList: true,
-            loadingMore: false,
-            error: null,
-            pagination: { hasNext: false },
-            mails: targetFolder === state.activeFolderId ? state.mails : [],
-        }));
+        if (!silent) {
+            this.setState((state) => ({
+                ...state,
+                loadingList: true,
+                loadingMore: false,
+                error: null,
+                pagination: { hasNext: false },
+                mails: targetFolder === state.activeFolderId ? state.mails : [],
+            }));
+        } else {
+            this.setState((state) => ({
+                ...state,
+                error: null,
+            }));
+        }
 
         try {
             const summary = await this.fetchFolderSummary(targetFolder);
@@ -158,8 +165,8 @@ export class InboxStore {
                     mails: normalizedItems,
                     total: summary.total,
                     unread: targetFolder === "draft" ? 0 : summary.unread,
-                    loadingList: false,
-                    loadingMore: false,
+                    loadingList: silent ? state.loadingList : false,
+                    loadingMore: silent ? state.loadingMore : false,
                     pagination: summary.pagination ?? { hasNext: false },
                     selectedMailId: matchedMail ? state.selectedMailId : undefined,
                     selectedMail: matchedMail ? nextSelectedMail : null,
@@ -184,8 +191,8 @@ export class InboxStore {
             }
             this.setState((state) => ({
                 ...state,
-                loadingList: false,
-                loadingMore: false,
+                loadingList: silent ? state.loadingList : false,
+                loadingMore: silent ? state.loadingMore : false,
                 error: toErrorMessage(error),
             }));
             throw error;
@@ -267,6 +274,7 @@ export class InboxStore {
             ...state,
             selectedMailId: undefined,
             selectedMail: null,
+            loadingSelection: false,
             offlineSelectionFallback: false,
         }));
     }
@@ -317,12 +325,8 @@ export class InboxStore {
     }
 
     public async saveDraft(payload: SaveDraftPayload): Promise<string> {
-        return this.runMutation(async () => {
-            const result = await saveDraft(payload);
-            await this.loadFolders();
-            await this.loadFolder("draft");
-            return result.draftId;
-        });
+        const result = await saveDraft(payload);
+        return result.draftId;
     }
 
     public async sendDraft(payload: SendDraftPayload): Promise<void> {

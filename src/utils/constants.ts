@@ -1,5 +1,6 @@
 export const LOGIN_EMPTY_ERROR = "Введите логин";
 export const LOGIN_NOT_ALLOWED_ERROR = "Некорректный формат почты";
+export const LOGIN_TOO_LONG_ERROR = "Логин не должен превышать 30 символов";
 
 export const PASSWORD_EMPTY_ERROR = "Введите пароль";
 export const PASSWORD_NOT_ALLOWED_ERROR = "Пароль должен быть не короче 6 символов";

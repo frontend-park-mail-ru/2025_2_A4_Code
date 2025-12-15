@@ -106,7 +106,7 @@ export class InboxActions {
                 attachments: data.attachments,
             });
             this.store.clearSelection();
-            await this.store.loadFolder("draft");
+            await Promise.all([this.store.loadFolders(), this.store.loadFolder("draft", { silent: true })]);
             const path = `/mail/draft/${encodeURIComponent(saved)}`;
             await this.router.navigate(path);
             return saved;

@@ -6,24 +6,13 @@ import "./InterfaceSettings.scss";
 import { fetchFolders, createFolder, renameFolder, deleteFolder, type FolderSummary, MAX_FOLDER_NAME_LENGTH } from "@entities/mail";
 import { SIDEBAR_TEXTS } from "@shared/constants/texts";
 import { CreateFolderModal } from "../../../inbox/components/CreateFolderModal/CreateFolderModal";
+import { showToast } from "@shared";
 
 export type ItemId = "theme" | "signature" | "folders";
 
 const MAX_NAME_LENGTH = MAX_FOLDER_NAME_LENGTH;
 const THEME_STORAGE_KEY = "ui-theme";
 type ThemeId = "light" | "dark";
-const THEME_PRESETS: Record<ThemeId, { name: string; description: string; colors: { bg: string; panel: string; text: string; muted: string; border: string } }> = {
-    light: {
-        name: "Стандартная",
-        description: "Светлые фоны и привычный контраст.",
-        colors: { bg: "#EFF2F7", panel: "#FFFFFF", text: "#1f2544", muted: "#6b7280", border: "#dbe1f1" },
-    },
-    dark: {
-        name: "Темная",
-        description: "Темные панели и мягкие акценты.",
-        colors: { bg: "#0b1220", panel: "#0f172a", text: "#e5e7eb", muted: "#cbd5e1", border: "#243047" },
-    },
-};
 const THEME_ORDER: ThemeId[] = ["light", "dark"];
 
 export class InterfaceSettingsComponent extends Component {
@@ -530,6 +519,7 @@ export class InterfaceSettingsComponent extends Component {
             }
 
             await this.loadFolders();
+            showToast("Изменения сохранены", "success");
         } catch (error) {
             console.error("Failed to apply folder changes", error);
             this.setError(error instanceof Error ? error.message : "Не удалось применить изменения папок");
@@ -681,107 +671,5 @@ export class InterfaceSettingsComponent extends Component {
         }
 
         return false;
-    }
-
-    private renderThemeContent(): HTMLElement {
-        const wrapper = document.createElement("div");
-        wrapper.className = "interface-settings__theme";
-        this.themeRoot = wrapper;
-
-        const title = document.createElement("p");
-        title.className = "interface-settings__theme-title";
-        title.textContent = "Выберите тему оформления";
-        wrapper.appendChild(title);
-
-        const grid = document.createElement("div");
-        grid.className = "interface-settings__theme-grid";
-        wrapper.appendChild(grid);
-
-        THEME_ORDER.forEach((id) => {
-            const preset = THEME_PRESETS[id];
-            const card = document.createElement("button");
-            card.type = "button";
-            card.className = "interface-settings__theme-card";
-            card.setAttribute("data-theme-id", id);
-            if (id === this.currentTheme) {
-                card.classList.add("interface-settings__theme-card--active");
-            }
-            card.onclick = () => this.handleThemeSelect(id);
-
-            const info = document.createElement("div");
-            info.className = "interface-settings__theme-info";
-
-            const name = document.createElement("div");
-            name.className = "interface-settings__theme-name";
-            name.textContent = preset.name;
-
-            const desc = document.createElement("div");
-            desc.className = "interface-settings__theme-desc";
-            desc.textContent = preset.description;
-
-            info.append(name, desc);
-
-            const swatches = document.createElement("div");
-            swatches.className = "interface-settings__theme-swatches";
-            [preset.colors.bg, preset.colors.panel, preset.colors.text].forEach((color) => {
-                const swatch = document.createElement("span");
-                swatch.className = "interface-settings__theme-swatch";
-                swatch.style.backgroundColor = color;
-                swatches.appendChild(swatch);
-            });
-
-            card.append(info, swatches);
-            grid.appendChild(card);
-        });
-
-        return wrapper;
-    }
-
-    private handleThemeSelect(theme: ThemeId): void {
-        if (theme === this.currentTheme) {
-            return;
-        }
-        this.applyTheme(theme);
-    }
-
-    private applyTheme(theme: ThemeId, persist = true): void {
-        const preset = THEME_PRESETS[theme];
-        if (!preset) return;
-        const root = document.documentElement;
-        root.style.setProperty("--color-bg", preset.colors.bg);
-        root.style.setProperty("--color-panel", preset.colors.panel);
-        root.style.setProperty("--color-text", preset.colors.text);
-        root.style.setProperty("--color-muted", preset.colors.muted);
-        root.style.setProperty("--color-border", preset.colors.border);
-        root.setAttribute("data-theme", theme);
-        if (persist) {
-            try {
-                localStorage.setItem(THEME_STORAGE_KEY, theme);
-            } catch {
-                // ignore
-            }
-        }
-        this.currentTheme = theme;
-        this.updateThemeActiveState();
-    }
-
-    private updateThemeActiveState(): void {
-        if (!this.themeRoot) return;
-        this.themeRoot.querySelectorAll<HTMLButtonElement>(".interface-settings__theme-card").forEach((card) => {
-            const id = card.getAttribute("data-theme-id");
-            card.classList.toggle("interface-settings__theme-card--active", id === this.currentTheme);
-        });
-    }
-
-    private readStoredTheme(): ThemeId {
-        try {
-            const stored = localStorage.getItem(THEME_STORAGE_KEY) as ThemeId | null;
-            if (stored && THEME_ORDER.includes(stored)) {
-                return stored;
-            }
-        } catch {
-            // ignore
-        }
-        return "light";
     }
 }

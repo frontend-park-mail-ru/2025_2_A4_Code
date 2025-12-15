@@ -315,17 +315,31 @@
   &__icon-btn {
     width: 28px;
     height: 28px;
-    border: none;
+    border: 1px solid transparent;
     border-radius: 6px;
     background: transparent;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 
     img {
       width: 16px;
       height: 16px;
+    }
+
+    &:hover {
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+      transform: translateY(-1px);
+    }
+
+    &--disabled,
+    &:disabled {
+      transform: none;
+      background: transparent;
+      border-color: transparent;
     }
   }
 

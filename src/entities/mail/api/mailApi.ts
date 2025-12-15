@@ -44,6 +44,8 @@ type MessageDetailsDto = {
     avatar?: string | null;
     files?: MessageFileDto[];
     Files?: MessageFileDto[];
+    receivers?: Array<{ email?: string }>;
+    Receivers?: Array<{ email?: string }>;
 };
 
 type MessageFileDto = {
@@ -505,11 +507,26 @@ function mapMessageDetails(id: string, dto: MessageDetailsDto): MailDetail {
     const senderUsername = dto?.sender?.username ?? dto?.username ?? "";
     const senderDisplay =
         senderUsername.trim().length > 0 ? senderUsername.trim() : senderEmail.trim() || SENDER_FALLBACK;
+    const rawReceivers = (dto as any).receivers ?? (dto as any).Receivers;
+    const firstReceiver =
+        Array.isArray(rawReceivers) && rawReceivers.length
+            ? rawReceivers
+                  .map((r: any) => (r?.email ?? "").trim())
+                  .find((val: string) => val.length > 0)
+            : undefined;
+    const recipient =
+        firstReceiver ||
+        (dto as any).recipient?.trim?.() ||
+        (dto as any).receiver?.trim?.() ||
+        (dto as any).to?.trim?.() ||
+        dto.email?.trim?.() ||
+        "";
 
     return {
         id,
         from: senderDisplay,
         fromEmail: senderEmail.trim() || undefined,
+        recipient: recipient || undefined,
         subject: dto.topic ?? "",
         preview: text.slice(0, 120),
         time: formatDateTimeFromBackend(dto.datetime),

@@ -1,4 +1,4 @@
-import { HeaderComponent } from "@shared/widgets/Header/Header";
+﻿import { HeaderComponent } from "@shared/widgets/Header/Header";
 import { Component } from "@shared/base/Component";
 import { SidebarComponent } from "@shared/widgets/Sidebar/Sidebar";
 import { MailListComponent } from "@shared/widgets/MailList/MailList";
@@ -183,7 +183,8 @@ export class InboxPage extends Component {
     }
 
     private applyState(state: InboxState): void {
-        const isBusy = state.loadingList || state.loadingSelection || state.mutating;
+        const listLoading = state.activeFolderId === "draft" ? false : state.loadingList;
+        const isBusy = listLoading || state.loadingSelection || state.mutating;
         this.loadingManager.setBusy(isBusy);
 
         if (state.error && state.error !== this.lastErrorMessage) {
@@ -315,6 +316,9 @@ export class InboxPage extends Component {
         const folderType =
             folders.find((f) => f.id === activeFolderId || f.backendId === activeFolderId)?.type ||
             activeFolderId;
+        const recipient =
+            mail.recipient ??
+            (folderType && folderType.toLowerCase() === "sent" ? mail.fromEmail ?? mail.from : undefined);
         return new MailViewComponent({
             id: mail.id,
             from: mail.from,
@@ -323,6 +327,7 @@ export class InboxPage extends Component {
             body: mail.body,
             avatarUrl: mail.avatarUrl ?? null,
             fromEmail: mail.fromEmail ?? mail.from,
+            recipient,
             attachments: mail.attachments ?? [],
             currentFolderId: activeFolderId,
             currentFolderType: folderType,
@@ -418,6 +423,7 @@ export class InboxPage extends Component {
         this.composeModal = null;
         this.createFolderModal = null;
         this.moveFolderModal = null;
+        this.loadingManager.reset();
         const { activeFolderId, selectedMailId } = this.store.getState();
         const empty = document.createElement("div");
         this.updateSlot("modal", empty).then();
@@ -433,7 +439,10 @@ export class InboxPage extends Component {
         data: ComposePayload
     ): void {
         submit(data)
-            .then(() => this.closeModal())
+            .then(() => {
+                showToast("Письмо отправлено", "success");
+                this.closeModal();
+            })
             .catch((error) => {
                 console.error("Failed to send message", error);
                 this.closeModal();
