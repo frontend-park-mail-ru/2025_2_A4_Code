@@ -672,4 +672,19 @@ export class InterfaceSettingsComponent extends Component {
 
         return false;
     }
+
+    private readStoredTheme(): ThemeId {
+        if (typeof window === "undefined") {
+            return "light";
+        }
+        try {
+            const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+            if (stored && (THEME_ORDER as string[]).includes(stored)) {
+                return stored as ThemeId;
+            }
+        } catch {
+            // ignore storage errors and fall back to default
+        }
+        return "light";
+    }
 }
