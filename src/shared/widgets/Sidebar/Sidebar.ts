@@ -160,8 +160,11 @@ export class SidebarComponent extends Component<Props> {
 
     private renderAdSlot(): void {
         if (!this.adContainer) return;
-        const adHtml = (window as any).__AD_SLOT__;
-        if (adHtml && typeof adHtml === "string") {
+        const adHtml =
+            (window as any).__AD_SLOT__ ??
+            document.documentElement.getAttribute("data-ad-slot") ??
+            "";
+        if (typeof adHtml === "string" && adHtml.trim().length > 0) {
             this.adContainer.innerHTML = adHtml;
             this.adContainer.style.display = "block";
         } else {
