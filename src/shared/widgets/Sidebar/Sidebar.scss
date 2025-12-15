@@ -1,17 +1,21 @@
 .sidebar {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
   gap: 8px;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 
   &__compose {
     padding: 10px 10px;
     border-radius: 12px;
-    background: #ffffff;
+    background: var(--color-panel, #ffffff);
     color: #5163eb;
     border: 2px solid #5163eb;
     font-weight: 600;
     cursor: pointer;
     transition: box-shadow .15s ease, transform .15s ease;
+    user-select: none;
     
     &:hover {
     }
@@ -20,10 +24,44 @@
   &__folders {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 2px 0 0;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    flex: 1 1 auto;
+    min-height: 220px;
+  }
+
+  &__create-folder {
+    margin-top: 12px;
+    padding: 0;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+  &__sidebar-folder__name {
+    color: #5163eb;
+  }
+
+  &__ad {
+    margin-top: 12px;
+    width: 100%;
+    display: none;
+    align-self: center;
+
+    iframe {
+      width: 100%;
+      max-width: 240px;
+      border: none;
+      display: block;
+      margin: 0 auto;
+    }
   }
 }

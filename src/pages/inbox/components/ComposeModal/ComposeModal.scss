@@ -3,19 +3,23 @@
   inset: 0;
   background: rgba(7, 16, 41, 0.35);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 24px;
+  padding: clamp(12px, 4vw, 24px);
   z-index: 1000;
+  overflow-y: auto;
+  backdrop-filter: blur(1px);
 }
 
 .compose-modal {
   position: relative;
   width: min(900px, 100%);
-  background: #ffffff;
+  max-height: 92dvh;
+  overflow: hidden;
+  background: var(--color-panel, #ffffff);
   border-radius: 12px;
   box-shadow: 0 24px 60px rgba(20, 28, 60, 0.18);
-  padding: 32px 32px 16px;
+  padding: 28px 28px 16px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -54,12 +58,14 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  overflow: hidden;
 }
 
 .compose-modal__recipient {
   display: flex;
-  gap: 20px;
-  align-items: flex-start;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .compose-modal__avatar {
@@ -83,36 +89,41 @@
 .compose-modal__avatar-fallback {
   font-size: 18px;
   font-weight: 600;
-  color: #2d3c66;
+  color: var(--color-text, #2d3c66);
 }
 
 .compose-modal__inputs {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
 
 .compose-modal__inputs-text {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  padding-left: 4px;
   font-size: 16px;
-  color: #000000;
+  color: var(--color-text, #000000);
+  width: 100%;
 }
 
 .compose-modal__label {
   font-weight: 600;
   white-space: nowrap;
+  color: var(--color-text, #1f2544);
 }
 
 .compose-modal__input {
-  flex: 1 1 360px;
-  min-width: 260px;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
   border: none;
-  border-bottom: 1px solid #dbe1f1;
-  padding: 12px 4px;
+  border-bottom: 1px solid var(--color-border, #dbe1f1);
+  padding: 12px 4px 12px 8px;
   font-size: 16px;
-  color: #1f2544;
+  color: var(--color-text, #1f2544);
   outline: none;
   transition: border-color 0.2s ease;
 }
@@ -132,14 +143,84 @@
 
 .compose-modal__actions {
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  align-items: center;
   flex-wrap: wrap;
-  margin-left: calc(48px + 20px);
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .compose-modal__action-slot {
   display: inline-flex;
-  margin-right: 32px;
+}
+
+.compose-modal__attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.compose-modal__attachment {
+  position: relative;
+  width: 148px;
+  min-height: 96px;
+  padding: 12px 12px 10px;
+  border: 1px solid var(--color-border, #dbe1f1);
+  border-radius: 12px;
+  background: var(--color-panel, #ffffff);
+  box-shadow: 0 4px 12px rgba(17, 24, 56, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.compose-modal__attachment-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text, #1f2544);
+  word-break: break-word;
+}
+
+.compose-modal__attachment-meta {
+  font-size: 12px;
+  color: var(--color-muted, #6b7280);
+}
+
+.compose-modal__attachment-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(31, 37, 68, 0.08);
+  color: var(--color-text, #1f2544);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.compose-modal__attachment-remove:hover {
+  background: rgba(81, 99, 235, 0.15);
+  color: #1d2b6b;
+}
+
+.compose-modal__attach-error {
+  min-height: 16px;
+  color: #e53935;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.compose-modal__attach-error--visible {
+  opacity: 1;
 }
 
 @media (max-width: 600px) {
@@ -149,38 +230,134 @@
 }
 
 .compose-modal__textarea {
-  width: calc(100% + 64px);
-  min-height: 350px;
-  max-height: min(600px, 60vh);
+  width: 100%;
+  min-height: 280px;
+  max-height: min(600px, 55vh);
   border: none;
-  border-top: 1px solid #dbe1f1;
-  border-bottom: 1px solid #dbe1f1;
+  border-top: 1px solid var(--color-border, #dbe1f1);
+  border-bottom: 1px solid var(--color-border, #dbe1f1);
   border-radius: 0;
-  padding: 32px 32px;
+  padding: 24px 16px;
   font-size: 16px;
-  color: #1f2544;
-  background: #ffffff;
+  color: var(--color-text, #1f2544);
+  background: var(--color-panel, #ffffff);
   outline: none;
   transition: border-color 0.2s ease;
-  margin: 0 -32px;
-  margin-bottom: -8px;
+  margin: 0;
   line-height: 1.5;
   overflow-y: auto;
   resize: vertical;
 }
 
 .compose-modal__textarea::placeholder {
-  color: #8f96ad;
+  color: var(--color-muted, #8f96ad);
 }
 
 .compose-modal__footer {
   display: flex;
-  justify-content: flex-end;
+  gap: 12px;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
 }
 
-.compose-modal__send-slot {
+.compose-modal__send-slot,
+.compose-modal__delete-slot {
   display: inline-flex;
-  width: 137px;
-  height: 40px;
-  border-radius: 10px;
+  justify-content: center;
+}
+
+@media (max-width: 720px) {
+  .compose-modal {
+    width: 100%;
+    max-height: none;
+    height: auto;
+    padding: 20px 18px 14px;
+    border-radius: 14px;
+    gap: 18px;
+  }
+
+  .compose-modal__body {
+    gap: 18px;
+  }
+
+  .compose-modal__inputs-text {
+    align-items: flex-start;
+  }
+
+  .compose-modal__label {
+    padding-top: 12px;
+    font-size: 15px;
+  }
+
+  .compose-modal__input {
+    font-size: 15px;
+    padding: 12px 4px 10px 6px;
+  }
+
+  .compose-modal__textarea {
+    min-height: 240px;
+    padding: 18px 12px;
+    font-size: 15px;
+  }
+
+  .compose-modal__close {
+    top: 12px;
+    right: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .compose-overlay {
+    padding: 12px;
+    align-items: flex-start;
+  }
+
+  .compose-modal {
+    border-radius: 12px;
+    padding: 16px 14px 12px;
+  }
+
+  .compose-modal__inputs-text {
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 0;
+  }
+
+  .compose-modal__label {
+    padding-top: 0;
+  }
+
+  .compose-modal__textarea {
+    min-height: 220px;
+  }
+
+  .compose-modal__actions {
+    gap: 10px;
+  }
+
+  .compose-modal__footer {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 375px) {
+  .compose-overlay {
+    padding: 10px;
+  }
+
+  .compose-modal {
+    padding: 14px 12px 10px;
+    gap: 14px;
+  }
+
+  .compose-modal__textarea {
+    min-height: 200px;
+    padding: 16px 10px;
+  }
+
+  .compose-modal__inputs {
+    gap: 12px;
+  }
 }

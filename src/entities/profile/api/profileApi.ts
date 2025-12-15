@@ -12,6 +12,7 @@ type ProfileResponseBody = {
     gender: string;
     date_of_birth: string;
     avatar_path: string | null;
+    role?: string;
 };
 
 type ProfileResponse = ApiResponse<ProfileResponseBody>;
@@ -27,6 +28,7 @@ export type ProfileData = {
     birthday: string;
     avatarUrl: string | null;
     createdAt: string;
+    role: string;
 };
 
 export type UpdateProfilePayload = {
@@ -46,28 +48,17 @@ const EMAIL_DOMAIN = "@flintmail.ru";
 const UPLOAD_AVATAR_ENDPOINT = "/user/upload/avatar";
 const ABSOLUTE_URL_REGEX = /^https?:\/\//i;
 
-function resolveAssetUrl(path: string | null | undefined): string | null {
-    if (!path) {
-        return null;
-    }
-
-    if (ABSOLUTE_URL_REGEX.test(path)) {
-        return ensureHttpsAssetUrl(path);
-    }
-
-    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-
-    let baseUrl = "";
+function getApiBaseUrl(): string {
     if (typeof window !== "undefined" && typeof window.__API_BASE_URL__ === "string") {
-        baseUrl = window.__API_BASE_URL__;
-    } else {
-        const apiInstance = apiService as unknown as { baseUrl?: string };
-        if (typeof apiInstance.baseUrl === "string") {
-            baseUrl = apiInstance.baseUrl;
-        }
+        return window.__API_BASE_URL__;
     }
 
-    return ensureHttpsAssetUrl(`${baseUrl}${normalizedPath}`);
+    const apiInstance = apiService as unknown as { baseUrl?: string };
+    if (typeof apiInstance.baseUrl === "string") {
+        return apiInstance.baseUrl;
+    }
+
+    return "";
 }
 
 function mapProfileResponse(body: ProfileResponseBody): ProfileData {
@@ -94,8 +85,9 @@ function mapProfileResponse(body: ProfileResponseBody): ProfileData {
         middleName,
         gender: normalizedGender ?? "",
         birthday: formatDateFromBackend(body.date_of_birth),
-        avatarUrl: resolveAssetUrl(body.avatar_path),
+        avatarUrl: ensureHttpsAssetUrl(body.avatar_path),
         createdAt: body.created_at,
+        role: body.role?.trim().toLowerCase() || "user",
     };
 }
 
@@ -113,7 +105,7 @@ export async function uploadProfileAvatar(file: File): Promise<string> {
         body: formData,
     });
 
-    return resolveAssetUrl(response.body.avatar_path) ?? ensureHttpsAssetUrl(response.body.avatar_path) ?? "";
+    return ensureHttpsAssetUrl(response.body.avatar_path) ?? "";
 }
 
 export async function updateProfile(payload: UpdateProfilePayload): Promise<ProfileData> {

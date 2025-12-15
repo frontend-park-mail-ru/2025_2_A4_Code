@@ -1,5 +1,6 @@
 export const LOGIN_EMPTY_ERROR = "Введите логин";
 export const LOGIN_NOT_ALLOWED_ERROR = "Некорректный формат почты";
+export const LOGIN_TOO_LONG_ERROR = "Логин не должен превышать 30 символов";
 
 export const PASSWORD_EMPTY_ERROR = "Введите пароль";
 export const PASSWORD_NOT_ALLOWED_ERROR = "Пароль должен быть не короче 6 символов";
@@ -15,7 +16,7 @@ export const SURNAME_HAS_INVALID_CHARS_ERROR = "Фамилия содержит 
 export const PATRONYMIC_HAS_INVALID_CHARS_ERROR = "Отчество содержит недопустимые символы";
 
 export const BIRTHDAY_EMPTY_ERROR = "Укажите дату рождения";
-export const BIRTHDAY_NOT_ALLOWED_ERROR = "Дата рождения должна быть в прошлом";
+export const BIRTHDAY_NOT_ALLOWED_ERROR = "Некорректная дата рождения";
 
 export const EMPTY_EMAIL_ERROR = "Укажите email получателя";
 export const INCORRECT_EMAIL_ERROR = "Некорректный email";

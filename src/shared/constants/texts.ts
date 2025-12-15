@@ -4,7 +4,6 @@ export const HEADER_TEXTS = {
 } as const;
 
 export const AVATAR_MENU_TEXTS = {
-    profile: "Профиль",
     settings: "Настройки",
     logout: "Выйти",
 } as const;
@@ -25,10 +24,10 @@ export const SIDEBAR_TEXTS: {
         { id: "inbox", name: "Входящие", count: 0, icon: "/img/folder-inbox.svg" },
         { id: "conversations", name: "Диалоги", icon: "/img/folder-dialog.svg" },
         { id: "sent", name: "Отправленные", icon: "/img/folder-sent.svg" },
-        { id: "drafts", name: "Черновики", icon: "/img/folder-drafts.svg" },
+        { id: "draft", name: "Черновики", icon: "/img/folder-drafts.svg" },
         { id: "spam", name: "Спам", icon: "/img/folder-spam.svg" },
         { id: "trash", name: "Корзина", icon: "/img/folder-trash.svg" },
-        { id: "custom", name: "Новая папка", icon: "/img/folder-add.svg" },
+        { id: "custom", name: "Новая папка", icon: "/img/folder-custom.svg" },
     ],
 };
 
@@ -40,4 +39,13 @@ export const COMPOSE_MODAL_TEXTS = {
     attachFile: "Прикрепить файл",
     saveDraft: "Сохранить черновик",
     send: "Отправить",
+} as const;
+
+export const INBOX_PAGE_TEXTS = {
+    recipientRequired: 'Получать обязателен',
+    bodyRequired: 'Тело обязательно',
+    offlineMailTitle: 'Тема письма',
+    offlineMailMessage: 'Не удалось загрузить письмо',
+    offlineBackAction: 'Назад',
+    emptyList: 'Пусто',
 } as const;

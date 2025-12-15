@@ -7,6 +7,7 @@ import { getInitials } from "@utils/person";
 import { PROFILE_SIDEBAR_TEXTS } from "@pages/constants/texts";
 import { getOnlineStatus, subscribeToOnlineStatus } from "@shared/utils/onlineStatus";
 import { probeOnlineStatus } from "@shared/utils/networkProbe";
+import { SidebarComponent, type Folder as SidebarFolder } from "@shared/widgets/Sidebar/Sidebar";
 
 type TabId = "personal" | "interface";
 
@@ -15,13 +16,19 @@ type Props = {
     email: string;
     avatarUrl?: string | null;
     onNavigateInbox?: () => void;
+    showTabs?: boolean;
     activeTab?: TabId;
     onTabChange?: (tabId: TabId) => void;
+    folders?: SidebarFolder[];
+    activeFolderId?: string;
+    onFolderSelect?: (folderId: string) => void;
+    onCreateFolder?: () => void;
 };
 
 export class ProfileSidebarComponent extends Component<Props> {
     private readonly tabs = new Map<TabId, ProfileSidebarTabItem>();
     private readonly backButton: ButtonComponent;
+    private foldersWidget: SidebarComponent | null = null;
     private isOnline: boolean = getOnlineStatus();
     private unsubscribeOnline?: () => void;
 
@@ -37,6 +44,15 @@ export class ProfileSidebarComponent extends Component<Props> {
             icon: '<img src="/img/arrow-left.svg" alt="" aria-hidden="true" />',
             onClick: () => this.props.onNavigateInbox?.(),
         });
+
+        if (props.folders) {
+            this.foldersWidget = new SidebarComponent({
+                folders: props.folders,
+                activeFolderId: props.activeFolderId,
+                onFolderSelect: props.onFolderSelect,
+                onCreateFolder: props.onCreateFolder,
+            });
+        }
     }
 
     protected renderTemplate(): string {
@@ -45,6 +61,7 @@ export class ProfileSidebarComponent extends Component<Props> {
             email: this.props.email,
             avatarUrl: this.props.avatarUrl ?? null,
             initials: getInitials(this.props.name, "--"),
+            showTabs: this.props.showTabs ?? true,
         });
     }
 
@@ -56,7 +73,7 @@ export class ProfileSidebarComponent extends Component<Props> {
             this.requestConnectivityProbe();
         });
         const tabsRoot = this.element?.querySelector('[data-slot="tabs"]') as HTMLElement | null;
-        if (tabsRoot) {
+        if (tabsRoot && (this.props.showTabs ?? true)) {
             tabsRoot.innerHTML = "";
             PROFILE_SIDEBAR_TEXTS.tabs.forEach((tab) => {
                 const component = new ProfileSidebarTabItem({
@@ -79,6 +96,16 @@ export class ProfileSidebarComponent extends Component<Props> {
             this.backButton.mount(backSlot).then();
         }
 
+        const foldersSlot = this.element?.querySelector('[data-slot="folders"]') as HTMLElement | null;
+        if (foldersSlot) {
+            foldersSlot.innerHTML = "";
+            if (this.foldersWidget) {
+                const widgetEl = this.foldersWidget.render();
+                foldersSlot.appendChild(widgetEl);
+                this.foldersWidget.mount(foldersSlot).then();
+            }
+        }
+
         this.updateAvatar();
         this.updateTabAvailability();
         this.requestConnectivityProbe();
@@ -99,10 +126,25 @@ export class ProfileSidebarComponent extends Component<Props> {
 
         this.updateAvatar();
 
+        const shouldShowTabs = this.props.showTabs ?? true;
+        const tabsRoot = this.element?.querySelector('[data-slot="tabs"]') as HTMLElement | null;
+        if (!shouldShowTabs && tabsRoot) {
+            tabsRoot.innerHTML = "";
+        }
+
         const activeTab = this.props.activeTab ?? "personal";
         this.tabs.forEach((component, id) => {
             component.setProps({ active: id === activeTab, disabled: !this.isOnline });
         });
+
+        if (this.foldersWidget) {
+            this.foldersWidget.setProps({
+                folders: newProps.folders ?? this.foldersWidget["props"]?.folders,
+                activeFolderId: newProps.activeFolderId ?? this.foldersWidget["props"]?.activeFolderId,
+                onFolderSelect: newProps.onFolderSelect ?? this.foldersWidget["props"]?.onFolderSelect,
+                onCreateFolder: newProps.onCreateFolder ?? this.foldersWidget["props"]?.onCreateFolder,
+            });
+        }
     }
 
     public async unmount(): Promise<void> {
@@ -113,6 +155,7 @@ export class ProfileSidebarComponent extends Component<Props> {
         }
         this.tabs.clear();
         await this.backButton.unmount();
+        await this.foldersWidget?.unmount();
         await super.unmount();
     }
 

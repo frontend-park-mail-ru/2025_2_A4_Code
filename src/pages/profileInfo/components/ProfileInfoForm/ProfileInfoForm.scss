@@ -1,0 +1,106 @@
+.profile-info-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 24px;
+}
+
+.profile-info-form__card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+}
+
+.profile-info-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.profile-info-form__label {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1f2544;
+    margin: 0;
+}
+
+.profile-info-form__textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px 14px;
+    border: 1px solid #cfd4e4;
+    border-radius: 10px;
+    font-size: 16px;
+    resize: vertical;
+    outline: none;
+}
+
+.profile-info-form__textarea:focus {
+    border-color: #6b7cff;
+    box-shadow: 0 0 0 3px rgba(107, 124, 255, 0.15);
+}
+
+.profile-info-form__placeholder {
+    color: #7c8299;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.profile-info-form__helper {
+    margin: 0;
+    color: #2b2f43;
+    font-size: 16px;
+}
+
+.profile-info-form__time-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-info-form__time-label {
+    color: #1f2544;
+    font-size: 16px;
+}
+
+.profile-info-form__select {
+    min-width: 96px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #cfd4e4;
+    background: #fff;
+    font-size: 16px;
+}
+
+.profile-info-form__footnote {
+    color: #9aa0b5;
+    margin: 4px 0 0;
+    font-size: 14px;
+}
+
+.profile-info-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+    margin-top: 12px;
+}
+
+.profile-info-form__save {
+    padding: 12px 24px;
+    background: #616fff;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.profile-info-form__save:hover {
+    background: #4d5af7;
+}
+
+.profile-info-form__save:active {
+    background: #3c48e6;
+}

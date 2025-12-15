@@ -1,6 +1,8 @@
-import {Component} from "@shared/base/Component";
+import { Component } from "@shared/base/Component";
 import template from "./InputField.hbs";
 import "./InputField.scss";
+
+type ControlType = "input" | "textarea";
 
 type Props = {
     label?: string;
@@ -15,6 +17,8 @@ type Props = {
     variant?: "filled" | "underline";
     hint?: string;
     disabled?: boolean;
+    control?: ControlType;
+    rows?: number;
 };
 
 export class InputFieldComponent extends Component<Props> {
@@ -23,44 +27,51 @@ export class InputFieldComponent extends Component<Props> {
             ...props,
             type: props.type ?? "text",
             variant: props.variant ?? "filled",
+            control: props.control ?? "input",
+            rows: props.rows ?? 4,
         });
     }
 
     protected renderTemplate(): string {
+        const control = this.props.control ?? "input";
+        const value = this.props.value ?? "";
+
         return template({
             label: this.props.label,
             name: this.props.name,
             type: this.props.type ?? "text",
             placeholder: this.props.placeholder,
-            value: this.props.value ?? "",
+            value,
             error: this.props.error,
             required: this.props.required,
             autocomplete: this.props.autocomplete,
             variant: this.props.variant ?? "filled",
             disabled: this.props.disabled ?? false,
+            isTextarea: control === "textarea",
+            textareaRows: this.props.rows ?? 4,
         });
     }
 
     protected afterRender(): void {
-        const input = this.element?.querySelector('[data-input]') as HTMLInputElement | null;
-        if (!input) return;
+        const control = this.getControlElement();
+        if (!control) return;
 
-        input.addEventListener('input', () => {
-            this.props.onInput?.(input.value);
+        control.addEventListener("input", () => {
+            this.props.onInput?.(control.value);
         });
     }
 
     public setValue(value: string): void {
-        const input = this.element?.querySelector('[data-input]') as HTMLInputElement | null;
-        if (input) {
-            input.value = value;
+        const control = this.getControlElement();
+        if (control) {
+            control.value = value;
         }
         this.setProps({ value });
     }
 
     public getValue(): string {
-        const input = this.element?.querySelector('[data-input]') as HTMLInputElement | null;
-        return input?.value ?? this.props.value ?? "";
+        const control = this.getControlElement();
+        return control?.value ?? this.props.value ?? "";
     }
 
     public setError(message: string | null): void {
@@ -86,9 +97,13 @@ export class InputFieldComponent extends Component<Props> {
 
     public setDisabled(disabled: boolean): void {
         this.props = { ...this.props, disabled };
-        const input = this.element?.querySelector('[data-input]') as HTMLInputElement | null;
-        if (input) {
-            input.disabled = disabled;
+        const control = this.getControlElement();
+        if (control) {
+            control.disabled = disabled;
         }
+    }
+
+    private getControlElement(): HTMLInputElement | HTMLTextAreaElement | null {
+        return (this.element?.querySelector("[data-control]") as HTMLInputElement | HTMLTextAreaElement | null) ?? null;
     }
 }

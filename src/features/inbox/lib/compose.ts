@@ -1,10 +1,13 @@
-import type { MailDetail } from "@app-types/mail";
+import type { MailAttachment, MailDetail } from "@app-types/mail";
 
 export type ComposeDraft = {
     initialTo?: string;
     initialSubject?: string;
     initialBody?: string;
     focusField?: "to" | "subject" | "body";
+    threadId?: string;
+    draftId?: string;
+    attachments?: MailAttachment[];
 };
 
 export function buildReplyDraft(mail: MailDetail): ComposeDraft {
@@ -17,6 +20,7 @@ export function buildReplyDraft(mail: MailDetail): ComposeDraft {
         initialSubject,
         initialBody,
         focusField: initialTo ? "body" : "to",
+        threadId: mail.threadId,
     };
 }
 
@@ -25,6 +29,7 @@ export function buildForwardDraft(mail: MailDetail): ComposeDraft {
         initialSubject: ensureSubjectPrefix(mail.subject, "Fwd:"),
         initialBody: buildForwardBody(mail),
         focusField: "to",
+        threadId: mail.threadId,
     };
 }
 

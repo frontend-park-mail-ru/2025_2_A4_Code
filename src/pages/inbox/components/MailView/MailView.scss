@@ -4,12 +4,13 @@
   gap: 24px;
   color: #1f2544;
   padding: 8px;
+  word-break: break-word;
 
   &__toolbar {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 8px;
   }
 
@@ -43,7 +44,7 @@
   &__toolbar-slot--icon .ui-button__icon img {
     width: 24px;
     height: 24px;
-    margin-right: 32px;
+    margin-right: 12px;
   }
   &__toolbar-slot--icon .ui-button {
     gap: 0;
@@ -61,6 +62,7 @@
     display: flex;
     gap: 16px;
     align-items: flex-start;
+    flex-wrap: wrap;
   }
 
   &__avatar {
@@ -76,6 +78,7 @@
     font-weight: 600;
     color: #2d3c66;
     overflow: hidden;
+    user-select: none;
 
     img {
       width: 100%;
@@ -120,6 +123,9 @@
   &__email {
     font-size: 16px;
     color: #6d7595;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
   }
 
   &__time {
@@ -136,6 +142,7 @@
   &__recipient {
     font-size: 16px;
     color: #6d7595;
+    word-break: break-all;
   }
 
   &__body {
@@ -144,10 +151,84 @@
     font-size: 16px;
     line-height: 1.5;
     color: #242a48;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 
     p {
       margin: 0 0 16px;
     }
+  }
+
+  &__attachments {
+    margin-top: 20px;
+    padding-top: 0;
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__attachments-title {
+    font-weight: 700;
+    color: #1f2544;
+  }
+
+  &__attachments-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  &__attachment {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 4px 8px;
+    padding: 12px 14px;
+    border: 1px solid #dbe1f1;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: inherit;
+    text-decoration: none;
+    min-width: 160px;
+    max-width: 240px;
+    box-shadow: 0 4px 12px rgba(17, 24, 56, 0.06);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  &__attachment:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(17, 24, 56, 0.12);
+  }
+
+  &__attachment-name {
+    font-weight: 700;
+    color: #1f2544;
+    word-break: break-word;
+  }
+
+  &__attachment-meta {
+    font-size: 12px;
+    color: #6b7280;
+    align-self: end;
+  }
+
+  &__attachment-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  &__attachment-download {
+    font-size: 12px;
+    color: #5163eb;
+    text-decoration: none;
+  }
+
+  &__attachment-download:hover {
+    text-decoration: underline;
   }
 
   @media (max-width: 640px) {
@@ -163,6 +244,135 @@
       width: 100%;
       margin-left: 0;
       text-align: left;
+    }
+  }
+}
+
+.mail-attachment-preview {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 9999;
+  font-family: "Nunito Sans", sans-serif;
+}
+
+.mail-attachment-preview__content {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: min(1000px, 95vw);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.mail-attachment-preview__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.mail-attachment-preview__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2544;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mail-attachment-preview__download {
+  font-size: 13px;
+  color: #5163eb;
+  text-decoration: none;
+}
+
+.mail-attachment-preview__download:hover {
+  text-decoration: underline;
+}
+
+.mail-attachment-preview__close {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #8b90a0;
+}
+
+.mail-attachment-preview__close:hover {
+  color: #1f2544;
+}
+
+.mail-attachment-preview__body {
+  padding: 0;
+  flex: 1;
+  background: #f8f9ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mail-attachment-preview__body img,
+.mail-attachment-preview__body iframe {
+  width: 100%;
+  height: 70vh;
+  object-fit: contain;
+  display: block;
+  border: none;
+}
+
+@media (max-width: 720px) {
+  .mail-view {
+    gap: 20px;
+    padding: 6px;
+
+    &__toolbar {
+      justify-content: flex-start;
+      gap: 12px;
+    }
+
+    &__subject {
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    &__avatar {
+      width: 40px;
+      height: 40px;
+    }
+
+    &__details {
+      gap: 6px;
+    }
+
+    &__details-row {
+      gap: 8px;
+    }
+
+    &__body {
+      padding-top: 20px;
+      font-size: 15px;
+    }
+
+    &__toolbar-slot .ui-button__label {
+      display: none;
+    }
+
+    &__toolbar-slot .ui-button {
+      padding: 0;
+      min-width: 0;
     }
   }
 }

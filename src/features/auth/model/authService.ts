@@ -5,7 +5,7 @@ import {
     type LoginPayload,
     type RegisterPayload,
 } from "@entities/auth";
-import { AUTH_PAGE_TEXTS, REGISTER_PAGE_TEXTS } from "@pages/constants/texts";
+import { AUTH_ERROR_TEXTS, REGISTER_ERROR_TEXTS } from "../constants/messages";
 import { extractApiErrorMessage } from "@shared/utils/apiError";
 import { DATA_CACHE_PREFIX } from "../../../serviceWorker/cacheConfig";
 import { SW_MESSAGES } from "../../../serviceWorker/messages";
@@ -17,18 +17,21 @@ import {
     clearProfileCache,
 } from "@features/profile";
 import { clearAllCookies } from "@shared/utils/cookies";
+import { extractTokens, setTokens, clearTokens } from "@shared/api/authTokens";
 
 export type AuthResult = { success: true } | { success: false; message: string };
 
 export async function authenticate(payload: LoginPayload): Promise<AuthResult> {
     try {
-        await login(payload);
+        const response = await login(payload);
+        persistTokens(response);
         await setupProfileCache();
         return { success: true };
     } catch (error) {
+        clearTokens();
         return {
             success: false,
-            message: extractApiErrorMessage(error, AUTH_PAGE_TEXTS.genericError),
+            message: extractApiErrorMessage(error, AUTH_ERROR_TEXTS.generic),
         };
     }
 }
@@ -36,16 +39,18 @@ export async function authenticate(payload: LoginPayload): Promise<AuthResult> {
 export async function registerUser(payload: RegisterPayload): Promise<AuthResult> {
     try {
         await register(payload);
-        await login({
+        const response = await login({
             login: payload.username,
             password: payload.password,
         });
+        persistTokens(response);
         await setupProfileCache();
         return { success: true };
     } catch (error) {
+        clearTokens();
         return {
             success: false,
-            message: extractApiErrorMessage(error, REGISTER_PAGE_TEXTS.genericError),
+            message: extractApiErrorMessage(error, REGISTER_ERROR_TEXTS.generic),
         };
     }
 }
@@ -54,6 +59,7 @@ export async function performLogout(): Promise<void> {
     try {
         await logout();
     } finally {
+        clearTokens();
         clearAllCookies();
         clearProfileCache();
         await clearCachedData();
@@ -108,4 +114,12 @@ async function setupProfileCache(): Promise<void> {
     } catch (error) {
         console.warn("[auth] failed to preload profile after authentication", error);
     }
+}
+
+function persistTokens(response: unknown): void {
+    const tokens = extractTokens(response as any);
+    if (!tokens) {
+        throw new Error("No tokens in auth response");
+    }
+    setTokens(tokens.accessToken, tokens.refreshToken);
 }

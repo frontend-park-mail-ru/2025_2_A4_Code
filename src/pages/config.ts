@@ -1,50 +1,36 @@
-﻿import { Router, type RouteConfig } from "@infra";
+import { Router, type RouteConfig } from "@infra";
 import { AuthPage } from "./auth";
 import { RegisterPage } from "./register";
 import { InboxPage } from "./inbox/InboxPage";
 import { ProfilePage } from "./profile";
-import { AuthLayout } from "@app/components/AuthLayout/AuthLayout";
-import { MainLayout } from "@app/components/MainLayout/MainLayout";
 
-const layoutFactories = {
-    auth: () => new AuthLayout(),
-    main: () => new MainLayout(),
-} as const;
-
-type LayoutKey = keyof typeof layoutFactories;
-type RouteBlueprint = Omit<RouteConfig, "createLayout"> & { layoutKey: LayoutKey };
-
-const routeBlueprints: ReadonlyArray<RouteBlueprint> = [
+const routeDefinitions: RouteConfig[] = [
     {
         path: "/auth",
-        layoutKey: "auth",
-        createPage: () => new AuthPage(),
+        createView: () => new AuthPage(),
         guestOnly: true,
     },
     {
         path: "/register",
-        layoutKey: "auth",
-        createPage: () => new RegisterPage(),
+        createView: () => new RegisterPage(),
         guestOnly: true,
     },
     {
-        path: "/inbox/:messageId?",
-        layoutKey: "main",
-        createPage: (params: Record<string, string>) => new InboxPage({ messageId: params.messageId }),
+        path: "/mail/:folder?/:messageId?",
+        createView: (params: Record<string, string>) =>
+            new InboxPage({ messageId: params.messageId, folderId: params.folder }),
         requiresAuth: true,
     },
     {
-        path: "/profile",
-        layoutKey: "main",
-        createPage: () => new ProfilePage(),
+        path: "/profile/:activeTab?/:section?",
+        createView: (params: Record<string, string>) =>
+            new ProfilePage({
+                activeTab: params.activeTab ?? "personal",
+                interfaceSection: params.section,
+            }),
         requiresAuth: true,
     },
 ];
-
-const routeDefinitions: RouteConfig[] = routeBlueprints.map((route) => ({
-    ...route,
-    createLayout: layoutFactories[route.layoutKey],
-}));
 
 export function setupRoutes(router: Router): void {
     routeDefinitions.forEach((route) => {

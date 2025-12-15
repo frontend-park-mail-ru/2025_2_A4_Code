@@ -18,9 +18,18 @@
     transition: border-color .15s ease, box-shadow .15s ease;
     background: transparent;
     color: inherit;
+    box-sizing: border-box;
 
     &::placeholder {
       color: rgba(39, 43, 53, 0.6);
+    }
+
+    &--textarea {
+      resize: none;
+      min-height: 120px;
+      max-height: 220px;
+      overflow-y: auto;
+      line-height: 1.4;
     }
   }
 
@@ -75,6 +84,75 @@
     &:focus {
       border-bottom-color: #5163eb;
       box-shadow: none;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .input-field {
+    padding-bottom: 16px;
+
+    &__label {
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    &__control {
+      padding: 11px 10px;
+      font-size: 14px;
+    }
+
+    &__control--textarea {
+      min-height: 130px;
+    }
+
+    &__error {
+      font-size: 13px;
+    }
+  }
+
+  .input-field--filled {
+    .input-field__control {
+      padding: 14px 16px;
+    }
+  }
+
+  .input-field--underline {
+    padding-bottom: 14px;
+
+    .input-field__control {
+      padding: 12px 4px;
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .input-field {
+    padding-bottom: 14px;
+
+    &__control {
+      padding: 10px 8px;
+      font-size: 13px;
+    }
+
+    &__label {
+      font-size: 12.5px;
+    }
+  }
+
+  .input-field--filled {
+    .input-field__control {
+      padding: 12px 14px;
+    }
+  }
+
+  .input-field--underline {
+    .input-field__label {
+      font-size: 13px;
+    }
+
+    .input-field__control {
+      padding: 10px 4px;
     }
   }
 }

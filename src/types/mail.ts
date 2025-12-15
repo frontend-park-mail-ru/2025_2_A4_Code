@@ -21,4 +21,5 @@ export interface MailDetail extends Mail {
     threadId?: string;
     attachments?: MailAttachment[];
     fromEmail?: string;
+    recipient?: string;
 }

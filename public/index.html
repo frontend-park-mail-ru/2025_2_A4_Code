@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -8,7 +8,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/normalize.css">
+    <script>
+        window.__API_BASE_URL__ = "https://flintmail.ru/api";
+        window.__AD_SLOT__ = '<iframe src="https://adnet.website/api/slots/serving/ff6585fb-4215-474c-91aa-33ad7bac132d" width="240" height="400" frameborder="0" scrolling="no" style="border:none; overflow:hidden;"></iframe>';
+        document.documentElement.setAttribute("data-ad-slot", window.__AD_SLOT__ || "");
+        document.addEventListener("DOMContentLoaded", () => {
+            const app = document.getElementById("app");
+            if (app) {
+                app.setAttribute("data-ad-slot", window.__AD_SLOT__ || "");
+            }
+        });
+    </script>
     <title>FlintMail</title>
+    <link rel="icon" type="image/svg+xml" href="/img/favicon.svg">
 </head>
 <body>
     <div id="app"></div>

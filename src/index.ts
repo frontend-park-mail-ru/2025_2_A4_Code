@@ -8,8 +8,9 @@ if (!rootElement) {
 }
 
 const app = new App();
+
 document.addEventListener("DOMContentLoaded", () => {
-    app.init().then(() => {});
+    app.init().then(() => undefined);
 });
 
 registerServiceWorker();

@@ -1,0 +1,24 @@
+﻿<div class="create-folder-overlay">
+  <div class="create-folder-modal">
+    <button class="create-folder-modal__close" data-action="close" aria-label="Закрыть">×</button>
+    <header class="create-folder-modal__header">
+      <h2 class="create-folder-modal__title">Создать папку</h2>
+    </header>
+
+    <div class="create-folder-modal__body">
+      <input
+        id="folder-name"
+        class="create-folder-modal__input"
+        type="text"
+        data-field="name"
+        maxlength="50"
+        placeholder="Введите название"
+      />
+      <div class="create-folder-modal__error" data-error="name"></div>
+    </div>
+
+    <footer class="create-folder-modal__footer">
+      <button class="create-folder-modal__save" data-action="save">Сохранить</button>
+    </footer>
+  </div>
+</div>

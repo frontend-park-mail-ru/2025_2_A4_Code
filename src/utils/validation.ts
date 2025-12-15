@@ -4,6 +4,7 @@ import {
     EMAIL_SAFE_REGEX, EMPTY_EMAIL_ERROR, INCORRECT_EMAIL_ERROR,
     LOGIN_EMPTY_ERROR,
     LOGIN_NOT_ALLOWED_ERROR,
+    LOGIN_TOO_LONG_ERROR,
     NAME_EMPTY_ERROR, NAME_HAS_INVALID_CHARS_ERROR,
     NAME_REGEX,
     NAME_TOO_SHORT_ERROR,
@@ -51,6 +52,8 @@ export function validateLoginForm(values: LoginFormFields): FieldError<keyof Log
 
     if (!login) {
         errors.push({ field: "login", message: LOGIN_EMPTY_ERROR  });
+    } else if (login.length > 30) {
+        errors.push({ field: "login", message: LOGIN_TOO_LONG_ERROR});
     } else if (!isAllowedLogin(login)) {
         errors.push({ field: "login", message: LOGIN_NOT_ALLOWED_ERROR});
     }
@@ -85,6 +88,8 @@ export function validateRegisterForm(values: RegisterFormFields): FieldError<key
 
     if (!login) {
         errors.push({ field: "login", message: LOGIN_EMPTY_ERROR });
+    } else if (login.length > 30) {
+        errors.push({ field: "login", message: LOGIN_TOO_LONG_ERROR});
     } else if (!USER_LOGIN_REGEX.test(login)) {
         errors.push({ field: "login", message: LOGIN_NOT_ALLOWED_ERROR});
     }

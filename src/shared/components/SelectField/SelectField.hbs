@@ -1,0 +1,49 @@
+<label class="select-field select-field--{{variant}} {{#if disabled}}select-field--disabled{{/if}}" data-select-field>
+    {{#if label}}
+        <span class="select-field__label">{{label}}</span>
+    {{/if}}
+
+    <input
+        type="hidden"
+        name="{{name}}"
+        value="{{value}}"
+        {{#if required}}required{{/if}}
+        data-input
+    />
+
+    <button
+        class="select-field__trigger"
+        type="button"
+        data-trigger
+        {{#if disabled}}disabled{{/if}}
+        aria-haspopup="listbox"
+        aria-expanded="false"
+    >
+        <span class="select-field__value" data-value>{{currentLabel}}</span>
+        <span class="select-field__chevron" aria-hidden="true"></span>
+    </button>
+
+    <ul class="select-field__dropdown" data-dropdown role="listbox">
+        {{#each options}}
+            <li>
+                <button
+                    type="button"
+                    class="select-field__option {{#if selected}}select-field__option--selected{{/if}}"
+                    data-option
+                    data-value="{{value}}"
+                    role="option"
+                    aria-selected="{{#if selected}}true{{else}}false{{/if}}"
+                    {{#if disabled}}disabled{{/if}}
+                >
+                    <span class="select-field__option-dot" aria-hidden="true"></span>
+                    <span>{{label}}</span>
+                </button>
+            </li>
+        {{/each}}
+    </ul>
+
+    {{#if hint}}
+        <span class="select-field__hint">{{hint}}</span>
+    {{/if}}
+    <span class="select-field__error" data-error {{#unless error}}hidden{{/unless}}>{{error}}</span>
+</label>

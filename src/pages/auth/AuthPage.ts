@@ -1,13 +1,16 @@
-﻿import { Page } from "@shared/base/Page";
+import { Component } from "@shared/base/Component";
 import { AuthFormComponent } from "./components";
 import { AUTH_PAGE_TEXTS } from "@pages/constants/texts";
 import { ButtonComponent } from "@shared/components/Button/Button";
 import { authenticate } from "@features/auth";
 import type { LoginPayload } from "@entities/auth";
-import { authManager } from "@infra";
+import { Router, authManager } from "@infra";
+import { AuthLayout } from "@app/components/AuthLayout/AuthLayout";
 import "./views/AuthPage.scss";
 
-export class AuthPage extends Page {
+export class AuthPage extends Component {
+    private readonly router = Router.getInstance();
+    private readonly layout = new AuthLayout();
     private readonly form: AuthFormComponent;
     private readonly registerButton: ButtonComponent;
 
@@ -30,7 +33,28 @@ export class AuthPage extends Page {
         return `<div class="auth-page"></div>`;
     }
 
-    protected getSlotContent() {
+    public render(): HTMLElement {
+        const element = this.layout.render(this.buildSlots());
+        this.element = this.layout.getElement();
+        return element;
+    }
+
+    public async mount(rootElement?: HTMLElement): Promise<void> {
+        if (!this.element) {
+            this.render();
+        }
+        await this.layout.mount(rootElement);
+        this.element = this.layout.getElement();
+    }
+
+    public async unmount(): Promise<void> {
+        await this.form.unmount();
+        await this.registerButton.unmount();
+        await this.layout.unmount();
+        this.element = null;
+    }
+
+    private buildSlots() {
         const content = document.createElement("div");
         content.className = "auth-page";
 
@@ -62,7 +86,7 @@ export class AuthPage extends Page {
         authManager.setAuthenticated(result.success);
 
         if (result.success) {
-            this.router.navigate("/inbox");
+            this.router.navigate("/mail");
             return;
         }
 

@@ -1,4 +1,4 @@
-<div class="compose-overlay" role="dialog" aria-modal="true">
+﻿<div class="compose-overlay" role="dialog" aria-modal="true">
   <div class="compose-modal">
     <button class="compose-modal__close" data-action="close" aria-label="Закрыть окно">
       <img src="/img/close-modal.svg" alt="" aria-hidden="true" />
@@ -25,14 +25,17 @@
       </div>
 
       <div class="compose-modal__actions">
-        <div class="compose-modal__action-slot" data-slot="attach"></div>
-        <div class="compose-modal__action-slot" data-slot="draft"></div>
+        <div class="compose-modal__action-slot compose-modal__action-slot--attach" data-slot="attach"></div>
+        <div class="compose-modal__action-slot compose-modal__action-slot--draft" data-slot="draft"></div>
       </div>
-      <textarea class="compose-modal__textarea" placeholder="Текст письма" data-field="body"></textarea>
+      <div class="compose-modal__attachments" data-slot="attachments"></div>
+      <div class="compose-modal__attach-error" data-attach-error></div>
+      <input class="compose-modal__file-input" type="file" data-attach-input multiple hidden />
+      <textarea class="compose-modal__textarea" placeholder="Введите сообщение" data-field="body"></textarea>
       <div class="compose-modal__footer">
+        <div class="compose-modal__delete-slot" data-slot="delete"></div>
         <div class="compose-modal__send-slot" data-slot="send"></div>
       </div>
     </div>
   </div>
 </div>
-
