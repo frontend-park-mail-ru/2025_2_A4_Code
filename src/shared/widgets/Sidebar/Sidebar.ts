@@ -163,13 +163,18 @@ export class SidebarComponent extends Component<Props> {
         const adHtml =
             (window as any).__AD_SLOT__ ??
             document.documentElement.getAttribute("data-ad-slot") ??
+            document.getElementById("app")?.getAttribute("data-ad-slot") ??
             "";
         if (typeof adHtml === "string" && adHtml.trim().length > 0) {
             this.adContainer.innerHTML = adHtml;
             this.adContainer.style.display = "block";
+            // eslint-disable-next-line no-console
+            console.info("[ad-slot] rendered sidebar ad");
         } else {
             this.adContainer.innerHTML = "";
             this.adContainer.style.display = "none";
+            // eslint-disable-next-line no-console
+            console.info("[ad-slot] sidebar ad not set");
         }
     }
 
