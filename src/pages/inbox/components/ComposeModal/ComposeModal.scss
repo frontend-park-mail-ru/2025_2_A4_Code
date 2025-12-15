@@ -143,15 +143,15 @@
 
 .compose-modal__actions {
   display: flex;
-  gap: 14px;
+  gap: 12px;
+  align-items: center;
   flex-wrap: wrap;
-  margin-left: 0;
-  justify-content: center;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .compose-modal__action-slot {
   display: inline-flex;
-  margin-right: 24px;
 }
 
 .compose-modal__attachments {
@@ -255,27 +255,17 @@
 
 .compose-modal__footer {
   display: flex;
-  justify-content: center;
   gap: 12px;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
 }
 
-.compose-modal__send-slot {
-  display: inline-flex;
-  width: 137px;
-  height: 40px;
-  border-radius: 10px;
-}
-
+.compose-modal__send-slot,
 .compose-modal__delete-slot {
   display: inline-flex;
-  width: 137px;
-  height: 40px;
-  border-radius: 10px;
-}
-
-.compose-modal__delete-slot {
-  display: inline-flex;
+  justify-content: center;
 }
 
 @media (max-width: 720px) {

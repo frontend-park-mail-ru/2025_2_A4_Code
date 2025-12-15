@@ -54,7 +54,7 @@ export class InterfaceSettingsComponent extends Component {
     private themeRoot: HTMLElement | null = null;
 
     private readonly placeholders: Record<ItemId, string> = {
-        theme: "",
+        theme: "мы работаем над этим",
         signature: "мы работаем над этим",
         folders: "",
     };
@@ -90,7 +90,6 @@ export class InterfaceSettingsComponent extends Component {
             }
         });
 
-        this.applyTheme(this.currentTheme, false);
         this.renderContent();
         void this.loadFolders();
     }
@@ -150,8 +149,11 @@ export class InterfaceSettingsComponent extends Component {
 
         if (this.activeItem === "theme") {
             this.teardownFolderView();
-            const themeContent = this.renderThemeContent();
-            contentRoot.replaceChildren(themeContent);
+            contentRoot.innerHTML = "";
+            const placeholder = document.createElement("div");
+            placeholder.className = "interface-settings__state interface-settings__state--placeholder";
+            placeholder.textContent = this.placeholders.theme || "мы работаем над этим";
+            contentRoot.appendChild(placeholder);
             return;
         }
 

@@ -1,9 +1,10 @@
 .sidebar {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
   gap: 8px;
   height: 100%;
   max-height: 100%;
+  overflow: hidden;
 
   &__compose {
     padding: 10px 10px;
@@ -29,6 +30,7 @@
     flex-direction: column;
     gap: 8px;
     flex: 1 1 auto;
+    min-height: 220px;
   }
 
   &__create-folder {
@@ -46,5 +48,20 @@
   }
   &__sidebar-folder__name {
     color: #5163eb;
+  }
+
+  &__ad {
+    margin-top: 12px;
+    width: 100%;
+    display: none;
+    align-self: center;
+
+    iframe {
+      width: 100%;
+      max-width: 240px;
+      border: none;
+      display: block;
+      margin: 0 auto;
+    }
   }
 }

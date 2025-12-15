@@ -380,6 +380,8 @@ export class MailViewComponent extends Component<Props> {
     }
 
     private async openPreview(item: MailAttachment, url: string): Promise<void> {
+        const PREVIEW_MAX_SIZE = 20 * 1024 * 1024; // 20 MB safeguard for in-modal preview
+
         const overlay = document.createElement("div");
         overlay.className = "mail-attachment-preview";
         overlay.setAttribute("role", "dialog");
@@ -444,6 +446,13 @@ export class MailViewComponent extends Component<Props> {
         );
 
         document.body.appendChild(overlay);
+
+        if (item.size && item.size > PREVIEW_MAX_SIZE) {
+            // слишком большой файл, открываем сразу в новой вкладке, чтобы не тащить его в память
+            window.open(url, "_blank", "noopener");
+            overlay.remove();
+            return;
+        }
 
         let previewUrl: string | null = null;
         try {

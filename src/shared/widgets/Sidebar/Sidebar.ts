@@ -31,6 +31,7 @@ export class SidebarComponent extends Component<Props> {
     private folderItems: Map<string, SidebarFolderItem> = new Map();
     private composeButton?: HTMLElement | null;
     private createFolderButton?: HTMLElement | null;
+    private adContainer?: HTMLElement | null;
     private isOnline: boolean = getOnlineStatus();
     private unsubscribeOnline?: () => void;
 
@@ -54,6 +55,7 @@ export class SidebarComponent extends Component<Props> {
         const element = this.element!;
         const composeBtn = element.querySelector('[data-compose]') as HTMLElement | null;
         const createFolderBtn = element.querySelector('[data-create-folder]') as HTMLElement | null;
+        this.adContainer = element.querySelector("[data-ad-slot]") as HTMLElement | null;
         this.foldersRoot = element.querySelector('[data-slot="folders"]') as HTMLElement | null;
         this.composeButton = composeBtn;
         this.createFolderButton = createFolderBtn;
@@ -91,6 +93,7 @@ export class SidebarComponent extends Component<Props> {
             });
         }
 
+        this.renderAdSlot();
         this.renderFolders();
     }
 
@@ -148,7 +151,23 @@ export class SidebarComponent extends Component<Props> {
         }
         this.folderItems.clear();
 
+        if (this.adContainer) {
+            this.adContainer.innerHTML = "";
+        }
+
         await super.unmount();
+    }
+
+    private renderAdSlot(): void {
+        if (!this.adContainer) return;
+        const adHtml = (window as any).__AD_SLOT__;
+        if (adHtml && typeof adHtml === "string") {
+            this.adContainer.innerHTML = adHtml;
+            this.adContainer.style.display = "block";
+        } else {
+            this.adContainer.innerHTML = "";
+            this.adContainer.style.display = "none";
+        }
     }
 
     private updateComposeAvailability(): void {
