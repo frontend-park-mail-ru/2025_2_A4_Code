@@ -12,6 +12,12 @@ export class NewMailWatcher {
     private reconnectAttempts = 0;
     private permissionRequested = false;
     private lastUnread: number | null = null;
+    private originalTitle: string = typeof document !== "undefined" ? document.title || "FlintMail" : "FlintMail";
+    private titleChanged = false;
+    private focusHandler?: () => void;
+    private visibilityHandler?: () => void;
+    private attentionInterval: number | null = null;
+    private attentionFlag = false;
 
     constructor(store: InboxStore) {
         this.store = store;
@@ -21,6 +27,7 @@ export class NewMailWatcher {
         if (typeof window === "undefined") return;
         this.requestPermission();
         this.setupPermissionRequestOnInteraction();
+        this.setupTitleResetHandlers();
         this.connect();
     }
 
@@ -30,6 +37,8 @@ export class NewMailWatcher {
             this.socket = null;
         }
         this.lastUnread = null;
+        this.resetTitle();
+        this.teardownTitleResetHandlers();
     }
 
     private connect(): void {
@@ -97,6 +106,7 @@ export class NewMailWatcher {
         console.info("[notify] mail_update", { newestFrom, newestSubj, unread, total, shouldNotify });
         if (shouldNotify) {
             this.notify(newestFrom, newestSubj);
+            this.setAttentionTitle();
         }
 
         if (shouldReload) {
@@ -114,6 +124,68 @@ export class NewMailWatcher {
             url.searchParams.set("token", token);
         }
         return url.toString();
+    }
+
+    private setAttentionTitle(): void {
+        if (typeof document === "undefined") return;
+        if (this.titleChanged) return;
+        this.originalTitle = document.title || this.originalTitle;
+        this.titleChanged = true;
+        this.startTitleBlink();
+    }
+
+    private resetTitle(): void {
+        if (typeof document === "undefined") return;
+        if (!this.titleChanged) return;
+        this.stopTitleBlink();
+        document.title = this.originalTitle || "FlintMail";
+        this.titleChanged = false;
+    }
+
+    private startTitleBlink(): void {
+        if (typeof document === "undefined" || this.attentionInterval !== null) {
+            return;
+        }
+        this.attentionFlag = false;
+        const base = this.originalTitle || "FlintMail";
+        const alt = "Новое письмо";
+        this.attentionInterval = window.setInterval(() => {
+            this.attentionFlag = !this.attentionFlag;
+            document.title = this.attentionFlag ? `${alt}` : base;
+        }, 2000);
+        document.title = `${base} / ${alt}`;
+    }
+
+    private stopTitleBlink(): void {
+        if (this.attentionInterval !== null) {
+            clearInterval(this.attentionInterval);
+            this.attentionInterval = null;
+        }
+        this.attentionFlag = false;
+    }
+
+    private setupTitleResetHandlers(): void {
+        if (typeof window === "undefined" || typeof document === "undefined") return;
+        this.focusHandler = () => this.resetTitle();
+        this.visibilityHandler = () => {
+            if (document.visibilityState === "visible") {
+                this.resetTitle();
+            }
+        };
+        window.addEventListener("focus", this.focusHandler);
+        document.addEventListener("visibilitychange", this.visibilityHandler);
+    }
+
+    private teardownTitleResetHandlers(): void {
+        if (typeof window === "undefined" || typeof document === "undefined") return;
+        if (this.focusHandler) {
+            window.removeEventListener("focus", this.focusHandler);
+            this.focusHandler = undefined;
+        }
+        if (this.visibilityHandler) {
+            document.removeEventListener("visibilitychange", this.visibilityHandler);
+            this.visibilityHandler = undefined;
+        }
     }
 
     private notify(from: string, subject: string): void {

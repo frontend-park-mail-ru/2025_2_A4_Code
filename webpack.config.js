@@ -6,6 +6,7 @@ import webpack from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import ImageMinimizerPlugin from 'image-minimizer-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -136,7 +137,13 @@ export default {
     optimization: {
         minimize: isProd,
         minimizer: [
-            '...',
+            new TerserPlugin({
+                parallel: true,
+                extractComments: false,
+                terserOptions: {
+                    format: { comments: false },
+                },
+            }),
             new CssMinimizerPlugin(),
         ],
     },

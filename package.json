@@ -32,6 +32,7 @@
     "imagemin-mozjpeg": "^10.0.0",
     "imagemin-pngquant": "^10.0.0",
     "imagemin-svgo": "^11.0.1",
+    "terser-webpack-plugin": "^5.3.10",
     "live-server": "^1.2.2",
     "mini-css-extract-plugin": "^2.9.2",
     "nodemon": "^3.1.10",
