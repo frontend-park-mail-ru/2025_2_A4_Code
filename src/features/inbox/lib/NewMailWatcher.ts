@@ -153,7 +153,7 @@ export class NewMailWatcher {
             this.attentionFlag = !this.attentionFlag;
             document.title = this.attentionFlag ? `${alt}` : base;
         }, 2000);
-        document.title = `${base} / ${alt}`;
+        // document.title = `${base}`;
     }
 
     private stopTitleBlink(): void {
