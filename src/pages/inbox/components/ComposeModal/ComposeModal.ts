@@ -27,7 +27,7 @@ type Props = {
     initialAttachments?: MailAttachment[];
 };
 
-type AttachmentItem = MailAttachment & { id: string; status: "ready" | "error"; error?: string };
+type AttachmentItem = MailAttachment & { id: string; status: "ready" | "uploading" | "error"; error?: string };
 
 export class ComposeModal extends Component<Props> {
     private readonly attachButton: ButtonComponent;
@@ -65,6 +65,7 @@ export class ComposeModal extends Component<Props> {
             label: COMPOSE_MODAL_TEXTS.send,
             variant: "primary",
             onClick: () => this.handleSend(),
+            disabled: false,
         });
 
         this.deleteDraftButton = this.props.onDeleteDraft
@@ -122,7 +123,7 @@ export class ComposeModal extends Component<Props> {
         }
 
         if (this.fileInput) {
-            this.fileInput.accept = Array.from(ALLOWED_FILE_TYPES).join(",");
+            this.fileInput.accept = "*/*";
             this.fileInput.addEventListener("change", this.handleFileInputChange);
         }
 
@@ -131,6 +132,7 @@ export class ComposeModal extends Component<Props> {
 
         this.applyInitialValues();
         this.focusInitialField();
+        this.updateSendButtonState();
     }
 
     private mountButton(root: HTMLElement, slotName: string, button: ButtonComponent): void {
@@ -258,10 +260,11 @@ export class ComposeModal extends Component<Props> {
             size: file.size,
             fileType: fileType || file.type || "",
             storagePath: this.buildStoragePath(file.name),
-            status: "ready",
+            status: "uploading",
         };
         this.attachments.push(item);
         this.renderAttachments();
+        this.updateSendButtonState();
 
         uploadAttachment(file, item.storagePath)
             .then((uploaded) => {
@@ -273,6 +276,7 @@ export class ComposeModal extends Component<Props> {
                 target.name = uploaded.name || target.name;
                 target.status = "ready";
                 this.renderAttachments();
+                this.updateSendButtonState();
             })
             .catch((err) => {
                 console.error("Failed to upload attachment", err);
@@ -280,6 +284,7 @@ export class ComposeModal extends Component<Props> {
                 this.renderAttachments();
                 this.setAttachError("Не удалось загрузить файл");
                 showToast("Не удалось загрузить файл", "error");
+                this.updateSendButtonState();
             });
     }
 
@@ -289,6 +294,7 @@ export class ComposeModal extends Component<Props> {
         if (this.attachments.length === 0) {
             this.setAttachError(null);
         }
+        this.updateSendButtonState();
     }
 
     private renderAttachments(): void {
@@ -299,6 +305,9 @@ export class ComposeModal extends Component<Props> {
         this.attachments.forEach((attachment) => {
             const card = document.createElement("div");
             card.className = "compose-modal__attachment";
+            if (attachment.status === "uploading") {
+                card.classList.add("compose-modal__attachment--uploading");
+            }
 
             const removeButton = document.createElement("button");
             removeButton.type = "button";
@@ -319,6 +328,22 @@ export class ComposeModal extends Component<Props> {
             card.appendChild(removeButton);
             card.appendChild(name);
             card.appendChild(meta);
+
+            if (attachment.status === "uploading") {
+                const loader = document.createElement("div");
+                loader.className = "compose-modal__attachment-loader";
+                const dots = document.createElement("div");
+                dots.style.display = "flex";
+                dots.style.gap = "6px";
+                dots.style.alignItems = "center";
+                for (let i = 0; i < 3; i += 1) {
+                    const dot = document.createElement("span");
+                    dot.className = "compose-modal__attachment-loader-dot";
+                    dots.appendChild(dot);
+                }
+                loader.appendChild(dots);
+                card.appendChild(loader);
+            }
 
             this.attachmentsContainer?.appendChild(card);
         });
@@ -419,6 +444,15 @@ export class ComposeModal extends Component<Props> {
             this.toErrorEl.textContent = "";
             this.toErrorEl.classList.remove("compose-modal__error--visible");
         }
+    }
+
+    private hasPendingUploads(): boolean {
+        return this.attachments.some((item) => item.status === "uploading");
+    }
+
+    private updateSendButtonState(): void {
+        const disable = this.hasPendingUploads();
+        this.sendButton.setProps({ disabled: disable });
     }
 
     public async unmount(): Promise<void> {
