@@ -8,7 +8,12 @@ import type { MailAttachment } from "@app-types/mail";
 import { uploadAttachment } from "@entities/mail";
 import { showToast } from "@shared";
 
-const ALLOWED_FILE_TYPES = new Set(["image/jpeg", "image/png", "application/pdf", "text/plain"]);
+const ALLOWED_FILE_TYPES = new Set([
+    "image/jpeg",
+    "image/png",
+    "application/pdf",
+    "text/plain",
+]);
 const MAX_FILE_SIZE = 40 * 1024 * 1024;
 const MAX_ATTACHMENTS = 20;
 const MAX_TOTAL_SIZE = 40 * 1024 * 1024;
@@ -123,7 +128,7 @@ export class ComposeModal extends Component<Props> {
         }
 
         if (this.fileInput) {
-            this.fileInput.accept = "*/*";
+            this.fileInput.accept = Array.from(ALLOWED_FILE_TYPES).join(",");
             this.fileInput.addEventListener("change", this.handleFileInputChange);
         }
 
