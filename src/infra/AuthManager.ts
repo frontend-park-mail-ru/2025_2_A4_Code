@@ -100,7 +100,7 @@ export class AuthManager {
             try {
                 listener(this.status);
             } catch (error) {
-                console.error("Auth status listener failed", error);
+                // console.error("Auth status listener failed", error);
             }
         });
     }

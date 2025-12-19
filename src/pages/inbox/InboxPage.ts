@@ -126,7 +126,7 @@ export class InboxPage extends Component {
             if (this.handleUnauthorized(error)) {
                 return;
             }
-            console.error("Failed to initialise inbox", error);
+            // console.error("Failed to initialise inbox", error);
         }
     }
 
@@ -146,7 +146,7 @@ export class InboxPage extends Component {
                     if (this.handleUnauthorized(error)) {
                         return;
                     }
-                    console.error("Failed to open message", error);
+                    // console.error("Failed to open message", error);
                 }
             }
             return;
@@ -189,7 +189,7 @@ export class InboxPage extends Component {
 
         if (state.error && state.error !== this.lastErrorMessage) {
             this.lastErrorMessage = state.error;
-            console.error(state.error);
+            // console.error(state.error);
         } else if (!state.error) {
             this.lastErrorMessage = null;
         }
@@ -242,7 +242,7 @@ export class InboxPage extends Component {
                 this.actions
                     .createFolder(name)
                     .then(() => this.closeModal())
-                    .catch((error) => console.error("Failed to create folder", error)),
+                    .catch((error) => {}),
         });
         this.createFolderModal = modal;
         this.composeModal = null;
@@ -255,7 +255,7 @@ export class InboxPage extends Component {
             if (this.handleUnauthorized(error)) {
                 return;
             }
-            console.error("Failed to load folder", error);
+            // console.error("Failed to load folder", error);
         });
         const path = folderId === "inbox" ? "/mail" : `/mail/${encodeURIComponent(folderId)}`;
         this.router.navigate(path).then();
@@ -360,7 +360,7 @@ export class InboxPage extends Component {
 
     private handleLoadMore(): void {
         this.store.loadMore().catch((error) => {
-            console.error("Failed to load more messages", error);
+            // console.error("Failed to load more messages", error);
         });
     }
 
@@ -392,7 +392,7 @@ export class InboxPage extends Component {
                       this.actions
                           .deleteDraft(draftId)
                           .then(() => this.closeModal())
-                          .catch((error) => console.error("Failed to delete draft", error))
+                          .catch((error) => {})
                 : undefined);
 
         const modal = new ComposeModal({
@@ -410,7 +410,7 @@ export class InboxPage extends Component {
                 this.actions
                     .saveDraft(payload, draftThreadId, draftId)
                     .then(() => this.closeModal())
-                    .catch((error) => console.error("Failed to save draft", error)),
+                    .catch((error) => {}),
             onDeleteDraft: deleteDraftHandler,
             draftId,
         });
@@ -444,21 +444,21 @@ export class InboxPage extends Component {
                 this.closeModal();
             })
             .catch((error) => {
-                console.error("Failed to send message", error);
+                // console.error("Failed to send message", error);
                 this.closeModal();
                 showToast("Не удалось отправить письмо", "error");
             });
     }
 
     private async handleLogout(): Promise<void> {
-        console.info("[auth] inbox logout requested");
+        // console.info("[auth] inbox logout requested");
         const navigationPromise = navigateToAuthPage(this.router, "manual-logout");
         try {
             await performLogout();
         } catch (error) {
-            console.error("Failed to logout", error);
+           // console.error("Failed to logout", error);
         } finally {
-            console.info("[auth] inbox logout completed, starting post-logout check");
+            // console.info("[auth] inbox logout completed, starting post-logout check");
             await navigationPromise;
             void this.triggerPostLogoutAuthCheck();
         }
@@ -476,7 +476,7 @@ export class InboxPage extends Component {
             onSelect: (folderId) => {
                 this.actions
                     .moveMessage(selectedMailId, folderId)
-                    .catch((error) => console.error("Failed to move message", error))
+                    .catch((error) => {})
                     .finally(() => this.closeModal());
             },
             onClose: () => this.closeModal(),
@@ -495,7 +495,7 @@ export class InboxPage extends Component {
         try {
             await this.actions.moveMessage(messageId, targetId);
         } catch (error) {
-            console.error("Failed to delete message", error);
+            // console.error("Failed to delete message", error);
         }
     }
 
@@ -507,7 +507,7 @@ export class InboxPage extends Component {
         try {
             await this.actions.markAsSpam(messageId);
         } catch (error) {
-            console.error("Failed to mark as spam", error);
+           //  console.error("Failed to mark as spam", error);
         }
     }
 
@@ -539,22 +539,22 @@ export class InboxPage extends Component {
                 userEmail: preview.email,
             });
         } catch (error) {
-            console.warn("Failed to load profile preview for header", error);
+            // console.warn("Failed to load profile preview for header", error);
         }
     }
 
     private async triggerPostLogoutAuthCheck(): Promise<void> {
         if (this.postLogoutCheckStarted) {
-            console.info("[auth] inbox post-logout check already started");
+            // console.info("[auth] inbox post-logout check already started");
             return;
         }
         this.postLogoutCheckStarted = true;
-        console.info("[auth] inbox post-logout profile probe");
+        // console.info("[auth] inbox post-logout profile probe");
         try {
             await apiService.request("/user/profile", { skipAuthRefresh: true, parseJson: false });
-            console.warn("[auth] post-logout profile request succeeded unexpectedly (still authenticated?)");
+            // console.warn("[auth] post-logout profile request succeeded unexpectedly (still authenticated?)");
         } catch (error) {
-            console.info("[auth] post-logout profile request failed (expected)", error);
+            // console.info("[auth] post-logout profile request failed (expected)", error);
         }
     }
 

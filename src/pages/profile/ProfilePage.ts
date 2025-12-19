@@ -176,7 +176,7 @@ export class ProfilePage extends Component {
             const normalizedProfile = this.normalizeProfile(fetchedProfile);
             this.applyProfile(normalizedProfile);
         } catch (error) {
-            console.error("Failed to load profile", error);
+            // console.error("Failed to load profile", error);
             this.showInitialsFallback();
         } finally {
             this.endGlobalLoading();
@@ -199,7 +199,7 @@ export class ProfilePage extends Component {
                 this.applyProfile(this.profile);
             }
         } catch (error) {
-            console.error("Failed to upload avatar", error);
+            // console.error("Failed to upload avatar", error);
         } finally {
             this.form.setAvatarUploading(false);
             this.endGlobalLoading();
@@ -240,7 +240,7 @@ export class ProfilePage extends Component {
             this.applyProfile(normalizedProfile);
             this.form.clearErrors();
         } catch (error) {
-            console.error("Failed to update profile", error);
+            // console.error("Failed to update profile", error);
         } finally {
             this.form.setSubmitting(false);
             this.endGlobalLoading();
@@ -257,14 +257,14 @@ export class ProfilePage extends Component {
     }
 
     private async handleLogout(): Promise<void> {
-        console.info("[auth] profile logout requested");
+        // console.info("[auth] profile logout requested");
         const navigationPromise = navigateToAuthPage(this.router, "manual-logout");
         try {
             await performLogout();
         } catch (error) {
-            console.error("Failed to logout", error);
+            // console.error("Failed to logout", error);
         } finally {
-            console.info("[auth] profile logout completed, starting post-logout check");
+            // console.info("[auth] profile logout completed, starting post-logout check");
             await navigationPromise;
             await this.triggerPostLogoutAuthCheck();
         }
@@ -272,16 +272,16 @@ export class ProfilePage extends Component {
 
     private async triggerPostLogoutAuthCheck(): Promise<void> {
         if (this.postLogoutCheckStarted) {
-            console.info("[auth] profile post-logout check already started");
+            // console.info("[auth] profile post-logout check already started");
             return;
         }
         this.postLogoutCheckStarted = true;
-        console.info("[auth] profile post-logout profile probe");
+        // console.info("[auth] profile post-logout profile probe");
         try {
             await apiService.request("/user/profile", { skipAuthRefresh: true, parseJson: false });
-            console.warn("[auth] post-logout profile request succeeded unexpectedly (still authenticated?)");
+            // console.warn("[auth] post-logout profile request succeeded unexpectedly (still authenticated?)");
         } catch (error) {
-            console.info("[auth] post-logout profile request failed (expected)", error);
+            // console.info("[auth] post-logout profile request failed (expected)", error);
         }
     }
 

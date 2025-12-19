@@ -449,7 +449,7 @@ export class ProfileFormComponent extends Component<Props> {
 
         this.setAvatarError(null);
         if (file.size > MAX_AVATAR_SIZE) {
-            console.warn(PROFILE_FORM_TEXTS.avatarTooLargeWarning);
+            // console.warn(PROFILE_FORM_TEXTS.avatarTooLargeWarning);
             this.setAvatarError(PROFILE_FORM_TEXTS.avatarTooLargeWarning);
             this.fileInput!.value = "";
             return;

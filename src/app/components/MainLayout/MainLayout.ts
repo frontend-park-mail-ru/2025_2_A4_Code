@@ -46,7 +46,7 @@ export class MainLayout extends Component {
         }
 
         if (!slotElement) {
-            console.warn(`Slot ${slotName} not found`);
+            // console.warn(`Slot ${slotName} not found`);
             return;
         }
 

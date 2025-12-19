@@ -169,12 +169,12 @@ export class SidebarComponent extends Component<Props> {
             this.adContainer.innerHTML = adHtml;
             this.adContainer.style.display = "block";
             // eslint-disable-next-line no-console
-            console.info("[ad-slot] rendered sidebar ad");
+            // console.info("[ad-slot] rendered sidebar ad");
         } else {
             this.adContainer.innerHTML = "";
             this.adContainer.style.display = "none";
             // eslint-disable-next-line no-console
-            console.info("[ad-slot] sidebar ad not set");
+            // console.info("[ad-slot] sidebar ad not set");
         }
     }
 

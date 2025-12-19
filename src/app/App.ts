@@ -19,7 +19,7 @@ export class App {
     constructor() {
         this.rootElement = document.getElementById('app') as HTMLElement;
         if (!this.rootElement) {
-            console.error('Root element #app not found. Check your index.html');
+            // console.error('Root element #app not found. Check your index.html');
             return;
         }
 
@@ -32,13 +32,13 @@ export class App {
 
         this.stopAuthListener = authManager.onStatusChange((status) => {
             if (status === "unauthenticated" && window.location.pathname !== "/auth") {
-                console.info("[auth] status change -> unauthenticated, redirecting");
+                // console.info("[auth] status change -> unauthenticated, redirecting");
                 void navigateToAuthPage(this.router, "status-change");
             }
         });
 
         apiService.setUnauthorizedHandler(({ url, method, status }) => {
-            console.warn("[auth] unauthorized from api", { url, method, status });
+            // console.warn("[auth] unauthorized from api", { url, method, status });
             void navigateToAuthPage(this.router, "api-401");
         });
 

@@ -94,6 +94,6 @@ export class AuthPage extends Component {
     }
 
     private handleForgotPassword(): void {
-        console.log("Reset password flow is not implemented yet.");
+        // console.log("Reset password flow is not implemented yet.");
     }
 }

@@ -120,7 +120,7 @@ export class AvatarButtonComponent extends Component<Props> {
             if (requestId !== this.pendingImageToken) {
                 return;
             }
-            console.warn("[avatar] failed to load image", error);
+            // console.warn("[avatar] failed to load image", error);
             this.showInitials(label);
         }
     }

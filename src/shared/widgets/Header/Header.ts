@@ -161,7 +161,7 @@ export class HeaderComponent extends Component<Props> {
             try {
                 await callback?.();
             } catch (err) {
-                console.error("Header action failed", err);
+                //console.error("Header action failed", err);
             }
         };
         void run();

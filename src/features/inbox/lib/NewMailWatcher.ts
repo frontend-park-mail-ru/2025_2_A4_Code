@@ -43,28 +43,28 @@ export class NewMailWatcher {
 
     private connect(): void {
         const url = this.buildWsUrl("/ws/notifications");
-        console.info("[ws] connecting to", url);
+        // console.info("[ws] connecting to", url);
         try {
             const ws = new WebSocket(url);
             this.socket = ws;
             ws.onopen = () => {
-                console.info("[ws] connected");
+                // console.info("[ws] connected");
                 this.reconnectAttempts = 0;
             };
             ws.onmessage = (event) => {
-                console.info("[ws] message", event.data);
+                // console.info("[ws] message", event.data);
                 this.handleMessage(event.data);
             };
             ws.onclose = (ev) => {
-                console.warn("[ws] closed", ev.code, ev.reason);
+                // console.warn("[ws] closed", ev.code, ev.reason);
                 this.scheduleReconnect();
             };
             ws.onerror = (ev) => {
-                console.warn("[ws] error", ev);
+                // console.warn("[ws] error", ev);
                 this.scheduleReconnect();
             };
         } catch (error) {
-            console.warn("[ws] failed to open", error);
+            // console.warn("[ws] failed to open", error);
             this.scheduleReconnect();
         }
     }
@@ -103,7 +103,7 @@ export class NewMailWatcher {
             isInboxActive &&
             ((unread !== null && unread > state.unread) || (total !== null && total > state.total));
 
-        console.info("[notify] mail_update", { newestFrom, newestSubj, unread, total, shouldNotify });
+        // console.info("[notify] mail_update", { newestFrom, newestSubj, unread, total, shouldNotify });
         if (shouldNotify) {
             this.notify(newestFrom, newestSubj);
             this.setAttentionTitle();
@@ -191,7 +191,7 @@ export class NewMailWatcher {
     private notify(from: string, subject: string): void {
         if (typeof window === "undefined") return;
         const permission = typeof Notification !== "undefined" ? Notification.permission : "unsupported";
-        console.info("[notify] attempt", { permission, from, subject });
+        // console.info("[notify] attempt", { permission, from, subject });
         if (window.Notification && permission === "granted") {
             try {
                 new Notification(NEW_MAIL_TITLE, {
@@ -202,7 +202,7 @@ export class NewMailWatcher {
                 });
                 return;
             } catch (error) {
-                console.warn("[notify] failed to show system notification", error);
+                // console.warn("[notify] failed to show system notification", error);
             }
         }
         const fallbackBody = subject ? `${NEW_MAIL_TITLE}: ${subject}` : NEW_MAIL_TITLE;
@@ -223,7 +223,7 @@ export class NewMailWatcher {
         if (Notification.permission !== "default") return;
 
         const handler = () => {
-            console.debug("[notify] requesting permission from user gesture");
+            // console.debug("[notify] requesting permission from user gesture");
             this.requestPermission(true);
         };
 

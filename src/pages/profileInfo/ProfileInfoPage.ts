@@ -94,7 +94,7 @@ export class ProfileInfoPage extends Component {
             const profile = await fetchProfile();
             this.applyProfile(profile);
         } catch (error) {
-            console.error("Failed to load profile info", error);
+            // console.error("Failed to load profile info", error);
         } finally {
             this.endLoading();
         }
@@ -138,7 +138,7 @@ export class ProfileInfoPage extends Component {
     }
 
     private async handleSave(data: { description: string; timeRange: { from: string; to: string } }): Promise<void> {
-        console.info("Profile info saved", data);
+        // console.info("Profile info saved", data);
     }
 
     private async handleLogout(): Promise<void> {
@@ -146,7 +146,7 @@ export class ProfileInfoPage extends Component {
         try {
             await performLogout();
         } catch (error) {
-            console.error("Failed to logout", error);
+            // console.error("Failed to logout", error);
         } finally {
             await navigationPromise;
         }

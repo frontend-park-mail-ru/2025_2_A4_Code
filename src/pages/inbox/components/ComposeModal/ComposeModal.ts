@@ -284,7 +284,7 @@ export class ComposeModal extends Component<Props> {
                 this.updateSendButtonState();
             })
             .catch((err) => {
-                console.error("Failed to upload attachment", err);
+                // console.error("Failed to upload attachment", err);
                 this.attachments = this.attachments.filter((att) => att.id !== item.id);
                 this.renderAttachments();
                 this.setAttachError("Не удалось загрузить файл");

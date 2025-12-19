@@ -110,7 +110,7 @@ export class InterfaceSettingsComponent extends Component {
         try {
             this.folders = await fetchFolders();
         } catch (error) {
-            console.error("Failed to load folders", error);
+            // console.error("Failed to load folders", error);
             this.folders = [];
         } finally {
             this.loading = false;
@@ -521,7 +521,7 @@ export class InterfaceSettingsComponent extends Component {
             await this.loadFolders();
             showToast("Изменения сохранены", "success");
         } catch (error) {
-            console.error("Failed to apply folder changes", error);
+            // console.error("Failed to apply folder changes", error);
             this.setError(error instanceof Error ? error.message : "Не удалось применить изменения папок");
         } finally {
             this.saving = false;

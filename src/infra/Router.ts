@@ -53,17 +53,17 @@ export class Router {
 
     public async navigate(path: string, options: NavigateOptions = {}): Promise<void> {
         const normalizedPath = this.normalizePath(path);
-        console.info("[Router] navigate requested", { path, normalizedPath, options });
+        // console.info("[Router] navigate requested", { path, normalizedPath, options });
         const match = this.findRoute(normalizedPath);
 
         if (match && this.onNavigateCallback) {
             const { config, params } = match;
-            console.info("[Router] route match", { path: normalizedPath, params, config });
+            // console.info("[Router] route match", { path: normalizedPath, params, config });
 
             if (!options.force) {
                 const accessAllowed = await this.ensureRouteAccess(config, normalizedPath, options);
                 if (!accessAllowed) {
-                    console.info("[Router] access denied, navigation stopped", { path: normalizedPath });
+                    // console.info("[Router] access denied, navigation stopped", { path: normalizedPath });
                     return;
                 }
             }
@@ -82,7 +82,7 @@ export class Router {
 
         const status = authManager.getStatus();
         const target = status === "authenticated" ? "/mail" : "/auth";
-        console.warn(`Router: route not found, redirecting to ${target}`, { path, normalizedPath });
+        // console.warn(`Router: route not found, redirecting to ${target}`, { path, normalizedPath });
         await this.navigate(target, { replace: true, skipHistory: options.skipHistory });
     }
 
@@ -174,7 +174,7 @@ export class Router {
         const guestOnly = config.guestOnly ?? false;
 
         if (!requiresAuth && !guestOnly) {
-            console.info("[Router] access allowed (no auth/guest flags)", { path: currentPath });
+            // console.info("[Router] access allowed (no auth/guest flags)", { path: currentPath });
             return true;
         }
 
@@ -188,10 +188,10 @@ export class Router {
         }
 
         if (requiresAuth && !isAuthenticated) {
-            console.info("[Router] blocked: requires auth, redirecting to /auth", {
-                path: currentPath,
-                status,
-            });
+            // console.info("[Router] blocked: requires auth, redirecting to /auth", {
+            //     path: currentPath,
+            //     status,
+            // });
             if (currentPath !== "/auth") {
                 await this.navigate("/auth", { replace: true });
             }
@@ -199,17 +199,17 @@ export class Router {
         }
 
         if (guestOnly && isAuthenticated) {
-            console.info("[Router] blocked: guest-only route while authenticated, redirecting to /mail", {
-                path: currentPath,
-                status,
-            });
+            // console.info("[Router] blocked: guest-only route while authenticated, redirecting to /mail", {
+            //     path: currentPath,
+            //     status,
+            // });
             if (currentPath !== "/mail") {
                 await this.navigate("/mail", { replace: true });
             }
             return false;
         }
 
-        console.info("[Router] access allowed", { path: currentPath, status });
+        //console.info("[Router] access allowed", { path: currentPath, status });
         return true;
     }
 }

@@ -84,7 +84,7 @@ async function clearBrowserCaches(): Promise<void> {
 
         await Promise.all(targets.map((key) => caches.delete(key)));
     } catch (error) {
-        console.warn("[auth] failed to clear cached data", error);
+        // console.warn("[auth] failed to clear cached data", error);
     }
 }
 
@@ -101,7 +101,7 @@ async function notifyServiceWorkerToClearCaches(): Promise<void> {
         const target = registration?.active ?? registration?.waiting ?? registration?.installing;
         target?.postMessage({ type: SW_MESSAGES.CLEAR_DATA_CACHE });
     } catch (error) {
-        console.warn("[auth] failed to notify service worker about cache cleanup", error);
+        // console.warn("[auth] failed to notify service worker about cache cleanup", error);
     }
 }
 
@@ -112,7 +112,7 @@ async function setupProfileCache(): Promise<void> {
         const preview = deriveProfilePreview(profile);
         primeProfilePreview(preview);
     } catch (error) {
-        console.warn("[auth] failed to preload profile after authentication", error);
+        // console.warn("[auth] failed to preload profile after authentication", error);
     }
 }
 

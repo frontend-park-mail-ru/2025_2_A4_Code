@@ -88,13 +88,13 @@ export class ApiService {
                 ? Object.keys(body as Record<string, unknown>)
                 : body;
 
-        console.info("[api] request", {
-            method,
-            url: requestUrl,
-            bodyKeys: Array.isArray(payloadInfo) ? payloadInfo : undefined,
-            hasBody: body !== undefined,
-            bodyType: body === undefined ? "none" : isJsonPayload ? "json" : typeof body,
-        });
+        // console.info("[api] request", {
+        //     method,
+        //     url: requestUrl,
+        //     bodyKeys: Array.isArray(payloadInfo) ? payloadInfo : undefined,
+        //     hasBody: body !== undefined,
+        //     bodyType: body === undefined ? "none" : isJsonPayload ? "json" : typeof body,
+        // });
 
         let accessToken = getAccessToken();
 
@@ -149,7 +149,7 @@ export class ApiService {
                     : Date.now();
             const duration = Math.round(finishedAt - startedAt);
 
-            console.info("[api] response", { method, url: requestUrl, status: response.status, durationMs: duration });
+            // console.info("[api] response", { method, url: requestUrl, status: response.status, durationMs: duration });
 
             if (!response.ok) {
                 if (response.status === 401) {
@@ -188,7 +188,7 @@ export class ApiService {
                 return fallback;
             }
 
-            console.error("[api] error", { method, url: requestUrl, error });
+            // console.error("[api] error", { method, url: requestUrl, error });
             throw error;
         }
     }
@@ -207,7 +207,7 @@ export class ApiService {
         if (!this.refreshPromise) {
             this.refreshPromise = this.performRefresh()
                 .catch((error) => {
-                    console.error("[api] refresh error", error);
+                    // console.error("[api] refresh error", error);
                     return false;
                 })
                 .finally(() => {
@@ -236,7 +236,7 @@ export class ApiService {
             });
 
             if (!response.ok) {
-                console.warn("[api] token refresh failed", { status: response.status });
+                // console.warn("[api] token refresh failed", { status: response.status });
                 clearTokens();
                 return false;
             }
@@ -256,16 +256,16 @@ export class ApiService {
                 refreshToken;
 
             if (!access) {
-                console.warn("[api] token refresh missing access token");
+                // console.warn("[api] token refresh missing access token");
                 clearTokens();
                 return false;
             }
 
             setTokens(access, refresh);
-            console.info("[api] token refresh success");
+            // console.info("[api] token refresh success");
             return true;
         } catch (error) {
-            console.error("[api] token refresh network error", error);
+            // console.error("[api] token refresh network error", error);
             clearTokens();
             return false;
         }
@@ -297,7 +297,7 @@ export class ApiService {
                 }
             }
         } catch (cacheError) {
-            console.warn("[api] cache lookup failed", cacheError);
+            // console.warn("[api] cache lookup failed", cacheError);
         }
 
         return undefined;

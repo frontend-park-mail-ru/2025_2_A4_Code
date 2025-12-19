@@ -62,7 +62,7 @@ export class CreateFolderModal extends Component<Props> {
             await this.props.onSave?.(name);
             this.props.onClose?.();
         } catch (error) {
-            console.error("Failed to create folder", error);
+            // console.error("Failed to create folder", error);
             this.setError(error instanceof Error ? error.message : "Не удалось создать папку");
         } finally {
             this.toggleSaving(false);

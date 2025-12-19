@@ -482,7 +482,7 @@ export class MailViewComponent extends Component<Props> {
                 body.appendChild(frame);
             }
         } catch (error) {
-            console.error("Failed to load attachment preview", error);
+            // console.error("Failed to load attachment preview", error);
             window.open(url, "_blank", "noopener");
             close();
         }

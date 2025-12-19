@@ -10,7 +10,7 @@ export function saveProfileCache(profile: ProfileData): void {
     try {
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
     } catch (error) {
-        console.warn("[profile] failed to persist profile cache", error);
+        // console.warn("[profile] failed to persist profile cache", error);
     }
 }
 
@@ -26,7 +26,7 @@ export function getProfileCache(): ProfileData | null {
         }
         return JSON.parse(raw) as ProfileData;
     } catch (error) {
-        console.warn("[profile] failed to read profile cache", error);
+        // console.warn("[profile] failed to read profile cache", error);
         return null;
     }
 }
@@ -39,6 +39,6 @@ export function clearProfileCache(): void {
     try {
         window.localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-        console.warn("[profile] failed to clear profile cache", error);
+        // console.warn("[profile] failed to clear profile cache", error);
     }
 }

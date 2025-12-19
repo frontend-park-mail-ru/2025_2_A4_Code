@@ -25,16 +25,16 @@ export async function navigateToAuthPage(
 
     authManager.setAuthenticated(false);
 
-    console.info("[auth] navigateToAuthPage", {
-        reason,
-        path: window.location.pathname,
-    });
+    // console.info("[auth] navigateToAuthPage", {
+    //     reason,
+    //     path: window.location.pathname,
+    // });
 
     const initialPath = window.location.pathname;
     try {
         await router.navigate(AUTH_PATH, { replace: true, force: true });
     } catch (error) {
-        console.warn("[auth] router navigate to auth failed", error);
+        // console.warn("[auth] router navigate to auth failed", error);
     }
 
     // Fallback: if history/location did not change, force the URL and trigger popstate.
